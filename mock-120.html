@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FRCS Vascular — 120-Q Mock Exam</title>
+<style>
+  :root { --bg:#0b0f14; --card:#131a22; --ink:#e8eef6; --muted:#a9b7c6; --accent:#58a6ff; --good:#2ecc71; --bad:#ff5c5c; }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:980px;margin:24px auto;padding:0 16px}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  h1{font-size:22px;margin:0}
+  .card{background:var(--card);border:1px solid #1f2a36;border-radius:12px;padding:16px;margin:12px 0}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>*{flex:1 1 320px}
+  textarea{width:100%;min-height:220px;background:#0d131a;color:var(--ink);border:1px solid #233041;border-radius:10px;padding:12px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  button{background:var(--accent);color:#05101b;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+  button.secondary{background:#202b36;color:var(--ink);border:1px solid #2a3a4a}
+  button.ghost{background:transparent;border:1px solid #2a3a4a;color:var(--muted)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#18222d;border:1px solid #263445;color:var(--muted);font-size:12px}
+  .q-meta{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+  .options{display:grid;gap:8px}
+  .opt{border:1px solid #2a3a4a;border-radius:10px;padding:10px;cursor:pointer;background:#0e141b}
+  .opt.selected{border-color:var(--accent);background:#0a1a2c}
+  .opt.correct{border-color:var(--good);background:#0e1b13}
+  .opt.wrong{border-color:var(--bad);background:#1b0e0e}
+  .controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+  .progressbar{height:8px;width:100%;background:#0d131a;border:1px solid #1f2a36;border-radius:8px;overflow:hidden}
+  .progressbar>div{height:100%;background:var(--accent);width:0%}
+  .grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(48px,1fr))}
+  .chip{text-align:center;border:1px solid #2a3a4a;border-radius:8px;padding:8px 0;background:#0e141b;font-weight:700}
+  .chip.good{border-color:#2ecc71;color:#2ecc71}
+  .chip.bad{border-color:#ff5c5c;color:#ff5c5c}
+  .hidden{display:none}
+  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#0f1720;border:1px solid #273446;padding:2px 6px;border-radius:6px;color:#c8d3df}
+  .footer{text-align:center;color:var(--muted);font-size:12px;margin:24px 0 12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FRCS Vascular — 120-Q Mock Exam</h1>
+    <div class="muted small">Single Best Answer (A–E) • shuffle • score • review</div>
+  </header>
+
+  <!-- Loader -->
+  <div class="card" id="loaderCard">
+    <h3 style="margin-top:0">Load questions</h3>
+    <div class="row">
+      <div>
+        <div class="muted small" style="margin:6px 0 8px">Paste the 120 questions here (numbered stems + A–E options). Then click “Parse”.</div>
+        <textarea id="rawInput" placeholder="1
+A 71-year-old with 6.3 cm symptomatic pararenal AAA...
+A. Wait for FEVAR
+B. Chimney EVAR
+C. Open repair
+D. Standard EVAR with endoanchors
+E. Axillo-bifem + sac embolisation
+
+2
+A 64-year-old with CMI: SMA ostial 85%...
+A. SMA balloon-expandable stent
+B. Dual-vessel stents
+C. Open antegrade bypass
+D. Observe with nutrition
+E. IMA bypass
+
+..."></textarea>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="parseBtn">Parse pasted questions</button>
+          <button class="secondary" id="loadKeyBtn">Load default 120-Q answer key</button>
+        </div>
+      </div>
+      <div>
+        <div class="muted small" style="margin:6px 0 8px">Optional: paste/override answer key (format “1C 2A 3B …”). Preloaded with our mock’s key (incl. your 116D correction).</div>
+        <textarea id="keyInput"></textarea>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="applyKeyBtn" class="secondary">Apply answer key</button>
+          <span class="muted small">Tip: press <span class="kbd">S</span> to start once loaded</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <button id="startBtn" disabled>Start exam</button>
+      <button id="shuffleBtn" class="ghost" disabled>Shuffle</button>
+      <span id="loadStatus" class="muted"></span>
+    </div>
+  </div>
+
+  <!-- Exam -->
+  <div id="examCard" class="card hidden">
+    <div class="q-meta">
+      <span class="pill" id="qCounter">Q 1 / 120</span>
+      <span class="pill" id="scorePill">Score: 0</span>
+      <span class="pill" id="timerPill">Time: 00:00</span>
+    </div>
+    <div id="qStem" style="white-space:pre-wrap;line-height:1.5"></div>
+    <div id="qOptions" class="options" style="margin-top:10px;"></div>
+    <div class="controls">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="prevBtn" class="secondary">◀ Prev</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="finishBtn" class="ghost">Finish</button>
+      </div>
+      <div style="min-width:260px;flex:1 1 auto;">
+        <div class="progressbar"><div id="progress"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultCard" class="card hidden">
+    <h3 style="margin-top:0">Results</h3>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="pill"><strong id="finalScore">0</strong> / <span id="totalQ">0</span></div>
+      <div class="pill">Accuracy: <strong id="finalPct">0%</strong></div>
+      <div class="pill">Time: <strong id="finalTime">00:00</strong></div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="muted small" style="margin:6px 0 8px">Review grid — green = correct, red = wrong. Click a number to jump back.</div>
+      <div id="reviewGrid" class="grid"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button id="retryBtn" class="secondary">Retry</button>
+      <button id="resetBtn" class="ghost">Reset</button>
+      <a href="index.html" class="ghost" style="text-decoration:none;display:inline-block;padding:10px 14px;border-radius:10px">Back to home</a>
+    </div>
+  </div>
+
+  <div class="footer">© FRCS Vascular mock • single-file app • dark-mode • no dependencies</div>
+</div>
+
+<script>
+const DEFAULT_KEY = `1C 2A 3B 4C 5C 6B 7C 8B 9B 10B 11B 12C 13C 14B 15C 16B 17B 18B 19B 20C
+21C 22B 23D 24C 25C 26B 27B 28B 29C 30B 31B 32A 33C 34B 35A 36C 37B 38C 39B 40C
+41A 42D 43C 44A 45C 46E 47C 48B 49B 50C 51B 52A 53C 54C 55B 56B 57B 58C 59B 60B
+61B 62A 63C 64B 65A 66B 67C 68D 69C 70B 71A 72C 73B 74B 75C 76C 77B 78B 79C 80C
+81A 82A 83B 84C 85A 86B 87D 88C 89B 90B 91C 92B 93B 94B 95B 96B 97C 98A 99B 100C
+101B 102B 103B 104A 105B 106B 107B 108C 109D 110B 111B 112C 113B 114B 115A 116D 117B 118B 119B 120A`;
+
+let QUESTIONS=[], ANSWERS={}, order=[], current=0, selected={}, startTime=null, timerInt=null;
+const el=id=>document.getElementById(id);
+const pad=n=>n<10?'0'+n:n;
+const secs=()=>Math.floor((Date.now()-startTime)/1000);
+const fmt=s=>`${pad(Math.floor(s/60))}:${pad(s%60)}`;
+
+function parseKey(text){
+  const m=text.toUpperCase().match(/(\d+)\s*([A-E])/g)||[];
+  const out={}; m.forEach(tok=>{const g=tok.match(/(\d+)\s*([A-E])/); out[g[1]]=g[2];});
+  return out;
+}
+function parseQuestions(raw){
+  const blocks=raw.trim().split(/\n\s*\n+/); const parsed=[]; let qNum=0;
+  for(const block of blocks){
+    const lines=block.split('\n').map(s=>s.replace(/\r/g,''));
+    let id=null, stemLines=[], opts={A:null,B:null,C:null,D:null,E:null};
+    for(const ln0 of lines){
+      const ln=ln0.trim(); if(!ln) continue;
+      if(!id && /^\d+\s*$/.test(ln)){ id=parseInt(ln,10); continue; }
+      if(!id && /^\d+\s+/.test(ln)){ id=parseInt(ln.match(/^(\d+)/)[1],10); stemLines.push(ln.replace(/^\d+\s+/,'')); continue; }
+      const om=ln.match(/^([A-E])[\.\)]\s*(.*)$/i);
+      if(om){ opts[om[1].toUpperCase()]=om[2].trim(); } else { stemLines.push(ln); }
+    }
+    if(!id){ qNum+=1; id=qNum; }
+    const arr=['A','B','C','D','E'].map(k=>opts[k]??'');
+    if(!arr[0]||!arr[1]) continue;
+    parsed.push({id, stem:stemLines.join('\n').trim(), options:arr, answer:null});
+  }
+  parsed.sort((a,b)=>a.id-b.id);
+  return parsed;
+}
+function render(){
+  const q=QUESTIONS[order[current]];
+  el('qCounter').textContent=`Q ${current+1} / ${QUESTIONS.length}`;
+  el('qStem').textContent=q.stem;
+  const ops=el('qOptions'); ops.innerHTML='';
+  q.options.forEach((txt,i)=>{
+    const L=String.fromCharCode(65+i);
+    const div=document.createElement('div');
+    div.className='opt'; div.dataset.letter=L;
+    div.innerHTML=`<div><strong>${L}.</strong> ${txt}</div>`;
+    if(selected[q.id]===L) div.classList.add('selected');
+    if(!el('resultCard').classList.contains('hidden')){
+      const correct=ANSWERS[q.id];
+      if(L===correct) div.classList.add('correct');
+      if(selected[q.id]&&L===selected[q.id]&&selected[q.id]!==correct) div.classList.add('wrong');
+    }
+    div.onclick=()=>{ if(!isFinished()){ selected[q.id]=L; render(); progress(); } };
+    ops.appendChild(div);
+  });
+}
+function progress(){
+  const answered=Object.keys(selected).length;
+  el('progress').style.width=Math.round(100*answered/QUESTIONS.length)+'%';
+  el('scorePill').textContent='Score: '+score();
+}
+function score(){
+  let s=0; for(const q of QUESTIONS){ if(selected[q.id]&&ANSWERS[q.id]&&selected[q.id]===ANSWERS[q.id]) s++; }
+  return s;
+}
+function isFinished(){ return !el('resultCard').classList.contains('hidden'); }
+function finish(){
+  clearInterval(timerInt);
+  el('finalScore').textContent=score();
+  el('totalQ').textContent=QUESTIONS.length;
+  el('finalPct').textContent=Math.round(100*score()/QUESTIONS.length)+'%';
+  el('finalTime').textContent=el('timerPill').textContent.replace('Time: ','');
+  const grid=el('reviewGrid'); grid.innerHTML='';
+  QUESTIONS.forEach((q,idx)=>{
+    const chip=document.createElement('div');
+    const ok=(selected[q.id]===ANSWERS[q.id]);
+    chip.className='chip '+(ok?'good':'bad'); chip.textContent=(idx+1);
+    chip.title=`Q${idx+1}: you=${selected[q.id]||'-'} • key=${ANSWERS[q.id]||'?'}`
+    chip.onclick=()=>{ el('resultCard').classList.add('hidden'); el('examCard').classList.remove('hidden'); current=idx; render(); };
+    grid.appendChild(chip);
+  });
+  el('examCard').classList.add('hidden'); el('resultCard').classList.remove('hidden');
+}
+function start(){
+  if(QUESTIONS.length===0) return;
+  el('loaderCard').classList.add('hidden'); el('examCard').classList.remove('hidden');
+  current=0; selected={}; startTime=Date.now();
+  timerInt=setInterval(()=>{ el('timerPill').textContent='Time: '+fmt(secs()); },1000);
+  render(); progress();
+}
+function shuffle(){
+  order=[...Array(QUESTIONS.length).keys()];
+  for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+}
+
+const $=id=>document.getElementById(id);
+$('parseBtn').onclick=()=>{
+  const raw=$('rawInput').value.trim();
+  if(!raw){ $('loadStatus').textContent='Paste questions first.'; return; }
+  QUESTIONS=parseQuestions(raw); if(QUESTIONS.length===0){ $('loadStatus').textContent='Could not parse — check formatting.'; return; }
+  order=[...Array(QUESTIONS.length).keys()];
+  const key=$('keyInput').value.trim()||DEFAULT_KEY; ANSWERS=parseKey(key);
+  $('startBtn').disabled=false; $('shuffleBtn').disabled=false; $('loadStatus').textContent=`Loaded ${QUESTIONS.length} questions.`;
+};
+$('loadKeyBtn').onclick=()=>{ $('keyInput').value=DEFAULT_KEY; ANSWERS=parseKey(DEFAULT_KEY); $('loadStatus').textContent='Default key loaded.'; if(QUESTIONS.length) {$('startBtn').disabled=false; $('shuffleBtn').disabled=false;} };
+$('applyKeyBtn').onclick=()=>{ const key=$('keyInput').value.trim(); if(!key){ $('loadStatus').textContent='Paste a key first.'; return; } ANSWERS=parseKey(key); $('loadStatus').textContent='Answer key applied.'; };
+$('startBtn').onclick=start;
+$('shuffleBtn').onclick=()=>{ shuffle(); $('loadStatus').textContent='Shuffled.'; };
+$('prevBtn').onclick=()=>{ if(current>0){ current--; render(); } };
+$('nextBtn').onclick=()=>{ if(current<QUESTIONS.length-1){ current++; render(); progress(); } else { finish(); } };
+$('finishBtn').onclick=finish;
+$('retryBtn').onclick=()=>{ $('resultCard').classList.add('hidden'); $('examCard').classList.remove('hidden'); selected={}; startTime=Date.now(); render(); progress(); };
+$('resetBtn').onclick=()=>{ window.location.reload(); };
+document.addEventListener('keydown',e=>{
+  if($('loaderCard').classList.contains('hidden')){
+    if(['a','b','c','d','e'].includes(e.key.toLowerCase())){ const L=e.key.toUpperCase(); const q=QUESTIONS[order[current]]; if(!isFinished()){ selected[q.id]=L; render(); progress(); } }
+    if(e.key==='ArrowRight'||e.key==='Enter') $('nextBtn').click();
+    if(e.key==='ArrowLeft') $('prevBtn').click();
+  }else{
+    if(e.key.toLowerCase()==='s' && !$('startBtn').disabled) start();
+  }
+});
+</script>
+</body>
+</html>
