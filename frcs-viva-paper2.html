@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FRCS Vascular – Mock Viva (Paper 2, Q1–40)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height: 1.5; margin: 20px auto; max-width: 980px; color: #111827;
+    }
+    @media (prefers-color-scheme: dark) { body { color:#e5e7eb; background:#0b0f17; } }
+    h1 { text-align:center; margin: 0 0 .25em; }
+    p.lead { text-align:center; margin:.25em 0 1.25em; color:#4b5563; }
+    .question {
+      margin-bottom: 16px; padding: 14px; border:1px solid #d1d5db; border-radius: 8px; background:#fafafa;
+    }
+    @media (prefers-color-scheme: dark) {
+      .question { border-color:#374151; background:#0f172a; }
+      p.lead { color:#9ca3af; }
+    }
+    .q-header { font-weight: 700; margin-bottom: 6px; }
+    .q-stem { margin-bottom: 8px; }
+    .options label { display:block; margin-left: 12px; margin-bottom: 4px; cursor:pointer; }
+    .result { margin-top: 6px; font-weight: 700; }
+    .correct { color:#0a8a0a; }
+    .incorrect { color:#b91c1c; }
+    .controls { display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+    button {
+      padding:10px 16px; font-size:1rem; cursor:pointer; background:#111827; color:#fff;
+      border:none; border-radius:8px;
+    }
+    button:hover { opacity:.92; }
+    #score { text-align:center; margin-top:14px; font-weight:800; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    details { margin: 14px 0; }
+    summary { font-weight:700; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<h1>FRCS Vascular — Mock Viva (Paper 2)</h1>
+<p class="lead">Single Best Answer • Consultant-level • Questions 1–40 in this file</p>
+
+<details>
+  <summary>How this viva works</summary>
+  <div style="padding:8px 2px 0 2px; color:#4b5563;">
+    Each vignette is a viva-style prompt with five choices (A–E). Select your answer and hit <em>Check Answers</em>.
+    Your selections are marked inline; the overall score appears below. Use <em>Reset</em> to clear.
+  </div>
+</details>
+
+<div id="questions">
+
+  <!-- ===================== -->
+  <!-- ===== Q1 – Q40 ====== -->
+  <!-- ===================== -->
+
+  <!-- 1 -->
+  <div class="question" data-q="1">
+    <div class="q-header">1. Juxtarenal AAA with back pain, no FEVAR available soon</div>
+    <div class="q-stem">73-year-old with 6.4 cm JRAAA, neck 2 mm reverse conical, thrombus-laden; stable; no infection; FEVAR unavailable &gt;10 days. Best management today?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q1l">
+      <span id="q1l" class="sr-only">Question 1 options</span>
+      <label><input type="radio" name="q1" value="A"> A. Emergency open repair</label>
+      <label><input type="radio" name="q1" value="B"> B. ChEVAR with bilateral parallel grafts</label>
+      <label><input type="radio" name="q1" value="C"> C. Endoanchors + standard EVAR</label>
+      <label><input type="radio" name="q1" value="D"> D. Transfer for urgent FEVAR</label>
+      <label><input type="radio" name="q1" value="E"> E. Observe 24 h and repeat CT</label>
+    </div>
+    <div class="result" id="r1"></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="question" data-q="2">
+    <div class="q-header">2. TBAD with FL renal perfusion &amp; TL compression</div>
+    <div class="q-stem">69-year-old: chronic type B dissection, true lumen compressed; both renals from false lumen but perfusing; thoracic diameter 48 mm. Worsening HTN and creatinine.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q2l">
+      <span id="q2l" class="sr-only">Question 2 options</span>
+      <label><input type="radio" name="q2" value="A"> A. TEVAR covering entry tear</label>
+      <label><input type="radio" name="q2" value="B"> B. Medical therapy only</label>
+      <label><input type="radio" name="q2" value="C"> C. PETTICOAT stenting</label>
+      <label><input type="radio" name="q2" value="D"> D. Thoracoabdominal open repair</label>
+      <label><input type="radio" name="q2" value="E"> E. Coil FL lumbar feeders</label>
+    </div>
+    <div class="result" id="r2"></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="question" data-q="3">
+    <div class="q-header">3. Symptomatic descending PAU (depth 13 mm) with haematoma</div>
+    <div class="q-stem">58-year-old, penetrating aortic ulcer with contained haematoma, stable.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q3l">
+      <span id="q3l" class="sr-only">Question 3 options</span>
+      <label><input type="radio" name="q3" value="A"> A. Medical therapy + surveillance</label>
+      <label><input type="radio" name="q3" value="B"> B. TEVAR</label>
+      <label><input type="radio" name="q3" value="C"> C. Open repair</label>
+      <label><input type="radio" name="q3" value="D"> D. Endoanchors only</label>
+      <label><input type="radio" name="q3" value="E"> E. Thoracotomy + patch repair</label>
+    </div>
+    <div class="result" id="r3"></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="question" data-q="4">
+    <div class="q-header">4. Post-EVAR sac growth without visible leak</div>
+    <div class="q-stem">Sac ↑ 7 mm/6 months; delayed swirling only; neck stable; EVAR well-positioned. Next intervention?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q4l">
+      <span id="q4l" class="sr-only">Question 4 options</span>
+      <label><input type="radio" name="q4" value="A"> A. Continue surveillance</label>
+      <label><input type="radio" name="q4" value="B"> B. Proximal cuff</label>
+      <label><input type="radio" name="q4" value="C"> C. Transarterial IMA + lumbars</label>
+      <label><input type="radio" name="q4" value="D"> D. Translumbar sac puncture ± embolisation</label>
+      <label><input type="radio" name="q4" value="E"> E. Immediate open conversion</label>
+    </div>
+    <div class="result" id="r4"></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="question" data-q="5">
+    <div class="q-header">5. TEVAR near LSA with LIMA-LAD &amp; dominant L vertebral</div>
+    <div class="q-stem">Planned landing 8 mm proximal to LSA; prior LIMA-LAD; dominant left vertebral.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q5l">
+      <span id="q5l" class="sr-only">Question 5 options</span>
+      <label><input type="radio" name="q5" value="A"> A. No revascularisation</label>
+      <label><input type="radio" name="q5" value="B"> B. Coil LSA</label>
+      <label><input type="radio" name="q5" value="C"> C. Carotid–subclavian bypass ± vertebral transposition</label>
+      <label><input type="radio" name="q5" value="D"> D. Clip LIMA</label>
+      <label><input type="radio" name="q5" value="E"> E. Carotid–axillary bypass</label>
+    </div>
+    <div class="result" id="r5"></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="question" data-q="6">
+    <div class="q-header">6. Blunt aortic injury (Grade III) in polytrauma</div>
+    <div class="q-stem">Pseudoaneurysm just distal to LSA; chest contamination; poor lungs.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q6l">
+      <span id="q6l" class="sr-only">Question 6 options</span>
+      <label><input type="radio" name="q6" value="A"> A. Open repair</label>
+      <label><input type="radio" name="q6" value="B"> B. TEVAR now</label>
+      <label><input type="radio" name="q6" value="C"> C. Delay TEVAR 72 h</label>
+      <label><input type="radio" name="q6" value="D"> D. Thoracotomy + primary repair</label>
+      <label><input type="radio" name="q6" value="E"> E. Observe with BP control</label>
+    </div>
+    <div class="result" id="r6"></div>
+  </div>
+
+  <!-- 7 -->
+  <div class="question" data-q="7">
+    <div class="q-header">7. TBAD after TEVAR with persistent TL collapse</div>
+    <div class="q-stem">Good proximal seal but true lumen collapse below graft persists.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q7l">
+      <span id="q7l" class="sr-only">Question 7 options</span>
+      <label><input type="radio" name="q7" value="A"> A. PETTICOAT (bare-metal stent expansion)</label>
+      <label><input type="radio" name="q7" value="B"> B. Proximal TEVAR extension</label>
+      <label><input type="radio" name="q7" value="C"> C. Distal TEVAR extension</label>
+      <label><input type="radio" name="q7" value="D"> D. Balloon septotomy</label>
+      <label><input type="radio" name="q7" value="E"> E. Open fenestration</label>
+    </div>
+    <div class="result" id="r7"></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="question" data-q="8">
+    <div class="q-header">8. Mycotic infrarenal aneurysm (Salmonella+)</div>
+    <div class="q-stem">4.2 cm, periaortic stranding, no rupture. Best initial management?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q8l">
+      <span id="q8l" class="sr-only">Question 8 options</span>
+      <label><input type="radio" name="q8" value="A"> A. Broad-spectrum IV antibiotics only</label>
+      <label><input type="radio" name="q8" value="B"> B. EVAR then 6 w IV antibiotics</label>
+      <label><input type="radio" name="q8" value="C"> C. Open excision + in-situ rifampicin graft</label>
+      <label><input type="radio" name="q8" value="D"> D. Ax-fem bypass + aortic ligation</label>
+      <label><input type="radio" name="q8" value="E"> E. Two-stage EVAR → delayed open explant</label>
+    </div>
+    <div class="result" id="r8"></div>
+  </div>
+
+  <!-- 9 -->
+  <div class="question" data-q="9">
+    <div class="q-header">9. Type Ib endoleak with CIA aneurysm; preserve IIA</div>
+    <div class="q-stem">Distal leak at 2 years; CIA 3.2 cm; internal iliac important.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q9l">
+      <span id="q9l" class="sr-only">Question 9 options</span>
+      <label><input type="radio" name="q9" value="A"> A. Extend to EIA + embolise IIA</label>
+      <label><input type="radio" name="q9" value="B"> B. Iliac branch device</label>
+      <label><input type="radio" name="q9" value="C"> C. Endoanchors</label>
+      <label><input type="radio" name="q9" value="D"> D. Open conversion</label>
+      <label><input type="radio" name="q9" value="E"> E. Relining alone</label>
+    </div>
+    <div class="result" id="r9"></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="question" data-q="10">
+    <div class="q-header">10. SCI after extensive TEVAR (12 h)</div>
+    <div class="q-stem">MAP 87; CSF drain 8 mL/h; Hb 89. First manoeuvre?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q10l">
+      <span id="q10l" class="sr-only">Question 10 options</span>
+      <label><input type="radio" name="q10" value="A"> A. Raise MAP &gt;100</label>
+      <label><input type="radio" name="q10" value="B"> B. Increase CSF drainage to 20–25 mL/h</label>
+      <label><input type="radio" name="q10" value="C"> C. Immediate LSA revascularisation</label>
+      <label><input type="radio" name="q10" value="D"> D. Steroids</label>
+      <label><input type="radio" name="q10" value="E"> E. Return to theatre</label>
+    </div>
+    <div class="result" id="r10"></div>
+  </div>
+
+  <!-- 11 -->
+  <div class="question" data-q="11">
+    <div class="q-header">11. AUI EVAR for rAAA – bleeding from groin</div>
+    <div class="q-stem">Hb falling; CTA: no graft issue. Next step?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q11l">
+      <span id="q11l" class="sr-only">Question 11 options</span>
+      <label><input type="radio" name="q11" value="A"> A. Duplex groin</label>
+      <label><input type="radio" name="q11" value="B"> B. Explore groin for stump blowout</label>
+      <label><input type="radio" name="q11" value="C"> C. Relining aorta</label>
+      <label><input type="radio" name="q11" value="D"> D. Embolise IMA</label>
+      <label><input type="radio" name="q11" value="E"> E. Endoanchors</label>
+    </div>
+    <div class="result" id="r11"></div>
+  </div>
+
+  <!-- 12 -->
+  <div class="question" data-q="12">
+    <div class="q-header">12. PET-CT uptake around EVAR with fever</div>
+    <div class="q-stem">Persistent fever, rising CRP; PET shows intense peri-graft uptake, no focal fluid.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q12l">
+      <span id="q12l" class="sr-only">Question 12 options</span>
+      <label><input type="radio" name="q12" value="A"> A. Normal post-op uptake</label>
+      <label><input type="radio" name="q12" value="B"> B. High suspicion for graft infection</label>
+      <label><input type="radio" name="q12" value="C"> C. Type II endoleak</label>
+      <label><input type="radio" name="q12" value="D"> D. Endotension</label>
+      <label><input type="radio" name="q12" value="E"> E. Sterile haematoma inflammation</label>
+    </div>
+    <div class="result" id="r12"></div>
+  </div>
+
+  <!-- 13 -->
+  <div class="question" data-q="13">
+    <div class="q-header">13. Chylous leak during iliac conduit closure</div>
+    <div class="q-stem">Retroperitoneal chylous leak appears while closing left iliac conduit. Best immediate step?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q13l">
+      <span id="q13l" class="sr-only">Question 13 options</span>
+      <label><input type="radio" name="q13" value="A"> A. Clip duct and proceed</label>
+      <label><input type="radio" name="q13" value="B"> B. Continue, treat post-op</label>
+      <label><input type="radio" name="q13" value="C"> C. Place intraperitoneal drain</label>
+      <label><input type="radio" name="q13" value="D"> D. Convert to transperitoneal</label>
+      <label><input type="radio" name="q13" value="E"> E. Nothing required</label>
+    </div>
+    <div class="result" id="r13"></div>
+  </div>
+
+  <!-- 14 -->
+  <div class="question" data-q="14">
+    <div class="q-header">14. 7.2 cm suprarenal AAA; COPD; custom delay 4 wks</div>
+    <div class="q-stem">Anatomy FEVAR-amenable; custom device delay is 4 weeks.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q14l">
+      <span id="q14l" class="sr-only">Question 14 options</span>
+      <label><input type="radio" name="q14" value="A"> A. Wait for FEVAR</label>
+      <label><input type="radio" name="q14" value="B"> B. Off-the-shelf t-Branch</label>
+      <label><input type="radio" name="q14" value="C"> C. Chimney renal + SMA</label>
+      <label><input type="radio" name="q14" value="D"> D. Open repair</label>
+      <label><input type="radio" name="q14" value="E"> E. Observe 1 month</label>
+    </div>
+    <div class="result" id="r14"></div>
+  </div>
+
+  <!-- 15 -->
+  <div class="question" data-q="15">
+    <div class="q-header">15. Spontaneous IMA aneurysm with pain</div>
+    <div class="q-stem">Focal mesenteric haematoma; SMA and coeliac patent. Best treatment?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q15l">
+      <span id="q15l" class="sr-only">Question 15 options</span>
+      <label><input type="radio" name="q15" value="A"> A. Open ligation</label>
+      <label><input type="radio" name="q15" value="B"> B. Stent-graft</label>
+      <label><input type="radio" name="q15" value="C"> C. Coil or plug embolisation</label>
+      <label><input type="radio" name="q15" value="D"> D. Conservative</label>
+      <label><input type="radio" name="q15" value="E"> E. IMA bypass</label>
+    </div>
+    <div class="result" id="r15"></div>
+  </div>
+
+  <!-- 16 -->
+  <div class="question" data-q="16">
+    <div class="q-header">16. Suspected aortoenteric fistula after EVAR – unstable</div>
+    <div class="q-stem">Herald bleed, PET uptake; haemodynamically unstable. Emergency haemostasis?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q16l">
+      <span id="q16l" class="sr-only">Question 16 options</span>
+      <label><input type="radio" name="q16" value="A"> A. Open explant + ax-bifem</label>
+      <label><input type="radio" name="q16" value="B"> B. Aortic balloon occlusion</label>
+      <label><input type="radio" name="q16" value="C"> C. Endovascular aortic coverage</label>
+      <label><input type="radio" name="q16" value="D"> D. Embolise SMA</label>
+      <label><input type="radio" name="q16" value="E"> E. Observe</label>
+    </div>
+    <div class="result" id="r16"></div>
+  </div>
+
+  <!-- 17 -->
+  <div class="question" data-q="17">
+    <div class="q-header">17. Type II leak (IMA) with sac growth + SMA ≥70% stenosis</div>
+    <div class="q-stem">Expanding sac; IMA source; significant SMA inflow disease present.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q17l">
+      <span id="q17l" class="sr-only">Question 17 options</span>
+      <label><input type="radio" name="q17" value="A"> A. Embolise IMA only</label>
+      <label><input type="radio" name="q17" value="B"> B. SMA angioplasty ± stent</label>
+      <label><input type="radio" name="q17" value="C"> C. Proximal cuff</label>
+      <label><input type="radio" name="q17" value="D"> D. Open explant</label>
+      <label><input type="radio" name="q17" value="E"> E. Coil lumbars only</label>
+    </div>
+    <div class="result" id="r17"></div>
+  </div>
+
+  <!-- 18 -->
+  <div class="question" data-q="18">
+    <div class="q-header">18. Segmental arterial mediolysis (SAM) – multiple splanchnic aneurysms</div>
+    <div class="q-stem">One aneurysm ruptured but contained. Best next step?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q18l">
+      <span id="q18l" class="sr-only">Question 18 options</span>
+      <label><input type="radio" name="q18" value="A"> A. Operate on all aneurysms</label>
+      <label><input type="radio" name="q18" value="B"> B. Treat only the ruptured aneurysm</label>
+      <label><input type="radio" name="q18" value="C"> C. Treat none</label>
+      <label><input type="radio" name="q18" value="D"> D. Endovascular for all</label>
+      <label><input type="radio" name="q18" value="E"> E. Steroids</label>
+    </div>
+    <div class="result" id="r18"></div>
+  </div>
+
+  <!-- 19 -->
+  <div class="question" data-q="19">
+    <div class="q-header">19. Li-Fraumeni (TP53) with 4.9 cm DTA aneurysm</div>
+    <div class="q-stem">55-year-old woman. Best approach?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q19l">
+      <span id="q19l" class="sr-only">Question 19 options</span>
+      <label><input type="radio" name="q19" value="A"> A. TEVAR</label>
+      <label><input type="radio" name="q19" value="B"> B. Open repair</label>
+      <label><input type="radio" name="q19" value="C"> C. Fenestrated TEVAR</label>
+      <label><input type="radio" name="q19" value="D"> D. Observe</label>
+      <label><input type="radio" name="q19" value="E"> E. Coil sac</label>
+    </div>
+    <div class="result" id="r19"></div>
+  </div>
+
+  <!-- 20 -->
+  <div class="question" data-q="20">
+    <div class="q-header">20. TASC D AIOD; hostile abdomen</div>
+    <div class="q-stem">63-year-old male; good vein/targets; multiple laparotomies &amp; RT abdomen.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q20l">
+      <span id="q20l" class="sr-only">Question 20 options</span>
+      <label><input type="radio" name="q20" value="A"> A. Aorto-bifemoral bypass</label>
+      <label><input type="radio" name="q20" value="B"> B. Axillo-bifemoral bypass</label>
+      <label><input type="radio" name="q20" value="C"> C. Fem-fem only</label>
+      <label><input type="radio" name="q20" value="D"> D. Kissing stents</label>
+      <label><input type="radio" name="q20" value="E"> E. Iliac endarterectomy</label>
+    </div>
+    <div class="result" id="r20"></div>
+  </div>
+
+  <!-- 21 -->
+  <div class="question" data-q="21">
+    <div class="q-header">21. Symptomatic carotid with hostile neck + Type III arch</div>
+    <div class="q-stem">55-year-old with TIA, prior neck dissection &amp; RT, high bifurcation.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q21l">
+      <span id="q21l" class="sr-only">Question 21 options</span>
+      <label><input type="radio" name="q21" value="A"> A. CEA</label>
+      <label><input type="radio" name="q21" value="B"> B. TCAR</label>
+      <label><input type="radio" name="q21" value="C"> C. Transfemoral CAS</label>
+      <label><input type="radio" name="q21" value="D"> D. Observe</label>
+      <label><input type="radio" name="q21" value="E"> E. Redo dissection + CEA</label>
+    </div>
+    <div class="result" id="r21"></div>
+  </div>
+
+  <!-- 22 -->
+  <div class="question" data-q="22">
+    <div class="q-header">22. Symptomatic complete ICA occlusion + contralateral 80%</div>
+    <div class="q-stem">Best strategy?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q22l">
+      <span id="q22l" class="sr-only">Question 22 options</span>
+      <label><input type="radio" name="q22" value="A"> A. Stent occluded ICA</label>
+      <label><input type="radio" name="q22" value="B"> B. CEA contralateral side</label>
+      <label><input type="radio" name="q22" value="C"> C. Anticoagulation</label>
+      <label><input type="radio" name="q22" value="D"> D. EC–IC bypass</label>
+      <label><input type="radio" name="q22" value="E"> E. Observe</label>
+    </div>
+    <div class="result" id="r22"></div>
+  </div>
+
+  <!-- 23 -->
+  <div class="question" data-q="23">
+    <div class="q-header">23. Day-2 post-CEA severe headache &amp; confusion</div>
+    <div class="q-stem">BP 190/100, CT normal. Likely diagnosis?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q23l">
+      <span id="q23l" class="sr-only">Question 23 options</span>
+      <label><input type="radio" name="q23" value="A"> A. Embolic stroke</label>
+      <label><input type="radio" name="q23" value="B"> B. Hyperperfusion syndrome</label>
+      <label><input type="radio" name="q23" value="C"> C. Haemorrhage</label>
+      <label><input type="radio" name="q23" value="D"> D. Hypoperfusion</label>
+      <label><input type="radio" name="q23" value="E"> E. Cranial nerve palsy</label>
+    </div>
+    <div class="result" id="r23"></div>
+  </div>
+
+  <!-- 24 -->
+  <div class="question" data-q="24">
+    <div class="q-header">24. Carotid body tumour (Shamblin III)</div>
+    <div class="q-stem">Where to refer?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q24l">
+      <span id="q24l" class="sr-only">Question 24 options</span>
+      <label><input type="radio" name="q24" value="A"> A. Any vascular centre</label>
+      <label><input type="radio" name="q24" value="B"> B. ENT-only</label>
+      <label><input type="radio" name="q24" value="C"> C. Combined high-volume vascular + ENT</label>
+      <label><input type="radio" name="q24" value="D"> D. Neurosurgery</label>
+      <label><input type="radio" name="q24" value="E"> E. Oncology</label>
+    </div>
+    <div class="result" id="r24"></div>
+  </div>
+
+  <!-- 25 -->
+  <div class="question" data-q="25">
+    <div class="q-header">25. Carotid dissection in FMD – persistent pain, no stroke</div>
+    <div class="q-stem">Best management?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q25l">
+      <span id="q25l" class="sr-only">Question 25 options</span>
+      <label><input type="radio" name="q25" value="A"> A. Stent</label>
+      <label><input type="radio" name="q25" value="B"> B. Antiplatelets</label>
+      <label><input type="radio" name="q25" value="C"> C. Anticoagulation</label>
+      <label><input type="radio" name="q25" value="D"> D. Observe</label>
+      <label><input type="radio" name="q25" value="E"> E. Patch repair</label>
+    </div>
+    <div class="result" id="r25"></div>
+  </div>
+
+  <!-- 26 -->
+  <div class="question" data-q="26">
+    <div class="q-header">26. Carotid web with embolic stroke</div>
+    <div class="q-stem">Best revascularisation?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q26l">
+      <span id="q26l" class="sr-only">Question 26 options</span>
+      <label><input type="radio" name="q26" value="A"> A. CEA</label>
+      <label><input type="radio" name="q26" value="B"> B. CAS</label>
+      <label><input type="radio" name="q26" value="C"> C. TCAR</label>
+      <label><input type="radio" name="q26" value="D"> D. Best medical therapy</label>
+      <label><input type="radio" name="q26" value="E"> E. Observe</label>
+    </div>
+    <div class="result" id="r26"></div>
+  </div>
+
+  <!-- 27 -->
+  <div class="question" data-q="27">
+    <div class="q-header">27. Radiation-induced symptomatic carotid stenosis</div>
+    <div class="q-stem">High bifurcation (C3); good transfemoral access.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q27l">
+      <span id="q27l" class="sr-only">Question 27 options</span>
+      <label><input type="radio" name="q27" value="A"> A. CEA</label>
+      <label><input type="radio" name="q27" value="B"> B. CAS</label>
+      <label><input type="radio" name="q27" value="C"> C. TCAR</label>
+      <label><input type="radio" name="q27" value="D"> D. Observe</label>
+      <label><input type="radio" name="q27" value="E"> E. Eversion CEA</label>
+    </div>
+    <div class="result" id="r27"></div>
+  </div>
+
+  <!-- 28 -->
+  <div class="question" data-q="28">
+    <div class="q-header">28. Hypotension/bradycardia during TCAR</div>
+    <div class="q-stem">Most likely mechanism?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q28l">
+      <span id="q28l" class="sr-only">Question 28 options</span>
+      <label><input type="radio" name="q28" value="A"> A. Flow reversal embolisation</label>
+      <label><input type="radio" name="q28" value="B"> B. Carotid sinus stimulation</label>
+      <label><input type="radio" name="q28" value="C"> C. Stent fracture</label>
+      <label><input type="radio" name="q28" value="D"> D. Wire perforation</label>
+      <label><input type="radio" name="q28" value="E"> E. Air embolism</label>
+    </div>
+    <div class="result" id="r28"></div>
+  </div>
+
+  <!-- 29 -->
+  <div class="question" data-q="29">
+    <div class="q-header">29. Symptomatic 70% ICA stenosis + severe COPD</div>
+    <div class="q-stem">Best option?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q29l">
+      <span id="q29l" class="sr-only">Question 29 options</span>
+      <label><input type="radio" name="q29" value="A"> A. CEA under GA</label>
+      <label><input type="radio" name="q29" value="B"> B. CEA under LA</label>
+      <label><input type="radio" name="q29" value="C"> C. CAS</label>
+      <label><input type="radio" name="q29" value="D"> D. TCAR</label>
+      <label><input type="radio" name="q29" value="E"> E. Observe</label>
+    </div>
+    <div class="result" id="r29"></div>
+  </div>
+
+  <!-- 30 -->
+  <div class="question" data-q="30">
+    <div class="q-header">30. High cervical traumatic ICA pseudoaneurysm; contaminated wound</div>
+    <div class="q-stem">No neuro deficit. Best option?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q30l">
+      <span id="q30l" class="sr-only">Question 30 options</span>
+      <label><input type="radio" name="q30" value="A"> A. Primary repair</label>
+      <label><input type="radio" name="q30" value="B"> B. Covered stent</label>
+      <label><input type="radio" name="q30" value="C"> C. Coil</label>
+      <label><input type="radio" name="q30" value="D"> D. Ligation</label>
+      <label><input type="radio" name="q30" value="E"> E. Observe</label>
+    </div>
+    <div class="result" id="r30"></div>
+  </div>
+
+  <!-- 31 -->
+  <div class="question" data-q="31">
+    <div class="q-header">31. Carotid stump syndrome</div>
+    <div class="q-stem">Best treatment?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q31l">
+      <span id="q31l" class="sr-only">Question 31 options</span>
+      <label><input type="radio" name="q31" value="A"> A. Stump excision + patch</label>
+      <label><input type="radio" name="q31" value="B"> B. Anticoagulation</label>
+      <label><input type="radio" name="q31" value="C"> C. Observe</label>
+      <label><input type="radio" name="q31" value="D"> D. Carotid stent</label>
+      <label><input type="radio" name="q31" value="E"> E. Coil stump</label>
+    </div>
+    <div class="result" id="r31"></div>
+  </div>
+
+  <!-- 32 -->
+  <div class="question" data-q="32">
+    <div class="q-header">32. Tandem CCA origin + ICA lesion (symptomatic)</div>
+    <div class="q-stem">CCA origin 90% + ICA 80%.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q32l">
+      <span id="q32l" class="sr-only">Question 32 options</span>
+      <label><input type="radio" name="q32" value="A"> A. CEA only</label>
+      <label><input type="radio" name="q32" value="B"> B. CCA stent then CEA same sitting</label>
+      <label><input type="radio" name="q32" value="C"> C. Hybrid: CCA stent + ICA endarterectomy</label>
+      <label><input type="radio" name="q32" value="D"> D. Observe</label>
+      <label><input type="radio" name="q32" value="E"> E. ICA stent first</label>
+    </div>
+    <div class="result" id="r32"></div>
+  </div>
+
+  <!-- 33 -->
+  <div class="question" data-q="33">
+    <div class="q-header">33. Severe dementia, life expectancy &lt;1y, 70% ICA</div>
+    <div class="q-stem">Best course?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q33l">
+      <span id="q33l" class="sr-only">Question 33 options</span>
+      <label><input type="radio" name="q33" value="A"> A. CEA</label>
+      <label><input type="radio" name="q33" value="B"> B. CAS</label>
+      <label><input type="radio" name="q33" value="C"> C. TCAR</label>
+      <label><input type="radio" name="q33" value="D"> D. No intervention</label>
+      <label><input type="radio" name="q33" value="E"> E. Observe 6 months</label>
+    </div>
+    <div class="result" id="r33"></div>
+  </div>
+
+  <!-- 34 -->
+  <div class="question" data-q="34">
+    <div class="q-header">34. Crescendo TIAs awaiting urgent CEA – thunderclap headache</div>
+    <div class="q-stem">CT normal; BP 200/120.</div>
+    <div class="options" role="radiogroup" aria-labelledby="q34l">
+      <span id="q34l" class="sr-only">Question 34 options</span>
+      <label><input type="radio" name="q34" value="A"> A. Proceed with CEA</label>
+      <label><input type="radio" name="q34" value="B"> B. Anticoagulate</label>
+      <label><input type="radio" name="q34" value="C"> C. Treat as hyperperfusion</label>
+      <label><input type="radio" name="q34" value="D"> D. Treat as migraine</label>
+      <label><input type="radio" name="q34" value="E"> E. MRI</label>
+    </div>
+    <div class="result" id="r34"></div>
+  </div>
+
+  <!-- 35 -->
+  <div class="question" data-q="35">
+    <div class="q-header">35. Kinked carotid–subclavian bypass; VBI symptoms</div>
+    <div class="q-stem">Best fix?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q35l">
+      <span id="q35l" class="sr-only">Question 35 options</span>
+      <label><input type="radio" name="q35" value="A"> A. Observe</label>
+      <label><input type="radio" name="q35" value="B"> B. Patch angioplasty</label>
+      <label><input type="radio" name="q35" value="C"> C. Redo bypass ± interposition</label>
+      <label><input type="radio" name="q35" value="D"> D. Stent-graft</label>
+      <label><input type="radio" name="q35" value="E"> E. Thrombolysis</label>
+    </div>
+    <div class="result" id="r35"></div>
+  </div>
+
+  <!-- 36 -->
+  <div class="question" data-q="36">
+    <div class="q-header">36. Renal artery aneurysm 2.7 cm near bifurcation; childbearing</div>
+    <div class="q-stem">Best management?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q36l">
+      <span id="q36l" class="sr-only">Question 36 options</span>
+      <label><input type="radio" name="q36" value="A"> A. Observe until 3 cm</label>
+      <label><input type="radio" name="q36" value="B"> B. Coil aneurysm</label>
+      <label><input type="radio" name="q36" value="C"> C. Covered stent</label>
+      <label><input type="radio" name="q36" value="D"> D. Open reconstruction</label>
+      <label><input type="radio" name="q36" value="E"> E. Nephrectomy</label>
+    </div>
+    <div class="result" id="r36"></div>
+  </div>
+
+  <!-- 37 -->
+  <div class="question" data-q="37">
+    <div class="q-header">37. Ostial calcific SMA &gt;90% with CMI</div>
+    <div class="q-stem">Food fear and weight loss. Best first-line?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q37l">
+      <span id="q37l" class="sr-only">Question 37 options</span>
+      <label><input type="radio" name="q37" value="A"> A. POBA</label>
+      <label><input type="radio" name="q37" value="B"> B. POBA + stent</label>
+      <label><input type="radio" name="q37" value="C"> C. Open bypass</label>
+      <label><input type="radio" name="q37" value="D"> D. Observe</label>
+      <label><input type="radio" name="q37" value="E"> E. MAL release</label>
+    </div>
+    <div class="result" id="r37"></div>
+  </div>
+
+  <!-- 38 -->
+  <div class="question" data-q="38">
+    <div class="q-header">38. Isolated MVT, JAK2+, bowel viable</div>
+    <div class="q-stem">Best approach?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q38l">
+      <span id="q38l" class="sr-only">Question 38 options</span>
+      <label><input type="radio" name="q38" value="A"> A. Anticoagulation only</label>
+      <label><input type="radio" name="q38" value="B"> B. AC + cytoreduction</label>
+      <label><input type="radio" name="q38" value="C"> C. Lysis</label>
+      <label><input type="radio" name="q38" value="D"> D. Laparotomy</label>
+      <label><input type="radio" name="q38" value="E"> E. TIPS</label>
+    </div>
+    <div class="result" id="r38"></div>
+  </div>
+
+  <!-- 39 -->
+  <div class="question" data-q="39">
+    <div class="q-header">39. SMA dissection with dynamic stenosis &amp; ongoing pain</div>
+    <div class="q-stem">Perfusion diminished; bowel viable. Intervention?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q39l">
+      <span id="q39l" class="sr-only">Question 39 options</span>
+      <label><input type="radio" name="q39" value="A"> A. Heparin only</label>
+      <label><input type="radio" name="q39" value="B"> B. SMA stent</label>
+      <label><input type="radio" name="q39" value="C"> C. ROMS</label>
+      <label><input type="radio" name="q39" value="D"> D. Laparotomy</label>
+      <label><input type="radio" name="q39" value="E"> E. IMA stent</label>
+    </div>
+    <div class="result" id="r39"></div>
+  </div>
+
+  <!-- 40 -->
+  <div class="question" data-q="40">
+    <div class="q-header">40. Coeliac artery aneurysm 2.4 cm, symptomatic, not ruptured</div>
+    <div class="q-stem">Best therapy?</div>
+    <div class="options" role="radiogroup" aria-labelledby="q40l">
+      <span id="q40l" class="sr-only">Question 40 options</span>
+      <label><input type="radio" name="q40" value="A"> A. Open ligation</label>
+      <label><input type="radio" name="q40" value="B"> B. Coil/plug</label>
+      <label><input type="radio" name="q40" value="C"> C. Covered stent</label>
+      <label><input type="radio" name="q40" value="D"> D. Observe</label>
+      <label><input type="radio" name="q40" value="E"> E. SMA bypass</label>
+    </div>
+    <div class="result" id="r40"></div>
+  </div>
+
+  <!-- ===== End Q1–40 ===== -->
+
+</div>
+
+<div class="controls">
+  <button id="check">Check Answers</button>
+  <button id="reset">Reset</button>
+</div>
+<div id="score"></div>
+
+<script>
+  // Full answer key for Q1–120 (so you can paste Q41–120 blocks later without touching JS)
+  const correct = {
+    1:'A',2:'A',3:'B',4:'D',5:'C',6:'B',7:'A',8:'A',9:'B',10:'A',
+    11:'B',12:'B',13:'A',14:'B',15:'C',16:'C',17:'B',18:'B',19:'D',20:'B',
+    21:'B',22:'B',23:'B',24:'C',25:'B',26:'A',27:'B',28:'B',29:'B',30:'B',
+    31:'A',32:'C',33:'D',34:'A',35:'C',36:'D',37:'B',38:'B',39:'B',40:'C',
+    41:'B',42:'C',43:'D',44:'B',45:'C',46:'D',47:'A',48:'A',49:'C',50:'A',
+    51:'A',52:'B',53:'B',54:'A',55:'D',56:'C',57:'C',58:'B',59:'B',60:'C',
+    61:'B',62:'E',63:'B',64:'B',65:'D',66:'D',67:'B',68:'B',69:'D',70:'A',
+    71:'B',72:'C',73:'D',74:'A',75:'A',76:'A',77:'B',78:'C',79:'A',80:'B',
+    81:'A',82:'B',83:'A',84:'A',85:'C',86:'A',87:'C',88:'B',89:'D',90:'B',
+    91:'B',92:'C',93:'A',94:'B',95:'C',96:'B',97:'C',98:'C',99:'C',100:'B',
+    101:'A',102:'C',103:'B',104:'C',105:'B',106:'B',107:'B',108:'A',109:'A',110:'C',
+    111:'A',112:'A',113:'A',114:'B',115:'A',116:'C',117:'C',118:'B',119:'B',120:'C'
+  };
+
+  function checkAnswers() {
+    let score = 0;
+    let totalPresent = 0;
+
+    for (const q in correct) {
+      const radios = document.querySelectorAll('[name="q' + q + '"]');
+      if (!radios.length) continue; // skip questions not on page yet
+      totalPresent++;
+
+      let chosen = null;
+      for (const r of radios) if (r.checked) { chosen = r.value; break; }
+
+      const res = document.getElementById('r' + q);
+      if (!res) continue;
+
+      if (!chosen) {
+        res.textContent = 'No answer selected. Correct: ' + correct[q];
+        res.className = 'result incorrect';
+      } else if (chosen === correct[q]) {
+        res.textContent = 'Correct ✓ (' + correct[q] + ')';
+        res.className = 'result correct';
+        score++;
+      } else {
+        res.textContent = 'Incorrect ✗ (You: ' + chosen + ', Correct: ' + correct[q] + ')';
+        res.className = 'result incorrect';
+      }
+    }
+
+    document.getElementById('score').textContent =
+      totalPresent ? ('Score: ' + score + ' / ' + totalPresent + ' (' + Math.round(score/totalPresent*100) + '%)') :
+      'No questions on this page yet.';
+  }
+
+  function resetAll() {
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    document.querySelectorAll('.result').forEach(el => { el.textContent = ''; el.className = 'result'; });
+    document.getElementById('score').textContent = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('check').addEventListener('click', checkAnswers);
+  document.getElementById('reset').addEventListener('click', resetAll);
+</script>
+
+</body>
+</html>
