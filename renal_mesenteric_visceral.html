@@ -1,1 +1,228 @@
-.
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renal / Mesenteric / Visceral Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Renal / Mesenteric / Visceral Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"RMV-001",topic:"Acute mesenteric ischaemia",difficulty:"easy",stem:"A 76-year-old woman with atrial fibrillation develops sudden severe abdominal pain out of proportion to examination. Lactate is 5.2 mmol/L. She is haemodynamically stable and has no peritonitis. Best next investigation?",options:{A:"CTA abdomen and pelvis",B:"Plain abdominal radiograph only",C:"Colonoscopy",D:"Barium swallow",E:"Diagnostic laparoscopy before imaging"},answer:"A",explanation:"CTA is the key investigation for suspected acute mesenteric ischaemia in a stable patient, defining arterial occlusion, bowel viability and treatment options."},
+{id:"RMV-002",topic:"AMI with peritonitis",difficulty:"medium",stem:"A 72-year-old man presents with acute mesenteric ischaemia. He has generalised peritonitis, lactate 8 mmol/L and CT evidence of SMA occlusion with pneumatosis. Best management principle?",options:{A:"Immediate operative exploration with revascularisation/source control strategy",B:"Outpatient anticoagulation",C:"Colonoscopy first",D:"No treatment unless pain persists for 6 weeks",E:"Compression therapy"},answer:"A",explanation:"Peritonitis in acute mesenteric ischaemia suggests infarcted bowel and requires urgent laparotomy, bowel assessment, source control and revascularisation where feasible."},
+{id:"RMV-003",topic:"SMA embolus",difficulty:"medium",stem:"A patient with atrial fibrillation has abrupt abdominal pain. CTA shows an embolus lodged in the proximal SMA with otherwise normal mesenteric arteries. Best likely mechanism?",options:{A:"Cardioembolic SMA occlusion",B:"Chronic venous insufficiency",C:"Median arcuate ligament syndrome",D:"Nutcracker syndrome",E:"Inferior mesenteric aneurysm rupture"},answer:"A",explanation:"Sudden severe pain in a patient with atrial fibrillation and focal SMA occlusion with otherwise normal vessels is typical of embolic acute mesenteric ischaemia."},
+{id:"RMV-004",topic:"SMA thrombosis",difficulty:"medium",stem:"A 68-year-old smoker has months of post-prandial pain and weight loss, then sudden deterioration. CTA shows heavily calcified coeliac and SMA origins with acute SMA thrombosis. Most likely mechanism?",options:{A:"Thrombosis on chronic atherosclerotic mesenteric disease",B:"Primary lymphoedema",C:"Gallstone pancreatitis",D:"Carotid embolus to the ICA",E:"Venous thoracic outlet syndrome"},answer:"A",explanation:"A history of chronic mesenteric symptoms with calcified mesenteric origins and acute deterioration suggests thrombosis on chronic atherosclerotic stenosis."},
+{id:"RMV-005",topic:"AMI revascularisation",difficulty:"medium",stem:"A stable patient has acute SMA occlusion without peritonitis. CTA shows short proximal thrombotic occlusion and suitable anatomy for endovascular treatment. Best management principle?",options:{A:"Urgent mesenteric revascularisation, endovascular or open depending anatomy and bowel viability",B:"Oral antibiotics alone",C:"Routine outpatient review",D:"No anticoagulation",E:"Compression stockings"},answer:"A",explanation:"Acute mesenteric arterial occlusion requires urgent revascularisation if bowel is potentially viable. Endovascular therapy may be appropriate in selected stable patients."},
+{id:"RMV-006",topic:"Second-look laparotomy",difficulty:"medium",stem:"A patient undergoes laparotomy and SMA revascularisation for acute mesenteric ischaemia. Several bowel segments are dusky but not frankly necrotic. Best operative planning?",options:{A:"Consider temporary abdominal closure and planned second-look laparotomy",B:"Resect all small bowel immediately",C:"Close and discharge",D:"No further assessment",E:"Colonoscopy in theatre only"},answer:"A",explanation:"When bowel viability is uncertain after revascularisation, planned second-look laparotomy allows reassessment and avoids unnecessary extensive resection."},
+{id:"RMV-007",topic:"NOMI",difficulty:"hard",stem:"An 82-year-old ICU patient on high-dose vasopressors develops abdominal distension, rising lactate and CT showing diffuse small-bowel hypoperfusion without SMA occlusion. Best diagnosis?",options:{A:"Non-occlusive mesenteric ischaemia",B:"May-Thurner syndrome",C:"Subclavian steal",D:"Varicose veins",E:"Renal fibromuscular dysplasia"},answer:"A",explanation:"NOMI occurs in low-flow states with splanchnic vasoconstriction and no major arterial occlusion, often in critically ill patients on vasopressors."},
+{id:"RMV-008",topic:"NOMI management",difficulty:"hard",stem:"A ventilated ICU patient has suspected non-occlusive mesenteric ischaemia without peritonitis. Best management principle?",options:{A:"Optimise haemodynamics, reduce vasoconstrictors where possible and consider catheter-directed vasodilator therapy in selected cases",B:"Immediate carotid endarterectomy",C:"No resuscitation",D:"Compression stockings",E:"Routine elective colonoscopy"},answer:"A",explanation:"NOMI treatment focuses on reversing low-flow physiology, reducing vasoconstriction and selected intra-arterial vasodilator therapy, with surgery if infarction/peritonitis develops."},
+{id:"RMV-009",topic:"Mesenteric venous thrombosis",difficulty:"medium",stem:"A 45-year-old man has abdominal pain. CT venous phase shows superior mesenteric vein thrombosis, bowel wall oedema and no peritonitis. Best initial management?",options:{A:"Therapeutic anticoagulation",B:"Immediate SMA stenting",C:"No treatment",D:"Appendicectomy",E:"Carotid-subclavian bypass"},answer:"A",explanation:"Mesenteric venous thrombosis without peritonitis is initially treated with anticoagulation, supportive care and investigation for provoking factors."},
+{id:"RMV-010",topic:"MVT with infarction",difficulty:"medium",stem:"A patient with mesenteric venous thrombosis develops peritonitis, worsening acidosis and CT evidence of non-enhancing bowel. Best management?",options:{A:"Laparotomy with resection of infarcted bowel plus anticoagulation",B:"Outpatient anticoagulation only",C:"No operation because thrombosis is venous",D:"Compression stockings",E:"Elective colonoscopy"},answer:"A",explanation:"Peritonitis and non-enhancing bowel indicate infarction. Surgery for bowel resection is required, alongside anticoagulation for the venous thrombosis."},
+{id:"RMV-011",topic:"Chronic mesenteric ischaemia",difficulty:"easy",stem:"A 69-year-old smoker has 6 months of post-prandial abdominal pain, food fear and 12 kg weight loss. CTA shows severe SMA and coeliac origin stenoses. Best diagnosis?",options:{A:"Chronic mesenteric ischaemia",B:"Irritable bowel syndrome by definition",C:"Acute appendicitis",D:"Venous ulcer disease",E:"Median nerve compression"},answer:"A",explanation:"Post-prandial pain, food fear, weight loss and multivessel mesenteric stenosis are classic for chronic mesenteric ischaemia."},
+{id:"RMV-012",topic:"CMI treatment",difficulty:"medium",stem:"A fit patient has symptomatic chronic mesenteric ischaemia with severe proximal SMA stenosis and weight loss. Best management principle?",options:{A:"Mesenteric revascularisation, usually targeting the SMA",B:"Reassurance only",C:"Long-term opiates without revascularisation",D:"No antiplatelet or statin therapy",E:"Inferior vena cava filter"},answer:"A",explanation:"Symptomatic chronic mesenteric ischaemia requires revascularisation if feasible, with the SMA usually the most important target."},
+{id:"RMV-013",topic:"CMI endovascular",difficulty:"medium",stem:"A frail 78-year-old patient has symptomatic chronic mesenteric ischaemia from a short calcified SMA origin stenosis. Best first-line revascularisation in many centres?",options:{A:"Endovascular SMA angioplasty and stenting",B:"Appendicectomy",C:"No treatment because weight loss is present",D:"Carotid endarterectomy",E:"Below-knee bypass"},answer:"A",explanation:"Endovascular stenting of the proximal SMA is commonly first-line for chronic mesenteric ischaemia, especially in older or higher-risk patients."},
+{id:"RMV-014",topic:"Open mesenteric bypass",difficulty:"hard",stem:"A young fit patient has chronic mesenteric ischaemia with long flush SMA occlusion unsuitable for endovascular treatment. Best durable option to consider?",options:{A:"Open mesenteric bypass",B:"Compression therapy",C:"IVC filter",D:"No revascularisation possible",E:"Carotid stenting"},answer:"A",explanation:"Open mesenteric bypass remains an option for fit patients with anatomy unsuitable for endovascular treatment or after failed endovascular therapy."},
+{id:"RMV-015",topic:"Mesenteric duplex",difficulty:"medium",stem:"A fasting mesenteric duplex shows markedly elevated SMA peak systolic velocity at the origin with post-stenotic turbulence. Best interpretation?",options:{A:"Significant SMA origin stenosis",B:"Normal finding",C:"External iliac occlusion",D:"Portal vein thrombosis",E:"Carotid body tumour"},answer:"A",explanation:"Markedly elevated peak systolic velocity and turbulence at the SMA origin on fasting duplex suggest haemodynamically significant stenosis."},
+{id:"RMV-016",topic:"Median arcuate ligament",difficulty:"medium",stem:"A 32-year-old thin woman has epigastric pain and weight loss. Duplex shows elevated coeliac artery velocities on expiration that improve with inspiration. Best diagnosis?",options:{A:"Median arcuate ligament syndrome",B:"SMA embolus",C:"May-Thurner syndrome",D:"Nutcracker syndrome",E:"Leriche syndrome"},answer:"A",explanation:"Respiratory variation in coeliac compression, worse on expiration and improved on inspiration, is typical of median arcuate ligament compression."},
+{id:"RMV-017",topic:"MALS management",difficulty:"hard",stem:"A patient has suspected median arcuate ligament syndrome with compatible symptoms and dynamic imaging. Best management principle?",options:{A:"Careful specialist assessment; decompression may be considered after excluding other causes",B:"Immediate SMA stenting in all cases",C:"No imaging is required",D:"Anticoagulation cures it",E:"Emergency colectomy"},answer:"A",explanation:"MALS is a diagnosis requiring careful symptom-imaging correlation and exclusion of other causes. Surgical decompression may be considered in selected patients."},
+{id:"RMV-018",topic:"Renal artery stenosis",difficulty:"easy",stem:"A 72-year-old man has resistant hypertension and flash pulmonary oedema. CTA shows severe bilateral renal artery stenosis. Best interpretation?",options:{A:"Renovascular disease may be clinically significant",B:"Renal artery stenosis is always incidental",C:"Only carotid duplex is needed",D:"Compression therapy is first-line",E:"No medical therapy is required"},answer:"A",explanation:"Bilateral renal artery stenosis with flash pulmonary oedema is a high-risk renovascular phenotype where revascularisation may be considered."},
+{id:"RMV-019",topic:"Incidental RAS",difficulty:"medium",stem:"A 74-year-old man undergoing CTA for AAA has incidental unilateral 60% renal artery stenosis. Blood pressure is controlled and renal function is stable. Best management?",options:{A:"Best medical therapy and observation",B:"Mandatory renal artery stenting",C:"Nephrectomy",D:"Thrombolysis",E:"No cardiovascular risk treatment"},answer:"A",explanation:"Most incidental atherosclerotic renal artery stenosis without resistant hypertension, renal decline or pulmonary oedema is managed medically."},
+{id:"RMV-020",topic:"RAS indications",difficulty:"medium",stem:"Which scenario is most likely to benefit from renal artery revascularisation?",options:{A:"Recurrent flash pulmonary oedema with severe bilateral renal artery stenosis",B:"Mild unilateral stenosis with normal BP",C:"Stable renal function with controlled hypertension",D:"Renal artery stenosis seen only on old ultrasound without symptoms",E:"Small scarred kidney with no function"},answer:"A",explanation:"High-risk presentations such as recurrent flash pulmonary oedema, rapidly declining renal function or severe resistant hypertension may benefit from revascularisation."},
+{id:"RMV-021",topic:"ACE inhibitor in RAS",difficulty:"medium",stem:"A patient with bilateral renal artery stenosis starts an ACE inhibitor and develops a marked creatinine rise. Best interpretation?",options:{A:"Reduced efferent arteriolar tone can reduce GFR in bilateral RAS",B:"ACE inhibitors always improve renal perfusion in bilateral RAS",C:"This excludes renovascular disease",D:"It proves renal vein thrombosis",E:"No medication review is needed"},answer:"A",explanation:"In bilateral renal artery stenosis or stenosis to a solitary kidney, ACE inhibitors can reduce glomerular filtration pressure and cause a creatinine rise."},
+{id:"RMV-022",topic:"Renal duplex",difficulty:"medium",stem:"Renal duplex shows renal artery PSV 360 cm/s and renal-aortic ratio 4.2. Best interpretation?",options:{A:"Haemodynamically significant renal artery stenosis is likely",B:"Normal renal artery flow",C:"Renal vein thrombosis",D:"Portal hypertension",E:"SMA occlusion"},answer:"A",explanation:"High renal artery PSV and elevated renal-aortic ratio suggest significant renal artery stenosis, interpreted with local lab criteria and clinical context."},
+{id:"RMV-023",topic:"Tardus parvus",difficulty:"medium",stem:"Intrarenal Doppler waveforms show delayed systolic upstroke and low acceleration bilaterally. Best term?",options:{A:"Tardus-parvus waveform",B:"To-and-fro waveform",C:"Yin-yang sign",D:"Triphasic pedal signal",E:"Venous reflux waveform"},answer:"A",explanation:"Tardus-parvus waveforms reflect damped distal arterial flow and can suggest proximal stenosis."},
+{id:"RMV-024",topic:"Fibromuscular dysplasia",difficulty:"medium",stem:"A 34-year-old woman has new severe hypertension. CTA shows beaded stenoses in the mid-distal renal artery. Best diagnosis?",options:{A:"Renal fibromuscular dysplasia",B:"Atherosclerotic ostial stenosis",C:"Renal vein thrombosis",D:"Nutcracker syndrome",E:"Polyarteritis nodosa by definition"},answer:"A",explanation:"Fibromuscular dysplasia typically affects younger women and produces a string-of-beads appearance in the mid-distal renal artery."},
+{id:"RMV-025",topic:"FMD treatment",difficulty:"medium",stem:"A young woman has renal artery fibromuscular dysplasia causing severe hypertension. Anatomy is suitable. Best revascularisation approach?",options:{A:"Balloon angioplasty without routine stenting",B:"Primary nephrectomy",C:"Covered stent in every case",D:"No blood pressure treatment",E:"Carotid endarterectomy"},answer:"A",explanation:"Renal FMD often responds to balloon angioplasty. Stenting is not routinely required unless there is complication or inadequate result."},
+{id:"RMV-026",topic:"Renal artery aneurysm",difficulty:"medium",stem:"A 31-year-old woman planning pregnancy has a 2.2 cm saccular renal artery aneurysm. Renal function is normal. Best management principle?",options:{A:"Consider repair because of size and pregnancy considerations",B:"Ignore until 8 cm",C:"Anticoagulation to shrink it",D:"No imaging follow-up ever",E:"Compression therapy"},answer:"A",explanation:"Renal artery aneurysm repair is considered for symptoms, growth, larger size and women of childbearing potential because rupture risk in pregnancy is particularly concerning."},
+{id:"RMV-027",topic:"Renal artery aneurysm branch",difficulty:"hard",stem:"A patient has a distal hilar renal artery aneurysm involving multiple branch vessels. Best planning principle?",options:{A:"Detailed anatomical planning; options include endovascular, open reconstruction or ex-vivo repair in selected cases",B:"No treatment is technically possible in any patient",C:"Coil the main renal artery without considering renal loss",D:"Carotid stenting",E:"Compression stockings"},answer:"A",explanation:"Complex hilar renal artery aneurysms need careful planning to preserve renal perfusion; treatment may involve branch reconstruction, selective embolisation or ex-vivo approaches."},
+{id:"RMV-028",topic:"Splenic artery aneurysm",difficulty:"easy",stem:"A 28-year-old pregnant woman is found to have a 1.8 cm splenic artery aneurysm. Best management principle?",options:{A:"Repair is usually recommended in pregnancy or women of childbearing potential",B:"Observe until 6 cm because pregnancy is protective",C:"Anticoagulation cures it",D:"No follow-up",E:"Treat with compression"},answer:"A",explanation:"Splenic artery aneurysms have high-risk implications in pregnancy, and repair is generally recommended in pregnant women or women of childbearing potential."},
+{id:"RMV-029",topic:"Splenic artery aneurysm rupture",difficulty:"medium",stem:"A 35-year-old pregnant woman has sudden left upper quadrant pain and shock. Ultrasound shows intraperitoneal free fluid and known splenic artery aneurysm. Best management?",options:{A:"Emergency haemorrhage control",B:"Outpatient review",C:"Oral anticoagulation",D:"Colonoscopy",E:"Compression therapy"},answer:"A",explanation:"Ruptured splenic artery aneurysm in pregnancy is a catastrophic emergency requiring immediate haemorrhage control and resuscitation."},
+{id:"RMV-030",topic:"Hepatic artery aneurysm",difficulty:"medium",stem:"A 66-year-old man has a 2.5 cm hepatic artery aneurysm found on CTA. He is fit. Best management principle?",options:{A:"Repair is usually considered because hepatic artery aneurysms have significant rupture risk",B:"Ignore all hepatic artery aneurysms",C:"Treat only with antibiotics",D:"Carotid endarterectomy",E:"No imaging follow-up"},answer:"A",explanation:"Hepatic artery aneurysms are visceral aneurysms with clinically important rupture risk; repair is often considered at smaller thresholds than some other visceral aneurysms."},
+{id:"RMV-031",topic:"SMA aneurysm",difficulty:"medium",stem:"A 59-year-old man has a 1.7 cm superior mesenteric artery aneurysm. Best management principle?",options:{A:"Repair is generally recommended because rupture risk is less size-dependent",B:"Observe until 10 cm",C:"No treatment if asymptomatic in all cases",D:"Anticoagulation cures it",E:"Inferior vena cava filter"},answer:"A",explanation:"SMA aneurysms are often treated regardless of size because rupture risk is clinically significant and not reliably size-dependent."},
+{id:"RMV-032",topic:"Coeliac artery aneurysm",difficulty:"medium",stem:"A patient has an asymptomatic 2.4 cm coeliac artery aneurysm. Best management principle?",options:{A:"Consider repair depending size, growth and anatomy",B:"No follow-up ever",C:"Treat with diuretics",D:"Carotid stent",E:"Major amputation"},answer:"A",explanation:"Coeliac artery aneurysms are considered for repair when larger, enlarging or symptomatic, with technique determined by branch anatomy and collateral supply."},
+{id:"RMV-033",topic:"Pancreaticoduodenal aneurysm",difficulty:"hard",stem:"CTA shows multiple pancreaticoduodenal arcade aneurysms with severe coeliac artery stenosis. Best interpretation?",options:{A:"Aneurysms may relate to increased collateral flow from coeliac stenosis",B:"They are always benign and need no review",C:"They prove renal artery FMD",D:"They are venous malformations",E:"They require carotid surgery"},answer:"A",explanation:"Pancreaticoduodenal arcade aneurysms can occur due to increased collateral flow in coeliac stenosis or occlusion and often warrant treatment consideration because rupture risk is significant."},
+{id:"RMV-034",topic:"Visceral pseudoaneurysm",difficulty:"medium",stem:"A patient with pancreatitis develops GI bleeding. CTA shows a splenic artery pseudoaneurysm. Best management?",options:{A:"Urgent endovascular or surgical treatment",B:"Observe until 5 cm",C:"Anticoagulation",D:"No follow-up",E:"Compression hosiery"},answer:"A",explanation:"Visceral pseudoaneurysms, especially pancreatitis-related, have high rupture risk and usually require urgent treatment regardless of size."},
+{id:"RMV-035",topic:"Pseudoaneurysm sign",difficulty:"easy",stem:"Duplex of a visceral pseudoaneurysm shows swirling colour flow in the sac and bidirectional flow in the neck. Best named waveform?",options:{A:"To-and-fro waveform",B:"Tardus-parvus waveform",C:"Subclavian steal waveform",D:"Triphasic venous reflux",E:"Monophasic portal flow"},answer:"A",explanation:"Pseudoaneurysm necks show a to-and-fro waveform due to systolic inflow and diastolic outflow."},
+{id:"RMV-036",topic:"Portal vein thrombosis",difficulty:"medium",stem:"A patient with abdominal pain and cirrhosis has CT showing portal vein thrombosis without bowel ischaemia. Best initial principle?",options:{A:"Assess extent, liver disease and bleeding risk; anticoagulate selected patients",B:"Immediate SMA bypass",C:"No assessment",D:"Carotid endarterectomy",E:"Compression stockings only"},answer:"A",explanation:"Portal vein thrombosis management depends on extent, acute vs chronic state, cirrhosis, variceal bleeding risk and intestinal ischaemia; anticoagulation is used selectively."},
+{id:"RMV-037",topic:"Budd-Chiari",difficulty:"medium",stem:"A 40-year-old woman has abdominal pain, ascites and hepatomegaly. Imaging shows hepatic vein outflow obstruction. Best diagnosis?",options:{A:"Budd-Chiari syndrome",B:"May-Thurner syndrome",C:"Median arcuate ligament syndrome",D:"Carotid stenosis",E:"Popliteal entrapment"},answer:"A",explanation:"Budd-Chiari syndrome is hepatic venous outflow obstruction, classically causing abdominal pain, ascites and hepatomegaly."},
+{id:"RMV-038",topic:"Nutcracker syndrome",difficulty:"medium",stem:"A 24-year-old woman has left flank pain and microscopic haematuria. CTA shows compression of the left renal vein between the SMA and aorta with dilated gonadal vein. Best diagnosis?",options:{A:"Nutcracker syndrome",B:"May-Thurner syndrome",C:"Subclavian steal",D:"Chronic mesenteric ischaemia",E:"Leriche syndrome"},answer:"A",explanation:"Nutcracker syndrome is left renal vein compression, often causing haematuria, flank pain and gonadal venous reflux."},
+{id:"RMV-039",topic:"Nutcracker management",difficulty:"hard",stem:"A thin 19-year-old has mild haematuria and imaging features of nutcracker syndrome, but symptoms are tolerable and renal function is normal. Best management?",options:{A:"Conservative management and surveillance",B:"Immediate nephrectomy",C:"SMA stenting",D:"Carotid surgery",E:"No explanation needed"},answer:"A",explanation:"Mild nutcracker syndrome in young patients is often managed conservatively, especially when symptoms are tolerable and renal function is preserved."},
+{id:"RMV-040",topic:"Retroperitoneal fibrosis",difficulty:"medium",stem:"A patient has back pain, renal impairment and CT showing periaortic soft tissue encasing both ureters with hydronephrosis. Best diagnosis?",options:{A:"Retroperitoneal fibrosis",B:"Acute appendicitis",C:"Subclavian steal",D:"Venous ulcer",E:"Median nerve palsy"},answer:"A",explanation:"Periaortic fibrotic tissue encasing ureters with hydronephrosis is typical of retroperitoneal fibrosis."},
+{id:"RMV-041",topic:"Takayasu arteritis",difficulty:"medium",stem:"A 29-year-old woman has arm claudication, unequal arm pressures, raised inflammatory markers and CTA showing long stenoses of the subclavian and renal arteries. Best diagnosis?",options:{A:"Takayasu arteritis",B:"Atherosclerotic AAA",C:"Buerger disease only",D:"Popliteal entrapment",E:"Klippel-Trenaunay syndrome"},answer:"A",explanation:"Takayasu arteritis is a large-vessel vasculitis affecting young women, causing long stenoses of the aorta and branches."},
+{id:"RMV-042",topic:"Takayasu intervention timing",difficulty:"hard",stem:"A patient with Takayasu arteritis has renal artery stenosis and uncontrolled hypertension. CRP is high and systemic symptoms suggest active disease. Best principle before elective revascularisation if possible?",options:{A:"Control active inflammation before elective intervention",B:"Stent during maximal inflammation in all cases",C:"Avoid immunosuppression",D:"No imaging follow-up",E:"Compression therapy"},answer:"A",explanation:"In vasculitis-related stenosis, elective intervention is ideally delayed until inflammation is controlled because restenosis and complications are higher during active disease."},
+{id:"RMV-043",topic:"Polyarteritis nodosa",difficulty:"medium",stem:"A patient has abdominal pain, hypertension and CTA showing multiple small visceral renal microaneurysms with systemic vasculitic features. Best diagnosis to consider?",options:{A:"Polyarteritis nodosa",B:"May-Thurner syndrome",C:"Median arcuate ligament syndrome",D:"Venous thoracic outlet",E:"Lymphoedema"},answer:"A",explanation:"Polyarteritis nodosa is a medium-vessel vasculitis that can cause renal and visceral microaneurysms, hypertension and abdominal pain."},
+{id:"RMV-044",topic:"Segmental arterial mediolysis",difficulty:"hard",stem:"A 56-year-old man has sudden abdominal pain. CTA shows multiple dissecting aneurysms and stenoses in the coeliac and mesenteric branches without inflammatory markers. Best diagnosis?",options:{A:"Segmental arterial mediolysis",B:"Takayasu arteritis",C:"Giant cell arteritis",D:"Venous malformation",E:"Atherosclerotic claudication"},answer:"A",explanation:"Segmental arterial mediolysis is a non-inflammatory arteriopathy causing dissections, aneurysms and stenoses in visceral arteries."},
+{id:"RMV-045",topic:"Spontaneous coeliac dissection",difficulty:"medium",stem:"A stable patient has isolated spontaneous coeliac artery dissection on CTA, no organ ischaemia and improving pain. Best management principle?",options:{A:"Conservative treatment with blood pressure control and surveillance",B:"Emergency open repair in all cases",C:"No follow-up",D:"Carotid ligation",E:"Compression stockings"},answer:"A",explanation:"Uncomplicated isolated visceral artery dissection is often treated conservatively with blood pressure control, antithrombotic strategy according to local practice and imaging surveillance."},
+{id:"RMV-046",topic:"Renal trauma",difficulty:"medium",stem:"A haemodynamically stable patient has blunt renal trauma with CT showing segmental renal infarction but no active bleeding or collecting system injury. Best management?",options:{A:"Non-operative management with observation",B:"Immediate nephrectomy",C:"Renal artery stent in all cases",D:"No monitoring",E:"Carotid duplex"},answer:"A",explanation:"Stable renal trauma without ongoing bleeding or collecting system complication is usually managed non-operatively with observation."},
+{id:"RMV-047",topic:"Renal trauma active bleeding",difficulty:"medium",stem:"A stable patient with blunt renal trauma has CT showing active arterial extravasation from a segmental renal branch. Best treatment?",options:{A:"Selective angioembolisation",B:"Immediate total nephrectomy in all cases",C:"No treatment",D:"Compression therapy",E:"SMA stenting"},answer:"A",explanation:"In stable renal trauma with active segmental bleeding, selective angioembolisation can control haemorrhage while preserving renal tissue."},
+{id:"RMV-048",topic:"Renal artery occlusion trauma",difficulty:"hard",stem:"A young patient has blunt trauma with main renal artery occlusion to a solitary kidney, diagnosed early. Best management principle?",options:{A:"Urgent attempt at renal revascularisation may be considered",B:"Ignore because renal arteries never need repair",C:"Delayed nephrectomy only",D:"Compression stockings",E:"Colonoscopy"},answer:"A",explanation:"Main renal artery occlusion to a solitary kidney is a high-stakes injury where early revascularisation may be considered to preserve renal function."},
+{id:"RMV-049",topic:"Splanchnic aneurysm infection",difficulty:"medium",stem:"A patient with infective endocarditis has a rapidly enlarging saccular SMA branch aneurysm and fever. Best diagnosis?",options:{A:"Infected visceral artery aneurysm",B:"Simple varicose vein",C:"Lymphoedema",D:"Median arcuate ligament syndrome",E:"Carotid restenosis"},answer:"A",explanation:"A rapidly enlarging saccular visceral aneurysm in the setting of bacteraemia or endocarditis suggests infected aneurysm and usually needs urgent antimicrobial and procedural management."},
+{id:"RMV-050",topic:"Visceral artery embolisation complication",difficulty:"medium",stem:"After coil embolisation of a splenic artery aneurysm, a patient develops left upper quadrant pain and fever with CT showing partial splenic infarction. Best interpretation?",options:{A:"Recognised post-embolisation complication managed supportively if limited and stable",B:"Carotid hyperperfusion syndrome",C:"Normal finding needing no assessment",D:"DVT",E:"Appendicitis by definition"},answer:"A",explanation:"Partial splenic infarction and post-embolisation syndrome can occur after splenic artery embolisation. Stable limited infarction is usually managed supportively, excluding abscess or major complication."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
