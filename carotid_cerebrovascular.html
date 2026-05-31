@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carotid / Cerebrovascular Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Carotid / Cerebrovascular Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"CAR-001",topic:"Symptomatic carotid stenosis",difficulty:"easy",stem:"A 72-year-old man has a left hemispheric TIA with complete recovery 5 days ago. Duplex and CTA show 80% left ICA stenosis by NASCET criteria. He is independent and fit for surgery. Best management?",options:{A:"Best medical therapy alone",B:"Left carotid endarterectomy as soon as feasible",C:"Delay carotid intervention for 3 months",D:"Left carotid ligation",E:"Annual duplex surveillance only"},answer:"B",explanation:"A recently symptomatic, fit patient with severe ipsilateral carotid stenosis should usually undergo timely carotid endarterectomy, ideally within 14 days of symptoms."},
+{id:"CAR-002",topic:"Timing after TIA",difficulty:"easy",stem:"A 68-year-old woman has amaurosis fugax affecting the right eye. CTA shows 75% right ICA stenosis. Symptoms occurred 9 days ago and she is neurologically intact. Best timing of intervention?",options:{A:"Within 14 days of the index symptom if feasible",B:"After 6 months of dual antiplatelet therapy",C:"Only if a second event occurs",D:"After the stenosis reaches 95%",E:"Never, because the symptom was ocular"},answer:"A",explanation:"Ocular symptoms count as ipsilateral carotid territory symptoms. Benefit from CEA is greatest when performed early, ideally within 14 days."},
+{id:"CAR-003",topic:"Moderate symptomatic stenosis",difficulty:"medium",stem:"A 74-year-old man has a non-disabling right hemispheric stroke. CTA shows 55% right ICA stenosis by NASCET. He is independent, male, and otherwise fit. Best interpretation?",options:{A:"CEA may be considered after individual risk-benefit assessment",B:"CEA is absolutely contraindicated below 70%",C:"Only carotid ligation is appropriate",D:"The stenosis is asymptomatic",E:"Anticoagulation replaces revascularisation"},answer:"A",explanation:"Symptomatic 50–69% carotid stenosis has more modest benefit from CEA, with greatest benefit in selected patients such as men, early presenters and those at low operative risk."},
+{id:"CAR-004",topic:"Mild symptomatic stenosis",difficulty:"easy",stem:"A 69-year-old man has a left hemispheric TIA. CTA shows 35% left ICA stenosis. He is otherwise fit. Best management?",options:{A:"Carotid endarterectomy",B:"Best medical therapy",C:"Carotid stenting",D:"External carotid endarterectomy",E:"Carotid-subclavian bypass"},answer:"B",explanation:"CEA does not provide benefit for symptomatic carotid stenosis below 50%. Best medical therapy is appropriate."},
+{id:"CAR-005",topic:"Recurrent discrete TIAs",difficulty:"medium",stem:"A 71-year-old woman has had three separate right hemispheric TIAs over 48 hours, each resolving completely before the next event. CTA shows 85% right ICA stenosis. She is neurologically intact between episodes. Best management principle?",options:{A:"Routine outpatient clinic review",B:"Urgent carotid intervention after optimisation and imaging",C:"Delay all treatment for 6 weeks",D:"No antiplatelet therapy until surgery",E:"Thrombolysis between events despite no deficit"},answer:"B",explanation:"Recurrent discrete ipsilateral TIAs indicate high early stroke risk. Severe ipsilateral carotid stenosis should be managed urgently with best medical therapy and expedited revascularisation if suitable."},
+{id:"CAR-006",topic:"Large completed stroke",difficulty:"hard",stem:"A 77-year-old man has a major left MCA infarct with dense hemiplegia, reduced consciousness and CT showing a large established infarct with mass effect. CTA shows 90% left ICA stenosis. Best carotid strategy?",options:{A:"Immediate CEA within 24 hours",B:"Defer carotid intervention; manage stroke and reassess if recovery permits",C:"Emergency carotid ligation",D:"Routine CAS the same day",E:"No brain imaging is needed"},answer:"B",explanation:"Large completed infarct with mass effect has high risk of haemorrhagic transformation and poor immediate benefit from carotid intervention. Stroke care and reassessment are appropriate."},
+{id:"CAR-007",topic:"Stroke thrombolysis and CEA",difficulty:"hard",stem:"A 66-year-old man received IV thrombolysis for a minor right hemispheric stroke. He has made a good recovery. CTA shows 80% right ICA stenosis. Best approach to CEA timing?",options:{A:"CEA immediately while thrombolytic effect is maximal",B:"Consider early CEA after multidisciplinary assessment once bleeding risk and infarct size are acceptable",C:"CEA is permanently contraindicated after thrombolysis",D:"Delay for 1 year in all cases",E:"Only operate if the stenosis occludes"},answer:"B",explanation:"CEA after thrombolysis requires careful assessment of infarct size, haemorrhagic risk and neurological stability. It is not absolutely contraindicated, but timing should be individualised."},
+{id:"CAR-008",topic:"Carotid occlusion",difficulty:"easy",stem:"A 73-year-old man has a left hemispheric stroke. CTA shows complete occlusion of the left ICA from its origin with distal reconstitution. Duplex confirms no flow in the cervical ICA. Best treatment for the occluded ICA?",options:{A:"Carotid endarterectomy of the occluded ICA",B:"Best medical therapy",C:"Routine carotid stenting",D:"External carotid ligation",E:"Annual venesection"},answer:"B",explanation:"Complete chronic ICA occlusion is not treated by CEA. Management is best medical therapy and treatment of other relevant lesions."},
+{id:"CAR-009",topic:"Near occlusion",difficulty:"hard",stem:"A 70-year-old man has a TIA. CTA shows very tight left ICA stenosis with distal ICA collapse consistent with near occlusion. He is now neurologically intact. Best interpretation?",options:{A:"Near occlusion behaves exactly like conventional 80% stenosis",B:"Benefit of CEA is less certain and should be individualised",C:"CEA is mandatory in every patient within 24 hours",D:"Antibiotics are first-line",E:"The contralateral carotid should be operated instead"},answer:"B",explanation:"Carotid near occlusion with distal collapse has less clear benefit from CEA than standard severe symptomatic stenosis. Management should be individualised, especially if recurrent symptoms occur."},
+{id:"CAR-010",topic:"Asymptomatic carotid stenosis",difficulty:"medium",stem:"A 69-year-old man is found to have asymptomatic 75% left ICA stenosis on duplex, confirmed by CTA. He is fit, has a life expectancy over 5 years and is on modern best medical therapy. Best interpretation?",options:{A:"CEA may be offered in selected low-risk patients after discussion",B:"CEA is mandatory in all asymptomatic stenoses above 50%",C:"No asymptomatic patient should ever be considered for intervention",D:"Immediate thrombolysis is required",E:"Carotid ligation is preferred"},answer:"A",explanation:"Selected patients with asymptomatic high-grade carotid stenosis may be offered CEA if procedural risk is low and life expectancy is reasonable, but best medical therapy is central."},
+{id:"CAR-011",topic:"Asymptomatic high risk",difficulty:"medium",stem:"An 84-year-old frail woman with severe COPD and limited life expectancy has asymptomatic 80% ICA stenosis found incidentally. She has no focal neurological symptoms. Best management?",options:{A:"CEA under general anaesthesia",B:"Best medical therapy",C:"Carotid stenting because she is frail",D:"Emergency carotid bypass",E:"No antiplatelet or statin therapy"},answer:"B",explanation:"In frail asymptomatic patients with limited life expectancy or high procedural risk, best medical therapy is preferred because procedural benefit is unlikely to be realised."},
+{id:"CAR-012",topic:"Duplex criteria",difficulty:"medium",stem:"Carotid duplex shows ICA PSV 310 cm/s, EDV 115 cm/s and ICA/CCA PSV ratio 5.2. Plaque is present at the ICA origin. Best interpretation?",options:{A:"Normal ICA",B:"Likely severe ICA stenosis",C:"Complete ICA occlusion",D:"Subclavian steal",E:"External carotid stenosis only"},answer:"B",explanation:"Markedly raised ICA PSV, EDV and ICA/CCA ratio are consistent with severe ICA stenosis, although local lab criteria and confirmatory imaging guide intervention."},
+{id:"CAR-013",topic:"Duplex occlusion",difficulty:"medium",stem:"Duplex after stroke shows echogenic material filling the ICA lumen, no colour flow and no Doppler signal in the ICA despite optimised settings. The ipsilateral CCA has high resistance flow. Best interpretation?",options:{A:"Severe but patent ICA stenosis",B:"ICA occlusion",C:"Normal ICA",D:"Vertebral artery stenosis",E:"Carotid body tumour"},answer:"B",explanation:"Absent colour and spectral Doppler flow in the ICA with supportive CCA waveform changes is consistent with ICA occlusion, not simply high-grade stenosis."},
+{id:"CAR-014",topic:"Pseudo-occlusion",difficulty:"hard",stem:"A duplex report suggests left ICA occlusion, but CTA shows a thread-like residual lumen at the origin with delayed distal filling. The patient has recurrent ipsilateral TIAs. Best interpretation?",options:{A:"The artery is definitely normal",B:"Pseudo-occlusion or near occlusion should be considered",C:"Duplex always overrules CTA",D:"No treatment is ever possible",E:"This is subclavian steal"},answer:"B",explanation:"Very low-flow near occlusion can mimic occlusion on duplex. Cross-sectional imaging helps distinguish true occlusion from near occlusion/pseudo-occlusion."},
+{id:"CAR-015",topic:"Contralateral occlusion",difficulty:"hard",stem:"A 72-year-old man has symptomatic 80% right ICA stenosis and chronic left ICA occlusion. He is independent and fit. Best interpretation for treatment planning?",options:{A:"CEA is impossible with contralateral occlusion",B:"CEA can be considered but perioperative risk may be higher",C:"Only best medical therapy is allowed",D:"Operate on the occluded left side first",E:"No cerebral monitoring is relevant"},answer:"B",explanation:"Contralateral ICA occlusion increases operative complexity and risk, but it is not an absolute contraindication to CEA in symptomatic severe stenosis."},
+{id:"CAR-016",topic:"High carotid lesion",difficulty:"medium",stem:"A 68-year-old man has symptomatic 85% ICA stenosis extending high behind the angle of the mandible. He has a hostile neck from previous surgery. Transfemoral CAS is technically feasible with favourable arch anatomy. Best interpretation?",options:{A:"CEA is always mandatory regardless of anatomy",B:"CAS may be reasonable when CEA risk is high and anatomy is favourable",C:"No treatment is possible",D:"External carotid endarterectomy is preferred",E:"Treat only with warfarin"},answer:"B",explanation:"CEA is generally preferred for symptomatic carotid stenosis, but CAS may be reasonable in selected patients with high surgical risk or hostile anatomy and favourable endovascular anatomy."},
+{id:"CAR-017",topic:"CAS age effect",difficulty:"medium",stem:"A 78-year-old man with symptomatic 80% ICA stenosis is suitable for either CEA or transfemoral CAS. He has no hostile neck features. Best general approach?",options:{A:"CEA is generally preferred over transfemoral CAS in older symptomatic patients",B:"CAS is always safer in older patients",C:"No intervention is beneficial after age 75",D:"Only thrombolysis is indicated",E:"Operate only on the external carotid"},answer:"A",explanation:"In older symptomatic patients, transfemoral CAS has higher periprocedural stroke risk than CEA. CEA is generally preferred if surgical risk is acceptable."},
+{id:"CAR-018",topic:"CAS arch anatomy",difficulty:"hard",stem:"A 74-year-old man is considered for transfemoral CAS. CTA shows a type III arch, heavy arch atheroma and tortuous calcified common carotid origin. Best interpretation?",options:{A:"Favourable anatomy for transfemoral CAS",B:"High embolic and technical risk for transfemoral CAS",C:"Anatomy is irrelevant to CAS",D:"This mandates no antiplatelet therapy",E:"This is an indication for venous stenting"},answer:"B",explanation:"Unfavourable arch anatomy, arch atheroma and tortuous access increase the technical and embolic risk of transfemoral CAS."},
+{id:"CAR-019",topic:"Antiplatelets before CEA",difficulty:"medium",stem:"A patient is planned for urgent CEA 6 days after TIA. He has been started on aspirin and high-dose statin. What is the best principle?",options:{A:"Stop all antiplatelet therapy for 2 weeks",B:"Continue antiplatelet therapy and optimise best medical therapy",C:"Avoid statins before surgery",D:"Use warfarin instead of antiplatelet therapy for all patients",E:"Delay surgery until cholesterol normalises"},answer:"B",explanation:"Patients with symptomatic carotid stenosis should receive best medical therapy including antiplatelet and statin therapy while awaiting urgent intervention."},
+{id:"CAR-020",topic:"Dual antiplatelet therapy",difficulty:"medium",stem:"A 69-year-old man is scheduled for transfemoral carotid stenting. He is on aspirin only. Best antiplatelet principle?",options:{A:"No antiplatelet therapy is needed for CAS",B:"Dual antiplatelet therapy is required around CAS",C:"Warfarin alone is preferred",D:"Stop aspirin before stenting",E:"Use thrombolysis instead"},answer:"B",explanation:"Carotid stenting requires dual antiplatelet therapy peri-procedurally to reduce stent thrombosis and embolic complications."},
+{id:"CAR-021",topic:"Cranial nerve injury",difficulty:"easy",stem:"After CEA, a patient has ipsilateral tongue deviation on protrusion. Which nerve is most likely injured?",options:{A:"Hypoglossal nerve",B:"Vagus nerve",C:"Accessory nerve",D:"Phrenic nerve",E:"Median nerve"},answer:"A",explanation:"Hypoglossal nerve injury causes ipsilateral tongue deviation due to weakness of tongue muscles."},
+{id:"CAR-022",topic:"Marginal mandibular nerve",difficulty:"easy",stem:"After CEA, a patient notices asymmetry of the lower lip when smiling. Tongue movement and voice are normal. Most likely nerve affected?",options:{A:"Marginal mandibular branch of facial nerve",B:"Hypoglossal nerve",C:"Recurrent laryngeal nerve",D:"Phrenic nerve",E:"Long thoracic nerve"},answer:"A",explanation:"Marginal mandibular nerve injury causes lower lip asymmetry, particularly when smiling."},
+{id:"CAR-023",topic:"Recurrent laryngeal nerve",difficulty:"medium",stem:"A patient develops hoarseness after redo left CEA. Flexible nasendoscopy shows left vocal cord palsy. Most likely nerve injury?",options:{A:"Recurrent laryngeal nerve",B:"Hypoglossal nerve",C:"Marginal mandibular nerve",D:"Greater auricular nerve",E:"Femoral nerve"},answer:"A",explanation:"Recurrent laryngeal nerve injury causes vocal cord palsy and hoarseness. It is especially important to recognise before contralateral neck surgery."},
+{id:"CAR-024",topic:"Hyperperfusion syndrome",difficulty:"medium",stem:"Three days after CEA for severe carotid stenosis, a patient develops severe ipsilateral headache, seizures and very high blood pressure. CT excludes haemorrhage initially. Best diagnosis?",options:{A:"Carotid hyperperfusion syndrome",B:"Subclavian steal",C:"Thoracic outlet syndrome",D:"Median arcuate ligament syndrome",E:"Type II endoleak"},answer:"A",explanation:"Carotid hyperperfusion syndrome presents after revascularisation with severe headache, hypertension, seizures and risk of intracerebral haemorrhage."},
+{id:"CAR-025",topic:"Post-CEA neck haematoma",difficulty:"easy",stem:"Two hours after CEA, a patient develops rapidly expanding neck swelling, stridor and respiratory distress. Best immediate management?",options:{A:"Observe with oxygen",B:"Urgent airway management and wound decompression",C:"Routine duplex next morning",D:"Oral antibiotics only",E:"Discharge if saturations improve"},answer:"B",explanation:"Expanding neck haematoma after CEA is an airway emergency. Immediate airway management and wound decompression/exploration are required."},
+{id:"CAR-026",topic:"Patch closure",difficulty:"medium",stem:"During conventional CEA, the arteriotomy is closed. Which closure strategy is generally associated with lower restenosis and perioperative thrombosis than primary closure?",options:{A:"Patch angioplasty",B:"Carotid ligation",C:"External carotid closure only",D:"No closure",E:"Venous thrombolysis"},answer:"A",explanation:"Patch closure after CEA reduces the risk of perioperative occlusion and restenosis compared with routine primary closure."},
+{id:"CAR-027",topic:"Shunting",difficulty:"hard",stem:"During CEA under general anaesthesia, carotid clamping causes loss of cerebral oximetry signal and EEG changes. Best intraoperative response?",options:{A:"Ignore because monitoring never changes management",B:"Insert a shunt or restore cerebral perfusion promptly",C:"Ligate the ICA",D:"Stop heparin and continue clamping",E:"Convert to carotid stent via the arteriotomy in all cases"},answer:"B",explanation:"Objective evidence of clamp intolerance should prompt shunting or another manoeuvre to restore cerebral perfusion."},
+{id:"CAR-028",topic:"CEA stump pressure",difficulty:"hard",stem:"During CEA, carotid stump pressure is very low after clamping and the patient shows neurological change under local anaesthesia. Best management?",options:{A:"Proceed without shunt regardless",B:"Insert a shunt",C:"Abandon and close skin only",D:"Ligate the common carotid",E:"Give protamine before endarterectomy"},answer:"B",explanation:"Neurological change under local anaesthesia or evidence of inadequate collateral perfusion is an indication for shunt placement."},
+{id:"CAR-029",topic:"Completion defect",difficulty:"hard",stem:"Completion duplex after CEA shows a mobile intimal flap causing marked residual stenosis at the distal endpoint. Best management?",options:{A:"Ignore and extubate",B:"Revise the endpoint before closure completion",C:"Start oral antibiotics",D:"Repeat duplex in 5 years",E:"Embolise the ECA"},answer:"B",explanation:"A significant mobile flap or technical defect at completion should be corrected to reduce risk of thrombosis or embolisation."},
+{id:"CAR-030",topic:"Restenosis after CEA",difficulty:"medium",stem:"A 70-year-old man has asymptomatic 65% restenosis 18 months after CEA. He is on best medical therapy. Best management?",options:{A:"Routine redo CEA in all cases",B:"Best medical therapy and surveillance",C:"Emergency CAS",D:"Carotid ligation",E:"Thrombolysis"},answer:"B",explanation:"Moderate asymptomatic restenosis after CEA is usually managed with best medical therapy and surveillance rather than automatic reintervention."},
+{id:"CAR-031",topic:"Severe asymptomatic restenosis",difficulty:"hard",stem:"A 67-year-old woman has asymptomatic 90% restenosis after prior CEA. CTA confirms severe focal restenosis. She is fit with good life expectancy. Best interpretation?",options:{A:"Reintervention may be considered after MDT review",B:"No surveillance is needed",C:"All restenosis is benign",D:"Antibiotics are first-line",E:"The contralateral carotid must be treated first"},answer:"A",explanation:"Severe asymptomatic restenosis after CEA may be considered for reintervention in selected patients, balancing procedural risk and local expertise."},
+{id:"CAR-032",topic:"Restenosis after CAS",difficulty:"hard",stem:"A 73-year-old man has asymptomatic 80% in-stent restenosis 2 years after CAS. He is neurologically well and on best medical therapy. Best interpretation?",options:{A:"Management should be individualised; many asymptomatic lesions are surveilled",B:"Emergency open stent explant is mandatory",C:"Stop antiplatelet therapy",D:"Thrombolyse the stent",E:"No imaging follow-up is ever required"},answer:"A",explanation:"Asymptomatic in-stent restenosis often has uncertain stroke risk and is frequently managed with surveillance and medical therapy unless severe, progressive or symptomatic."},
+{id:"CAR-033",topic:"Tandem carotid disease",difficulty:"hard",stem:"A 66-year-old man has recurrent left hemispheric TIAs. CTA shows 80% left ICA origin stenosis and a moderate intracranial left MCA stenosis. Best management principle?",options:{A:"Treat the extracranial symptomatic carotid stenosis if suitable and manage intracranial disease medically",B:"No extracranial treatment is ever useful with tandem disease",C:"Intracranial stenting is mandatory first-line",D:"CEA is contraindicated in all tandem lesions",E:"Only anticoagulation is indicated"},answer:"A",explanation:"A severe symptomatic extracranial carotid stenosis can still be treated even with tandem intracranial disease. Intracranial stenosis is usually managed medically unless selected specialist indications exist."},
+{id:"CAR-034",topic:"Carotid and coronary disease",difficulty:"hard",stem:"A 74-year-old man has asymptomatic 80% left ICA stenosis and unstable angina requiring urgent CABG. No prior TIA or stroke. Best principle?",options:{A:"Routine prophylactic CEA for every asymptomatic stenosis before CABG",B:"Prioritise unstable coronary disease; carotid strategy individualised by MDT",C:"Delay CABG for 1 year",D:"Carotid ligation before CABG",E:"No antiplatelet or statin therapy"},answer:"B",explanation:"In asymptomatic carotid stenosis with urgent unstable coronary disease, routine prophylactic CEA is not automatic. Management should be individualised by MDT based on neurological risk and coronary urgency."},
+{id:"CAR-035",topic:"Carotid body tumour",difficulty:"medium",stem:"A 46-year-old woman has a painless, slowly enlarging mass at the carotid bifurcation. It is mobile side-to-side but not vertically. MRI shows a hypervascular lesion splaying the ICA and ECA. Best diagnosis?",options:{A:"Carotid body tumour",B:"Branchial cyst",C:"Thyroid adenoma",D:"Submandibular abscess",E:"Internal jugular thrombosis"},answer:"A",explanation:"A hypervascular carotid bifurcation mass splaying ICA and ECA is typical of a carotid body tumour."},
+{id:"CAR-036",topic:"Carotid body tumour genetics",difficulty:"medium",stem:"A 32-year-old man has bilateral carotid body tumours and a family history of similar neck masses. Best additional step?",options:{A:"No further assessment is needed",B:"Genetic assessment for hereditary paraganglioma syndrome",C:"Immediate bilateral carotid ligation",D:"Anticoagulation for 6 months",E:"Treat as infected lymph nodes"},answer:"B",explanation:"Bilateral or familial carotid body tumours suggest hereditary paraganglioma syndrome, often involving SDH mutations, and warrant genetic assessment."},
+{id:"CAR-037",topic:"Carotid aneurysm",difficulty:"medium",stem:"A 59-year-old man has a 2.8 cm extracranial internal carotid artery aneurysm with recurrent embolic TIAs. Best management principle?",options:{A:"Best medical therapy only in all cases",B:"Repair or exclusion to prevent embolic and aneurysm complications",C:"Emergency thyroidectomy",D:"No antiplatelet therapy",E:"Compression bandage to the neck"},answer:"B",explanation:"Symptomatic extracranial carotid aneurysms are generally considered for repair or exclusion because of embolic and local risks."},
+{id:"CAR-038",topic:"Subclavian steal",difficulty:"easy",stem:"A 66-year-old woman has dizziness when using her left arm. Duplex shows retrograde flow in the left vertebral artery and proximal left subclavian stenosis. Best diagnosis?",options:{A:"Subclavian steal syndrome",B:"Carotid body tumour",C:"ICA occlusion",D:"Thoracic aortic rupture",E:"Giant cell arteritis only"},answer:"A",explanation:"Arm-exertional vertebrobasilar symptoms with retrograde vertebral flow due to proximal subclavian stenosis is subclavian steal syndrome."},
+{id:"CAR-039",topic:"Subclavian stenosis management",difficulty:"medium",stem:"A 71-year-old man has symptomatic left subclavian stenosis with vertebrobasilar symptoms and a 35 mmHg arm pressure difference. Best first-line revascularisation in suitable anatomy?",options:{A:"Endovascular angioplasty and stenting",B:"Carotid endarterectomy",C:"Left nephrectomy",D:"No treatment because all steal is asymptomatic",E:"Femoro-femoral bypass"},answer:"A",explanation:"Symptomatic proximal subclavian stenosis is commonly treated with endovascular angioplasty and stenting when anatomy is suitable."},
+{id:"CAR-040",topic:"LIMA coronary graft",difficulty:"hard",stem:"A 68-year-old man has prior CABG using a left internal mammary artery graft. He develops exertional angina and left arm claudication. Imaging shows severe proximal left subclavian stenosis. Best interpretation?",options:{A:"Coronary-subclavian steal should be considered",B:"This cannot affect coronary perfusion",C:"Treat with carotid ligation",D:"Only the right subclavian matters",E:"No revascularisation is ever indicated"},answer:"A",explanation:"Proximal left subclavian stenosis in a patient with a LIMA graft can cause coronary-subclavian steal and myocardial ischaemia."},
+{id:"CAR-041",topic:"Vertebral artery disease",difficulty:"medium",stem:"A 70-year-old man has recurrent posterior circulation TIAs despite best medical therapy. Imaging shows severe dominant vertebral artery origin stenosis. Best management principle?",options:{A:"Consider vertebral origin revascularisation in selected refractory symptomatic cases",B:"CEA of the ipsilateral ICA always cures posterior circulation symptoms",C:"No imaging is relevant",D:"Antibiotics are first-line",E:"Routine vertebral ligation"},answer:"A",explanation:"Most vertebral disease is managed medically, but selected patients with recurrent posterior circulation symptoms despite best medical therapy may be considered for vertebral origin intervention."},
+{id:"CAR-042",topic:"Carotid dissection",difficulty:"medium",stem:"A 43-year-old man develops neck pain and partial Horner syndrome after minor trauma. CTA shows extracranial ICA dissection without major stroke. Best initial management?",options:{A:"Antithrombotic therapy and stroke specialist management",B:"Immediate CEA in all dissections",C:"Carotid ligation",D:"No follow-up imaging",E:"Antibiotics"},answer:"A",explanation:"Extracranial carotid dissection is usually managed initially with antithrombotic therapy and stroke specialist input, with intervention reserved for selected complications."},
+{id:"CAR-043",topic:"Radiation carotid disease",difficulty:"hard",stem:"A 62-year-old man had radical neck radiotherapy 15 years ago. He now has symptomatic 80% ICA stenosis with dense neck fibrosis and high bifurcation. Best interpretation?",options:{A:"CEA is always straightforward after radiotherapy",B:"CAS may be favoured if surgical risk is high and anatomy suitable",C:"No treatment is possible",D:"Radiation stenosis cannot cause stroke",E:"Only external carotid treatment is useful"},answer:"B",explanation:"Radiation-associated carotid stenosis can make CEA higher risk because of hostile neck fibrosis. CAS may be favoured if endovascular anatomy is suitable."},
+{id:"CAR-044",topic:"Carotid bruit",difficulty:"easy",stem:"A 65-year-old man has an asymptomatic carotid bruit. Duplex shows 20% ICA stenosis bilaterally. Best management?",options:{A:"Carotid endarterectomy",B:"Cardiovascular risk-factor optimisation",C:"Carotid stenting",D:"Emergency thrombolysis",E:"No statin because stenosis is mild"},answer:"B",explanation:"A bruit with mild stenosis does not require carotid intervention. It should prompt cardiovascular risk-factor optimisation."},
+{id:"CAR-045",topic:"Amaurosis fugax",difficulty:"easy",stem:"A 67-year-old man describes a curtain descending over his right eye for 10 minutes with full recovery. Ipsilateral carotid stenosis is found. Best classification of the symptom?",options:{A:"Carotid territory TIA",B:"Peripheral vestibulopathy",C:"Migraine only",D:"Lower limb claudication",E:"Seizure by definition"},answer:"A",explanation:"Transient monocular blindness or amaurosis fugax is an ipsilateral carotid territory ischaemic symptom."},
+{id:"CAR-046",topic:"Symptom laterality",difficulty:"medium",stem:"A 72-year-old woman has a left hemispheric TIA. Duplex shows 30% left ICA stenosis and 80% right ICA stenosis. Best classification of the right ICA lesion?",options:{A:"Symptomatic because any TIA counts",B:"Asymptomatic right ICA stenosis",C:"Ruptured carotid plaque",D:"Occluded carotid",E:"Posterior circulation stenosis"},answer:"B",explanation:"Carotid symptoms are lateralised. A left hemispheric TIA makes the left carotid symptomatic; the contralateral right ICA stenosis is asymptomatic."},
+{id:"CAR-047",topic:"Eversion CEA",difficulty:"medium",stem:"A surgeon performs CEA by transecting the ICA at its origin, everting the artery to remove plaque and reimplanting it. What technique is this?",options:{A:"Eversion carotid endarterectomy",B:"Transfemoral carotid stenting",C:"Carotid-subclavian bypass",D:"Patchless venous bypass",E:"Vertebral transposition"},answer:"A",explanation:"Transection and eversion of the ICA to remove plaque describes eversion carotid endarterectomy."},
+{id:"CAR-048",topic:"CAS complication",difficulty:"medium",stem:"During transfemoral CAS, the patient develops profound bradycardia and hypotension during balloon dilatation of the carotid bulb. Best mechanism?",options:{A:"Carotid sinus stimulation",B:"Hypoglossal nerve transection",C:"Subclavian steal",D:"Renal artery embolisation",E:"Aortic rupture"},answer:"A",explanation:"Ballooning or stenting at the carotid bulb can stimulate the carotid sinus, causing bradycardia and hypotension."},
+{id:"CAR-049",topic:"Plaque morphology",difficulty:"medium",stem:"An asymptomatic patient has 65% ICA stenosis. Duplex shows plaque ulceration and microembolic signals are detected on transcranial Doppler. Best interpretation?",options:{A:"These features may increase stroke risk and influence MDT discussion",B:"They prove the artery is occluded",C:"They make antiplatelet therapy contraindicated",D:"They are irrelevant in all patients",E:"They diagnose carotid body tumour"},answer:"A",explanation:"High-risk plaque features such as ulceration and microembolic signals may increase stroke risk and can influence discussion about intervention in selected asymptomatic patients."},
+{id:"CAR-050",topic:"Post-CEA stroke",difficulty:"hard",stem:"Thirty minutes after CEA, a patient develops dense contralateral weakness in recovery. Blood pressure is stable and glucose is normal. Best immediate principle?",options:{A:"Assume anaesthetic effect and wait until morning",B:"Urgent assessment for carotid thrombosis or intracranial event with immediate imaging/re-exploration pathway",C:"Discharge on dual antiplatelets",D:"Remove the neck drain and observe",E:"Treat as subclavian steal"},answer:"B",explanation:"New neurological deficit immediately after CEA is an emergency. Carotid thrombosis, embolisation or intracranial haemorrhage must be assessed urgently, with rapid imaging and re-exploration if indicated."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
