@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aortoiliac / EVAR Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Aortoiliac / EVAR Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"AOR-001",topic:"Ruptured AAA",difficulty:"medium",stem:"A 76-year-old man presents with sudden abdominal and back pain, hypotension and a known 7.2 cm infrarenal AAA. He responds to blood products and is awake with systolic pressure 88 mmHg. Your unit has 24-hour EVAR capability. Best next step?",options:{A:"Immediate transfer to theatre without imaging",B:"Urgent CTA to assess suitability for EVAR",C:"Aggressive crystalloid resuscitation to systolic pressure above 140 mmHg",D:"Discharge if pain improves after analgesia",E:"Ultrasound surveillance in 24 hours"},answer:"B",explanation:"In a patient with suspected ruptured AAA who can be kept alive for imaging, urgent CTA is required to plan treatment. EVAR is first-line where anatomically feasible and available."},
+{id:"AOR-002",topic:"Ruptured AAA resuscitation",difficulty:"medium",stem:"A 72-year-old man with suspected ruptured AAA has a systolic blood pressure of 86 mmHg, is talking, and has a palpable carotid pulse. He is awaiting CTA and blood products are available. Best resuscitation strategy?",options:{A:"Give repeated crystalloid boluses to normalise blood pressure",B:"Permissive hypotension while maintaining consciousness and organ perfusion",C:"No analgesia until after repair",D:"Immediate heparin bolus before imaging",E:"Delay transfer until haemoglobin is normal"},answer:"B",explanation:"Before haemorrhage control, resuscitation should avoid dislodging clot or worsening bleeding. The aim is permissive hypotension with adequate cerebral and end-organ perfusion, using blood products rather than excessive crystalloid."},
+{id:"AOR-003",topic:"Ruptured AAA EVAR anatomy",difficulty:"hard",stem:"A 79-year-old woman has a ruptured 6.8 cm infrarenal AAA. CTA shows a 23 mm long infrarenal neck, diameter 25 mm, angulation 35 degrees, common iliac landing zones bilaterally, and no prohibitive access disease. Best treatment?",options:{A:"Open repair only because the aneurysm has ruptured",B:"Emergency EVAR if device and team are available",C:"Delay repair until renal function improves",D:"Ultrasound-guided thrombin injection",E:"Medical management unless systolic pressure falls below 70 mmHg"},answer:"B",explanation:"This anatomy is suitable for standard EVAR. In a rupture, EVAR is preferred where anatomically feasible and deliverable without unsafe delay."},
+{id:"AOR-004",topic:"Ruptured AAA hostile anatomy",difficulty:"hard",stem:"A 74-year-old man has a ruptured AAA. CTA shows a conical 6 mm infrarenal neck, heavy thrombus at the seal zone and severe neck angulation. Both iliac systems are patent. He is physiologically fit enough for laparotomy. Best management?",options:{A:"Standard infrarenal EVAR",B:"Open repair",C:"Observe with repeat CT in 6 hours",D:"Inferior mesenteric artery embolisation",E:"Anticoagulation and transfer to clinic"},answer:"B",explanation:"A very short, conical, thrombus-lined, angulated neck is unsuitable for standard infrarenal EVAR. If the patient is fit enough and no suitable advanced endovascular option is immediately available, open repair is appropriate."},
+{id:"AOR-005",topic:"AAA surveillance threshold",difficulty:"easy",stem:"A 71-year-old man has an asymptomatic infrarenal AAA measuring 4.6 cm on ultrasound. Previous diameter 12 months ago was 4.4 cm. He is otherwise well. Best management?",options:{A:"Elective AAA repair now",B:"Continue ultrasound surveillance and risk-factor management",C:"Emergency EVAR",D:"Discharge from follow-up",E:"Inferior mesenteric artery embolisation"},answer:"B",explanation:"An asymptomatic 4.6 cm AAA in a man is below the usual elective repair threshold and is not rapidly expanding. Surveillance and cardiovascular risk reduction are appropriate."},
+{id:"AOR-006",topic:"AAA threshold",difficulty:"easy",stem:"A 68-year-old man is found to have an asymptomatic 5.8 cm infrarenal AAA on ultrasound. CTA confirms suitable infrarenal EVAR anatomy. He is fit for intervention. Best management?",options:{A:"Continue yearly surveillance",B:"Offer elective repair after shared decision-making",C:"Only treat if pain develops",D:"Anticoagulate and repeat imaging in 5 years",E:"Percutaneous thrombin injection"},answer:"B",explanation:"A fit man with an asymptomatic AAA above 5.5 cm should be offered elective repair, with open repair or EVAR depending anatomy, risk and patient preference."},
+{id:"AOR-007",topic:"AAA in women",difficulty:"medium",stem:"A 72-year-old woman has an asymptomatic 5.1 cm infrarenal AAA. She is fit and CTA shows reasonable anatomy for EVAR. Best interpretation?",options:{A:"Women are managed only at a 6.5 cm threshold",B:"Repair may be considered at a smaller diameter than in men",C:"AAA repair is contraindicated in women",D:"Surveillance can stop because the aneurysm is stable",E:"Antiplatelet therapy will shrink the aneurysm"},answer:"B",explanation:"Women have a higher rupture risk at smaller AAA diameters, so repair is often considered at a lower threshold than the standard 5.5 cm threshold used for men."},
+{id:"AOR-008",topic:"AAA rapid expansion",difficulty:"medium",stem:"A 69-year-old man has a 5.0 cm infrarenal AAA. It measured 4.2 cm 18 months ago. He is asymptomatic and fit. Best management?",options:{A:"Continue routine annual surveillance only",B:"Consider elective repair because of rapid expansion",C:"Discharge from surveillance",D:"Treat with oral anticoagulation",E:"Repeat ultrasound in 5 years"},answer:"B",explanation:"Rapid aneurysm expansion is a reason to consider elective repair even if the absolute diameter is close to but below the usual threshold."},
+{id:"AOR-009",topic:"Symptomatic AAA",difficulty:"medium",stem:"A 75-year-old man has a 5.3 cm AAA and new persistent back pain. CTA shows no rupture but tenderness is localised over the aneurysm. He is haemodynamically stable. Best management?",options:{A:"Routine surveillance because diameter is under 5.5 cm",B:"Urgent repair planning during the same admission",C:"Discharge with analgesia",D:"Colonoscopy before vascular review",E:"No treatment unless hypotension develops"},answer:"B",explanation:"A symptomatic AAA should be treated urgently regardless of whether it has reached the standard asymptomatic size threshold."},
+{id:"AOR-010",topic:"EVAR suitability",difficulty:"medium",stem:"A 77-year-old man is assessed for EVAR. CTA shows infrarenal neck length 8 mm, diameter 31 mm, reverse taper, 70-degree angulation and circumferential thrombus. Access vessels are adequate. Best interpretation?",options:{A:"Ideal anatomy for standard EVAR",B:"Hostile neck with high risk of type Ia endoleak",C:"Only iliac anatomy matters for EVAR suitability",D:"Open repair is impossible because access is adequate",E:"No repair is possible in any centre"},answer:"B",explanation:"Short, wide, angulated, reverse-tapered and thrombus-lined neck anatomy increases the risk of proximal seal failure and type Ia endoleak after standard EVAR."},
+{id:"AOR-011",topic:"Type I endoleak",difficulty:"easy",stem:"Completion angiography after infrarenal EVAR shows contrast filling the aneurysm sac from the proximal attachment site. Best classification?",options:{A:"Type Ia endoleak",B:"Type Ib endoleak",C:"Type II endoleak",D:"Type III endoleak",E:"Type V endoleak"},answer:"A",explanation:"A proximal attachment-site leak is a type Ia endoleak and represents inadequate proximal seal."},
+{id:"AOR-012",topic:"Type Ib endoleak",difficulty:"easy",stem:"One month after EVAR, CTA shows contrast entering the sac from the right distal iliac seal zone. The proximal neck seal is intact. Best classification?",options:{A:"Type Ia endoleak",B:"Type Ib endoleak",C:"Type II endoleak",D:"Type IV endoleak",E:"Endotension"},answer:"B",explanation:"A distal attachment-site leak at the iliac landing zone is a type Ib endoleak."},
+{id:"AOR-013",topic:"Type II endoleak",difficulty:"medium",stem:"A 73-year-old man has EVAR surveillance CTA. Sac size is unchanged at 52 mm. There is delayed filling from lumbar arteries with no attachment-site leak. Best management?",options:{A:"Emergency open conversion",B:"Observation with continued surveillance",C:"Proximal cuff insertion",D:"Immediate graft explant",E:"Iliac limb relining"},answer:"B",explanation:"A type II endoleak without sac expansion is commonly observed with continued surveillance."},
+{id:"AOR-014",topic:"Type II endoleak with sac growth",difficulty:"medium",stem:"A 75-year-old man is 3 years post-EVAR. CTA shows a persistent type II endoleak and sac growth from 55 mm to 64 mm over 12 months. No type I or III endoleak is seen. Best next management?",options:{A:"Discharge from surveillance",B:"Consider embolisation after excluding occult type I/III leak",C:"Give warfarin",D:"Immediate proximal cuff without further assessment",E:"No treatment because all type II endoleaks are benign"},answer:"B",explanation:"Persistent type II endoleak with sac expansion warrants treatment consideration, but occult type I or III endoleak must be excluded before assuming the type II leak is the sole cause."},
+{id:"AOR-015",topic:"Type III endoleak",difficulty:"medium",stem:"A 78-year-old man presents 6 years after EVAR. CTA shows sac expansion and contrast entering the sac through separation between the main body and a limb. Best classification?",options:{A:"Type Ia endoleak",B:"Type II endoleak",C:"Type III endoleak",D:"Type IV endoleak",E:"Type V endoleak"},answer:"C",explanation:"Component separation or fabric disruption causing direct sac pressurisation is a type III endoleak and requires repair."},
+{id:"AOR-016",topic:"Type III endoleak management",difficulty:"medium",stem:"A patient with prior EVAR has sac expansion and a type III endoleak from modular disconnection between the body and left limb. Anatomy is suitable for endovascular repair. Best treatment?",options:{A:"Observation only",B:"Relining across the defect",C:"Stop antiplatelet therapy",D:"Coil the inferior mesenteric artery",E:"Annual ultrasound only"},answer:"B",explanation:"Type III endoleaks directly pressurise the sac and should be repaired, commonly by endovascular relining to bridge the separation or fabric defect."},
+{id:"AOR-017",topic:"Endotension",difficulty:"hard",stem:"A 74-year-old man has sac growth after EVAR. CTA, contrast-enhanced ultrasound and catheter angiography show no demonstrable endoleak. Best term?",options:{A:"Type Ia endoleak",B:"Type II endoleak",C:"Endotension",D:"Mycotic aneurysm",E:"Aortoenteric fistula"},answer:"C",explanation:"Sac expansion after EVAR without an identifiable endoleak is often termed endotension, or type V endoleak."},
+{id:"AOR-018",topic:"EVAR surveillance",difficulty:"easy",stem:"A 70-year-old man undergoes standard infrarenal EVAR. He asks why long-term imaging follow-up is needed. Best answer?",options:{A:"EVAR has no late complications",B:"Surveillance detects endoleak, migration, limb complications and sac expansion",C:"Surveillance is only required after open repair",D:"Imaging is only needed if fever develops",E:"Duplex surveillance prevents graft infection"},answer:"B",explanation:"EVAR requires lifelong surveillance because late complications include endoleak, migration, limb stenosis/occlusion, device failure and sac expansion."},
+{id:"AOR-019",topic:"Post-EVAR limb occlusion",difficulty:"medium",stem:"A 69-year-old man develops acute left leg pain 2 weeks after EVAR. CTA shows occlusion of a kinked left iliac limb with viable limb and no rupture. Best management principle?",options:{A:"Ignore because early limb occlusion always recanalises",B:"Urgent revascularisation and correction of the limb problem",C:"Coil embolisation of lumbar arteries",D:"Stop all antiplatelet therapy",E:"Elective review in 6 months"},answer:"B",explanation:"EVAR limb occlusion causing acute limb ischaemia requires urgent revascularisation and treatment of the underlying kink, stenosis or landing-zone problem."},
+{id:"AOR-020",topic:"Iliac aneurysm landing zone",difficulty:"medium",stem:"A man needs EVAR for AAA with a 32 mm right common iliac aneurysm extending to the iliac bifurcation. The right internal iliac is patent and the left internal iliac is dominant. Best strategy if anatomy allows?",options:{A:"Cover both internal iliac arteries without planning",B:"Use iliac branch device or preserve at least one internal iliac artery",C:"Land in the aneurysmal common iliac artery",D:"Avoid repair because iliac aneurysm is present",E:"Coil the superior mesenteric artery"},answer:"B",explanation:"When the common iliac landing zone is aneurysmal, distal seal may require extension to the external iliac. Internal iliac preservation with an iliac branch device is preferred when feasible, and at least one hypogastric artery should generally be preserved."},
+{id:"AOR-021",topic:"Hypogastric embolisation",difficulty:"medium",stem:"A 74-year-old man requires EVAR with extension into the right external iliac artery. Right internal iliac embolisation is planned. Left internal iliac artery is patent. Most recognised complication to discuss?",options:{A:"Right arm claudication",B:"Buttock claudication and pelvic ischaemic symptoms",C:"Carotid restenosis",D:"Pulmonary embolism is inevitable",E:"Hyperhidrosis"},answer:"B",explanation:"Internal iliac artery interruption can cause buttock claudication, erectile dysfunction and, rarely, severe pelvic, colonic or spinal ischaemia."},
+{id:"AOR-022",topic:"Bilateral hypogastric occlusion",difficulty:"hard",stem:"A 79-year-old man has bilateral common iliac aneurysms requiring distal extension to both external iliac arteries. Both internal iliac arteries are patent preoperatively. Best principle?",options:{A:"Sacrifice both internal iliac arteries routinely",B:"Preserve at least one internal iliac artery if feasible",C:"Coil both renal arteries",D:"Use no distal seal",E:"Defer repair forever because bilateral iliac aneurysms are untreatable"},answer:"B",explanation:"Bilateral internal iliac occlusion increases risk of pelvic ischaemia. Preservation of at least one internal iliac artery is preferred where anatomically feasible."},
+{id:"AOR-023",topic:"Accessory renal artery",difficulty:"hard",stem:"CTA for EVAR shows a 5.9 cm infrarenal AAA and a 2.5 mm accessory renal artery arising from the aneurysm neck supplying the lower pole of the left kidney. Main renal arteries are normal. Best interpretation?",options:{A:"Accessory renal arteries can never be covered",B:"Small accessory renal artery coverage may be acceptable if needed for seal",C:"The aneurysm cannot be repaired",D:"The accessory renal artery must be stented in all cases",E:"This is a type II endoleak before treatment"},answer:"B",explanation:"Small accessory renal arteries may sometimes be covered to achieve an adequate proximal seal, accepting possible segmental infarction. Larger or dominant accessory arteries need more careful preservation planning."},
+{id:"AOR-024",topic:"Renal chimney",difficulty:"hard",stem:"A frail 82-year-old man has a symptomatic juxtarenal aneurysm unsuitable for standard EVAR. No custom fenestrated device is immediately available. A chimney EVAR is proposed. Key limitation to recognise?",options:{A:"It eliminates all endoleak risk",B:"Gutter-related type Ia endoleak is a concern",C:"It requires no renal imaging",D:"It is only used for iliac aneurysms",E:"It prevents renal stent occlusion"},answer:"B",explanation:"Chimney EVAR may be useful in urgent or selected high-risk settings, but gutter-related proximal seal failure and renal stent complications are important limitations."},
+{id:"AOR-025",topic:"Fenestrated EVAR",difficulty:"medium",stem:"A fit 73-year-old man has a 6.2 cm juxtarenal AAA with no infrarenal neck. Anatomy is suitable for a custom fenestrated device and he is not ruptured. Best elective endovascular option?",options:{A:"Standard infrarenal EVAR",B:"Fenestrated EVAR",C:"Type II endoleak embolisation",D:"Iliac limb extension only",E:"No imaging follow-up"},answer:"B",explanation:"A juxtarenal AAA without an adequate infrarenal neck is not suitable for standard EVAR. Fenestrated EVAR can create a seal above the renals while maintaining renal and visceral perfusion."},
+{id:"AOR-026",topic:"Open AAA exposure",difficulty:"medium",stem:"During open infrarenal AAA repair, the aneurysm extends close to the renal arteries but there is a clampable neck below them. Best proximal control?",options:{A:"Supraceliac clamp in every case",B:"Infrarenal aortic clamp if safe neck control is possible",C:"Clamp both common femoral arteries only",D:"Clamp the inferior vena cava",E:"No proximal control is required"},answer:"B",explanation:"For standard open infrarenal AAA repair, proximal control is ideally obtained with an infrarenal aortic clamp if a safe neck is available."},
+{id:"AOR-027",topic:"Suprarenal clamping",difficulty:"medium",stem:"A patient undergoing open juxtarenal AAA repair requires suprarenal clamping. Which complication is particularly increased compared with infrarenal clamping?",options:{A:"Renal ischaemia and postoperative renal dysfunction",B:"Carotid embolisation",C:"Upper limb compartment syndrome",D:"Varicose vein recurrence",E:"Thoracic outlet syndrome"},answer:"A",explanation:"Suprarenal clamping increases renal ischaemia time and risk of postoperative renal dysfunction."},
+{id:"AOR-028",topic:"IMA reimplantation",difficulty:"hard",stem:"During open AAA repair, the inferior mesenteric artery back-bleeding is poor. The patient has previous left hemicolectomy and the hypogastric arteries are diseased. Best consideration?",options:{A:"IMA reimplantation may be considered if colonic perfusion is concerning",B:"IMA must never be reimplanted",C:"Coil the SMA",D:"Close without assessing bowel",E:"Give long-term warfarin to perfuse colon"},answer:"A",explanation:"IMA reimplantation is not routine, but may be considered when colonic perfusion is at risk, especially with poor back-bleeding, compromised hypogastrics or prior colonic surgery."},
+{id:"AOR-029",topic:"Aortoenteric fistula",difficulty:"medium",stem:"A 71-year-old man presents with haematemesis 4 years after open AAA repair. He had a small self-limiting bleed 12 hours earlier. He is now septic and hypotensive. Most likely diagnosis?",options:{A:"Primary haemorrhoids",B:"Secondary aortoenteric fistula",C:"Type II endoleak",D:"Mesenteric venous thrombosis",E:"Renal artery stenosis"},answer:"B",explanation:"GI bleeding after aortic graft surgery, especially with a herald bleed and sepsis, is secondary aortoenteric fistula until proven otherwise."},
+{id:"AOR-030",topic:"Aortoenteric fistula imaging",difficulty:"medium",stem:"A stable patient with previous aortic graft presents with fever, abdominal pain and intermittent upper GI bleeding. Aortoenteric fistula is suspected. Best initial imaging?",options:{A:"CTA abdomen and pelvis",B:"Plain abdominal radiograph only",C:"Routine colonoscopy as first test",D:"Duplex of the popliteal arteries",E:"Non-contrast CT head"},answer:"A",explanation:"CTA is the key initial investigation in stable patients with suspected aortoenteric fistula or aortic graft infection, although a negative scan does not fully exclude it."},
+{id:"AOR-031",topic:"Aortic graft infection",difficulty:"hard",stem:"A 68-year-old man presents 2 years after aortobifemoral bypass with fever, weight loss and groin sinus. CT shows perigraft gas and fluid around the proximal graft. Best management principle?",options:{A:"Long-term oral antibiotics alone in all cases",B:"Source control with graft excision or reconstruction strategy plus antibiotics",C:"Ignore if blood cultures are negative",D:"Coil the inferior mesenteric artery",E:"Routine graft surveillance only"},answer:"B",explanation:"Aortic graft infection usually requires antibiotics plus source control, often involving graft explantation and in-situ or extra-anatomic reconstruction depending organism, contamination and patient condition."},
+{id:"AOR-032",topic:"Mycotic aneurysm",difficulty:"medium",stem:"A 64-year-old man has fever, positive blood cultures and a rapidly enlarging saccular infrarenal aortic aneurysm with periaortic inflammation. Best diagnosis?",options:{A:"Degenerative fusiform AAA",B:"Infected aortic aneurysm",C:"Type V endoleak",D:"Nutcracker syndrome",E:"Median arcuate ligament syndrome"},answer:"B",explanation:"A rapidly enlarging saccular aneurysm with systemic infection and periaortic inflammatory change is suspicious for infected or mycotic aneurysm."},
+{id:"AOR-033",topic:"Inflammatory AAA",difficulty:"medium",stem:"CTA shows a 5.7 cm inflammatory AAA with marked periaortic fibrosis and medial deviation of both ureters. The patient has hydronephrosis. Best associated issue?",options:{A:"Ureteric obstruction from retroperitoneal fibrosis",B:"Carotid occlusion",C:"Aortic dissection flap in every case",D:"Portal vein thrombosis",E:"Pulmonary sequestration"},answer:"A",explanation:"Inflammatory AAA can be associated with dense retroperitoneal fibrosis causing ureteric involvement and hydronephrosis."},
+{id:"AOR-034",topic:"Horseshoe kidney",difficulty:"hard",stem:"A patient with a 6 cm AAA has a horseshoe kidney with renal isthmus overlying the aneurysm and multiple accessory renal arteries. Best preoperative priority?",options:{A:"Proceed without arterial mapping",B:"Detailed CTA assessment of renal arterial anatomy and operative approach",C:"Ignore the isthmus because it always atrophies",D:"Treat with antibiotics only",E:"Coil both main renal arteries"},answer:"B",explanation:"Horseshoe kidney complicates AAA repair due to the renal isthmus and variable accessory renal arteries. Detailed arterial mapping and planning are essential."},
+{id:"AOR-035",topic:"EVAR access",difficulty:"medium",stem:"An 80-year-old man is planned for EVAR. CTA shows heavily calcified 5 mm external iliac arteries bilaterally with severe tortuosity. Best interpretation?",options:{A:"Access is irrelevant to EVAR planning",B:"There is increased risk of access failure or iliac injury",C:"This guarantees successful percutaneous EVAR",D:"Only neck length matters",E:"Open repair is mandatory in all such cases"},answer:"B",explanation:"Small, calcified, tortuous iliac access increases risk of device delivery failure, dissection, rupture and need for adjunctive access strategies."},
+{id:"AOR-036",topic:"Percutaneous EVAR complication",difficulty:"medium",stem:"After percutaneous EVAR, the patient has expanding groin swelling and hypotension. Duplex shows active bleeding from the common femoral puncture site. Best management?",options:{A:"Observe for 24 hours",B:"Urgent haemorrhage control with endovascular or open repair",C:"Start therapeutic heparin",D:"Remove all dressings and mobilise",E:"Elective outpatient review"},answer:"B",explanation:"Expanding groin haematoma with hypotension after percutaneous access is major access bleeding requiring urgent haemorrhage control."},
+{id:"AOR-037",topic:"Common iliac aneurysm",difficulty:"easy",stem:"A 73-year-old man has an isolated right common iliac artery aneurysm measuring 4.0 cm. He is fit. Best management?",options:{A:"Discharge from surveillance",B:"Consider elective repair",C:"Only repair at 8 cm",D:"Antibiotics and repeat imaging in 10 years",E:"Ligation of both external iliac arteries"},answer:"B",explanation:"Isolated common iliac aneurysms are generally considered for elective repair around 3.5 cm or above, depending anatomy, growth and patient factors."},
+{id:"AOR-038",topic:"Internal iliac aneurysm",difficulty:"medium",stem:"A 76-year-old man has a 4.2 cm internal iliac artery aneurysm found on CTA. It is asymptomatic but enlarging. Best management principle?",options:{A:"Surveillance only regardless of size",B:"Elective exclusion or repair with pelvic circulation planning",C:"Immediate amputation",D:"Carotid endarterectomy first in all patients",E:"Anticoagulation to shrink the aneurysm"},answer:"B",explanation:"An enlarging internal iliac aneurysm of this size usually warrants elective repair or exclusion, with careful planning to preserve pelvic perfusion where possible."},
+{id:"AOR-039",topic:"Blue toe syndrome",difficulty:"medium",stem:"A 70-year-old man with a shaggy aorta and small AAA develops painful blue toes after angiography. Pedal pulses are present. Best mechanism?",options:{A:"Large embolus occluding the common femoral artery",B:"Cholesterol microembolisation",C:"Venous thromboembolism",D:"Cellulitis",E:"Popliteal entrapment"},answer:"B",explanation:"Blue toe syndrome with preserved pulses after aortic instrumentation is typical of cholesterol crystal microembolisation from a shaggy aorta or aneurysm."},
+{id:"AOR-040",topic:"Aortoiliac occlusive disease",difficulty:"easy",stem:"A 62-year-old man has bilateral buttock and thigh claudication, absent femoral pulses and erectile dysfunction. Most likely level of disease?",options:{A:"Isolated tibial disease",B:"Aortoiliac occlusive disease",C:"Isolated carotid stenosis",D:"Renal vein compression",E:"Popliteal adventitial cyst"},answer:"B",explanation:"Buttock/thigh claudication with absent femoral pulses and erectile dysfunction suggests aortoiliac occlusive disease, classically Leriche syndrome."},
+{id:"AOR-041",topic:"Aortoiliac claudication",difficulty:"medium",stem:"A 59-year-old man has lifestyle-limiting buttock claudication despite smoking cessation, statin, antiplatelet therapy and supervised exercise. CTA shows focal severe right common iliac stenosis. Best next management?",options:{A:"No intervention is ever appropriate for claudication",B:"Endovascular iliac revascularisation can be considered",C:"Major amputation",D:"Long-term antibiotics",E:"Femoro-distal bypass first-line"},answer:"B",explanation:"For lifestyle-limiting claudication refractory to best medical therapy and exercise, focal iliac stenosis is often suitable for endovascular treatment."},
+{id:"AOR-042",topic:"TASC aortoiliac",difficulty:"medium",stem:"A 67-year-old man has extensive chronic occlusion of the infrarenal aorta and both common iliac arteries, with good common femoral targets. He is fit and has disabling symptoms. Best durable revascularisation?",options:{A:"Aortobifemoral bypass",B:"Isolated tibial angioplasty",C:"Lumbar sympathectomy",D:"Inferior mesenteric artery stenting",E:"No treatment can improve symptoms"},answer:"A",explanation:"Extensive aortoiliac occlusive disease in a fit patient is often best treated with durable open aortobifemoral bypass, although endovascular options may be considered in selected cases."},
+{id:"AOR-043",topic:"Axillobifemoral bypass",difficulty:"medium",stem:"A 78-year-old frail man with severe cardiopulmonary disease has critical limb-threatening ischaemia from aortoiliac occlusion. He is unsuitable for transabdominal aortic reconstruction and endovascular crossing fails. Best extra-anatomic option?",options:{A:"Axillobifemoral bypass",B:"Carotid-subclavian bypass",C:"Below-knee amputation in all cases",D:"Portal vein bypass",E:"Renal autotransplantation"},answer:"A",explanation:"Axillobifemoral bypass is an extra-anatomic revascularisation option for high-risk patients unsuitable for direct aortic reconstruction."},
+{id:"AOR-044",topic:"EVAR migration",difficulty:"medium",stem:"A patient 5 years after EVAR has sac expansion. CTA shows the main body has migrated distally with loss of proximal seal. Best diagnosis?",options:{A:"Type Ia endoleak due to migration",B:"Type II endoleak from lumbar arteries",C:"Endotension only",D:"Type IV endoleak",E:"Normal post-EVAR finding"},answer:"A",explanation:"Distal migration with loss of proximal seal causes a type Ia endoleak and sac pressurisation."},
+{id:"AOR-045",topic:"Proximal cuff",difficulty:"medium",stem:"A 76-year-old man develops a type Ia endoleak after EVAR. The graft has migrated slightly but there remains adequate infrarenal neck above the graft to obtain seal. Best endovascular option?",options:{A:"Proximal aortic cuff extension",B:"Lumbar artery embolisation only",C:"No treatment",D:"Below-knee bypass",E:"Splenic artery embolisation"},answer:"A",explanation:"If there is adequate remaining proximal neck, a proximal cuff may restore the seal and treat a type Ia endoleak."},
+{id:"AOR-046",topic:"Aorto-uni-iliac conversion",difficulty:"hard",stem:"A 79-year-old man has a type III endoleak after EVAR with severe modular disruption. One iliac limb cannot be cannulated and anatomy is unsuitable for standard bifurcated relining. He is unfit for open conversion. Best possible endovascular bailout?",options:{A:"Aorto-uni-iliac endograft with femoro-femoral crossover",B:"Observation only",C:"Coil embolisation of both renal arteries",D:"Carotid-carotid bypass",E:"Saphenous vein stripping"},answer:"A",explanation:"When bifurcated relining is not possible, aorto-uni-iliac conversion with contralateral iliac occlusion and femoro-femoral crossover may be a useful bailout."},
+{id:"AOR-047",topic:"EVAR sac shrinkage",difficulty:"easy",stem:"One year after EVAR, CTA shows no endoleak and sac diameter has reduced from 62 mm to 52 mm. The patient is well. Best interpretation?",options:{A:"Favourable sac regression",B:"Type I endoleak",C:"Rupture is inevitable",D:"Graft infection",E:"Immediate open conversion required"},answer:"A",explanation:"Sac shrinkage with no endoleak after EVAR is a favourable sign suggesting exclusion of the aneurysm."},
+{id:"AOR-048",topic:"Post-EVAR rupture",difficulty:"medium",stem:"A 74-year-old man presents shocked 4 years after EVAR. CTA shows aneurysm rupture with a large type Ia endoleak. Best management principle?",options:{A:"Treat as ruptured aneurysm requiring urgent seal or open conversion",B:"Routine outpatient surveillance",C:"Antibiotics only",D:"Colonoscopy first",E:"No repair because he already had EVAR"},answer:"A",explanation:"Post-EVAR rupture from type Ia endoleak is a life-threatening failure requiring urgent endovascular seal if feasible or open conversion."},
+{id:"AOR-049",topic:"EVAR renal dysfunction",difficulty:"medium",stem:"A patient with eGFR 28 requires urgent CTA for suspected symptomatic AAA. Best approach?",options:{A:"Never perform CTA in renal impairment",B:"Proceed if clinically necessary with renal-protective measures and justified contrast use",C:"Use only plain abdominal X-ray",D:"Delay for 6 months",E:"Use gadolinium angiography routinely"},answer:"B",explanation:"Renal impairment increases contrast risk, but urgent life-threatening aortic pathology justifies CTA with hydration, minimised contrast and renal-protective planning."},
+{id:"AOR-050",topic:"Aortic dissection",difficulty:"medium",stem:"A 64-year-old man has acute tearing back pain. CTA shows uncomplicated acute type B aortic dissection without rupture, malperfusion, refractory pain or uncontrolled hypertension. Best initial management?",options:{A:"Immediate open thoracoabdominal replacement",B:"Best medical therapy with blood pressure and heart rate control",C:"No treatment and discharge",D:"Infrarenal EVAR",E:"Inferior vena cava filter"},answer:"B",explanation:"Uncomplicated acute type B dissection is initially managed medically with blood pressure and heart rate control, surveillance and escalation if complications develop."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
