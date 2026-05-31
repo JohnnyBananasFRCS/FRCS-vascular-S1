@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dialysis Access Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Dialysis Access Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"ACC-001",topic:"Access planning",difficulty:"easy",stem:"A 58-year-old man with progressive CKD stage 5 is expected to need haemodialysis within 6 months. He is right-handed. Duplex shows a suitable left cephalic vein at the wrist and good radial artery inflow. Best access option?",options:{A:"Left radiocephalic AV fistula",B:"Right brachiocephalic AV fistula",C:"Tunnelled femoral dialysis catheter",D:"Left thigh graft",E:"No planning until emergency dialysis is needed"},answer:"A",explanation:"Where anatomy is suitable, a distal autogenous fistula in the non-dominant arm is generally preferred to preserve future access sites."},
+{id:"ACC-002",topic:"Vessel mapping",difficulty:"easy",stem:"A patient is referred for first haemodialysis access. Clinical examination is limited by obesity and previous cannulation. Best preoperative assessment?",options:{A:"Duplex mapping of arteries and veins",B:"Chest X-ray only",C:"No imaging before surgery",D:"Carotid duplex",E:"Colonoscopy"},answer:"A",explanation:"Preoperative duplex mapping assesses vein diameter, continuity, depth and arterial inflow, improving access selection."},
+{id:"ACC-003",topic:"Access hierarchy",difficulty:"medium",stem:"A right-handed patient has unsuitable left wrist cephalic vein but a good left upper-arm cephalic vein and brachial artery. Best autogenous option?",options:{A:"Left brachiocephalic AV fistula",B:"Immediate prosthetic thigh graft",C:"Right femoral tunnelled catheter",D:"No access because wrist vein unsuitable",E:"Left carotid-subclavian bypass"},answer:"A",explanation:"If distal radiocephalic fistula is unsuitable, a brachiocephalic fistula is a common upper-arm autogenous option."},
+{id:"ACC-004",topic:"Basilic vein transposition",difficulty:"medium",stem:"A patient needs access. Cephalic veins are unsuitable bilaterally. Duplex shows a good upper-arm basilic vein and brachial artery. Best autogenous option to consider?",options:{A:"Basilic vein transposition",B:"Immediate below-knee bypass",C:"No access possible",D:"Inferior vena cava filter",E:"Carotid endarterectomy"},answer:"A",explanation:"The basilic vein is often suitable for autogenous access but usually requires mobilisation and superficialisation/transposition for cannulation."},
+{id:"ACC-005",topic:"Dominant arm",difficulty:"easy",stem:"A right-handed patient has suitable veins in both arms for first fistula creation. Best principle?",options:{A:"Prefer non-dominant arm if anatomy is suitable",B:"Always use the dominant arm",C:"Always start with a thigh graft",D:"Use central venous catheter permanently",E:"Avoid autogenous access"},answer:"A",explanation:"Using the non-dominant arm first is usually preferred if vessels are suitable, preserving dominant arm function and future options."},
+{id:"ACC-006",topic:"Central venous stenosis",difficulty:"medium",stem:"A patient with prior right-sided dialysis catheter has right arm swelling and prominent chest wall veins. Duplex shows a functioning right brachiocephalic fistula. Best suspected diagnosis?",options:{A:"Central venous stenosis or occlusion",B:"Carotid stenosis",C:"Compartment syndrome",D:"Appendicitis",E:"Popliteal aneurysm"},answer:"A",explanation:"Arm swelling with chest wall collaterals after central venous catheter use suggests central venous stenosis or occlusion, often exacerbated by AV access flow."},
+{id:"ACC-007",topic:"Central venous imaging",difficulty:"medium",stem:"A patient has arm swelling after ipsilateral AV fistula creation and suspected central venous stenosis. Best confirmatory investigation if intervention is likely?",options:{A:"Contrast venography or cross-sectional venous imaging",B:"Plain wrist X-ray",C:"Exercise ABPI",D:"Colonoscopy",E:"No imaging"},answer:"A",explanation:"Central venous stenosis is best defined by venography or suitable cross-sectional venous imaging when intervention is being considered."},
+{id:"ACC-008",topic:"Pacemaker leads",difficulty:"medium",stem:"A patient needs haemodialysis access and has a left-sided pacemaker with transvenous leads. Best access planning principle?",options:{A:"Avoid ipsilateral access if possible because of central venous stenosis risk",B:"Always create a left brachiocephalic fistula",C:"Pacemaker leads improve venous drainage",D:"Only femoral access is possible",E:"No mapping is required"},answer:"A",explanation:"Transvenous pacemaker leads increase the risk of central venous stenosis. Ipsilateral AV access may cause swelling and poor function, so contralateral planning is preferred when feasible."},
+{id:"ACC-009",topic:"Catheter preservation",difficulty:"easy",stem:"A CKD5 patient is likely to require haemodialysis access. Which vein should generally be avoided for routine venepuncture and cannulas to preserve future access?",options:{A:"Forearm cephalic and basilic veins",B:"External jugular vein only",C:"Great saphenous vein only",D:"Portal vein",E:"Pulmonary vein"},answer:"A",explanation:"Forearm superficial veins should be preserved in advanced CKD because they may be needed for future fistula creation."},
+{id:"ACC-010",topic:"Timing of fistula",difficulty:"medium",stem:"A patient is expected to start haemodialysis in 4 months. He has suitable vessels for fistula formation. Best management?",options:{A:"Create access in advance to allow maturation",B:"Wait until emergency dialysis is needed",C:"Place permanent femoral catheter only",D:"Avoid all vascular planning",E:"Use a temporary arterial line for dialysis"},answer:"A",explanation:"AV fistulas need time to mature, so access should be planned and created before anticipated dialysis where possible."},
+{id:"ACC-011",topic:"Maturation failure",difficulty:"medium",stem:"Six weeks after radiocephalic fistula creation, the fistula has a weak thrill and is difficult to cannulate. Duplex shows juxta-anastomotic stenosis and low flow. Best management?",options:{A:"Assess for salvage with angioplasty or surgical revision",B:"Ignore until it thromboses",C:"Immediate major amputation",D:"Stop dialysis planning",E:"Compression bandage"},answer:"A",explanation:"Non-maturing fistulas should be investigated for correctable lesions such as juxta-anastomotic stenosis, which may be treated by angioplasty or revision."},
+{id:"ACC-012",topic:"Early thrombosis",difficulty:"medium",stem:"A new brachiocephalic fistula loses its thrill on day 2. The hand is warm and well perfused. Best next step?",options:{A:"Urgent assessment for thrombosis and possible salvage",B:"Routine review in 1 year",C:"Compression sleeve only",D:"No further access planning",E:"Antibiotics alone"},answer:"A",explanation:"Early loss of thrill suggests thrombosis. Urgent assessment may permit thrombectomy or revision before the access is lost."},
+{id:"ACC-013",topic:"Thrill",difficulty:"easy",stem:"A mature AV fistula has a continuous low-pitched thrill over the anastomosis and good cannulation segment. Best interpretation?",options:{A:"Likely functioning access",B:"Definite thrombosis",C:"Severe steal by definition",D:"Central venous occlusion",E:"Pseudoaneurysm rupture"},answer:"A",explanation:"A continuous thrill and good cannulation segment are reassuring features of a functioning fistula."},
+{id:"ACC-014",topic:"Outflow stenosis",difficulty:"medium",stem:"A dialysis unit reports rising venous pressures and prolonged bleeding after needle removal. The fistula has a pulsatile character. Best suspected problem?",options:{A:"Outflow stenosis",B:"Normal maturation",C:"Arterial embolus to the leg",D:"Carotid stenosis",E:"Appendicitis"},answer:"A",explanation:"High venous pressures, prolonged bleeding and a pulsatile fistula suggest venous outflow stenosis."},
+{id:"ACC-015",topic:"Inflow stenosis",difficulty:"medium",stem:"A fistula has poor dialysis flows, a weak thrill and difficult cannulation. Duplex shows low access flow and radial artery stenosis proximal to the anastomosis. Best diagnosis?",options:{A:"Inflow stenosis",B:"Central venous hypertension",C:"Ruptured AAA",D:"Venous leg ulcer",E:"Hyperhidrosis"},answer:"A",explanation:"Low access flow with proximal arterial disease indicates inflow stenosis, which may require angioplasty or surgical revision."},
+{id:"ACC-016",topic:"Access surveillance",difficulty:"medium",stem:"A mature fistula has a focal venous stenosis on duplex but dialysis is adequate, there are no pressure problems and flow is stable. Best management principle?",options:{A:"Do not treat every duplex stenosis; correlate with clinical access dysfunction",B:"Mandatory angioplasty of all stenoses",C:"Immediate ligation",D:"Stop dialysis",E:"No future observation"},answer:"A",explanation:"Intervention should be driven by clinically significant dysfunction, not every isolated duplex abnormality."},
+{id:"ACC-017",topic:"Steal syndrome",difficulty:"easy",stem:"A patient develops hand pain during dialysis after brachiocephalic fistula creation. The hand is cool with digital ulceration. Symptoms improve when the fistula is compressed. Best diagnosis?",options:{A:"Dialysis access steal syndrome",B:"Carpal tunnel syndrome only",C:"Cellulitis",D:"Venous hypertension",E:"Thoracic outlet syndrome"},answer:"A",explanation:"Hand ischaemia after AV access that improves with access compression is typical of dialysis access steal syndrome."},
+{id:"ACC-018",topic:"Steal risk",difficulty:"medium",stem:"Which patient is at increased risk of dialysis access steal after brachial artery-based fistula creation?",options:{A:"Diabetic patient with peripheral arterial disease",B:"Young patient with normal arteries",C:"Patient with isolated varicose veins",D:"Patient with appendicitis",E:"Patient with asymptomatic gallstones"},answer:"A",explanation:"Diabetes, PAD, female sex, older age and brachial artery-based high-flow access increase the risk of access-related hand ischaemia."},
+{id:"ACC-019",topic:"Steal investigation",difficulty:"medium",stem:"A patient has suspected access steal. Best initial assessment?",options:{A:"Clinical examination with access compression, digital pressures and duplex assessment",B:"Colonoscopy",C:"Chest X-ray only",D:"No assessment before ligation",E:"Exercise treadmill test"},answer:"A",explanation:"Steal evaluation includes clinical assessment, effect of access compression, digital pressures and duplex to assess access flow, arterial inflow and distal perfusion."},
+{id:"ACC-020",topic:"DRIL",difficulty:"hard",stem:"A patient has severe access steal from a functioning brachiocephalic fistula. The fistula is needed for dialysis and access flow is not excessive. Best limb-salvage option to preserve access?",options:{A:"DRIL procedure",B:"Immediate fistula ligation in all cases",C:"Carotid endarterectomy",D:"No treatment",E:"Compression stockings"},answer:"A",explanation:"DRIL can relieve steal while preserving a functioning access, particularly when distal perfusion is compromised and access flow is not simply excessive."},
+{id:"ACC-021",topic:"High-flow access",difficulty:"medium",stem:"A patient has a high-flow upper-arm fistula, hand symptoms and access flow of 2.8 L/min. Cardiac output is elevated. Best access-related concern?",options:{A:"High-output cardiac failure and steal risk",B:"Carotid dissection",C:"Appendicitis",D:"Type II endoleak",E:"Popliteal entrapment"},answer:"A",explanation:"Very high-flow access can contribute to high-output cardiac failure and may worsen hand ischaemia."},
+{id:"ACC-022",topic:"High-output heart failure",difficulty:"medium",stem:"A dialysis patient with a large brachiocephalic fistula develops breathlessness and high-output cardiac failure. Access flow is 3.2 L/min. Best management principle?",options:{A:"Consider access flow reduction or ligation depending dialysis needs and cardiac status",B:"Ignore the access",C:"Increase access flow",D:"Treat only with antibiotics",E:"Create another ipsilateral fistula"},answer:"A",explanation:"High-flow access causing cardiac failure may need flow reduction, banding/revision or ligation depending access dependence and cardiac reserve."},
+{id:"ACC-023",topic:"Banding",difficulty:"hard",stem:"A high-flow fistula causes steal symptoms. The access is otherwise useful. A calibrated banding procedure is planned. Main technical aim?",options:{A:"Reduce access flow while preserving adequate dialysis flow and hand perfusion",B:"Occlude the fistula completely in all cases",C:"Increase flow to 5 L/min",D:"Treat central venous stenosis",E:"Remove the brachial artery"},answer:"A",explanation:"Banding aims to reduce excessive access flow enough to improve distal perfusion while maintaining access usability."},
+{id:"ACC-024",topic:"Aneurysmal fistula",difficulty:"medium",stem:"A patient has an aneurysmal radiocephalic fistula with thin shiny overlying skin and recurrent scab bleeding. Best management?",options:{A:"Urgent surgical assessment for revision or ligation",B:"Needle through the scab",C:"Routine review in 2 years",D:"Compression only",E:"No action unless rupture occurs"},answer:"A",explanation:"Thin skin, scabbing or bleeding over an aneurysmal fistula are warning signs for rupture and require urgent assessment."},
+{id:"ACC-025",topic:"Pseudoaneurysm",difficulty:"medium",stem:"A haemodialysis graft has a rapidly enlarging pulsatile swelling at a repeated cannulation site. Duplex shows a contained defect communicating with the graft. Best diagnosis?",options:{A:"Graft pseudoaneurysm",B:"Lipoma",C:"Baker cyst",D:"Lymph node",E:"Carotid body tumour"},answer:"A",explanation:"A contained defect communicating with the graft at a cannulation site is a pseudoaneurysm."},
+{id:"ACC-026",topic:"Graft infection",difficulty:"medium",stem:"A patient with a prosthetic forearm loop graft has fever, erythema, purulent drainage and exposed graft material. Best management principle?",options:{A:"Antibiotics plus graft excision/source control",B:"Continue cannulating through pus",C:"Topical cream only",D:"No blood cultures",E:"Ignore if dialysis flow is good"},answer:"A",explanation:"Exposed infected prosthetic graft usually requires antibiotics and graft excision or segmental management depending extent, with source control."},
+{id:"ACC-027",topic:"Fistula infection",difficulty:"medium",stem:"A mature autogenous fistula has local cellulitis but no abscess, no bleeding, no pseudoaneurysm and the patient is systemically well. Best management?",options:{A:"Antibiotics and close assessment",B:"Mandatory complete excision of all fistulas",C:"No treatment",D:"High-pressure cannulation",E:"Carotid stenting"},answer:"A",explanation:"Uncomplicated local infection around an autogenous fistula can often be managed with antibiotics and close review, unlike exposed infected prosthetic material."},
+{id:"ACC-028",topic:"Bleeding fistula",difficulty:"easy",stem:"A dialysis patient arrives with active bleeding from a fistula puncture site. Best immediate management?",options:{A:"Direct pressure over the bleeding point",B:"Tourniquet above the elbow as first-line for every bleed",C:"Remove all dressings and observe",D:"Give thrombolysis",E:"No resuscitation until duplex"},answer:"A",explanation:"Initial management of fistula bleeding is firm direct pressure over the bleeding point, with escalation if bleeding is uncontrolled or recurrent."},
+{id:"ACC-029",topic:"Sentinel bleed",difficulty:"medium",stem:"A patient reports two episodes of spontaneous bleeding from a scab over an aneurysmal fistula. It has stopped by the time he arrives. Best management?",options:{A:"Treat as warning bleed and arrange urgent vascular access review",B:"Discharge permanently",C:"Advise needling through the scab",D:"No dressing",E:"Stop dialysis forever"},answer:"A",explanation:"Spontaneous bleeding from scabbed aneurysmal access is a sentinel bleed and carries rupture risk; urgent assessment is needed."},
+{id:"ACC-030",topic:"Cannulation timing",difficulty:"easy",stem:"A new autogenous fistula was created 10 days ago. It has a thrill but is immature. The dialysis unit asks to cannulate it immediately. Best response?",options:{A:"Avoid early cannulation until maturation is adequate",B:"Cannulate immediately regardless of maturity",C:"Ligate the fistula",D:"Use it only for arterial line monitoring",E:"Compression bandage for 6 weeks"},answer:"A",explanation:"Autogenous fistulas require maturation before safe reliable cannulation. Premature cannulation risks infiltration and access failure."},
+{id:"ACC-031",topic:"Early cannulation graft",difficulty:"medium",stem:"A patient requires urgent permanent access and has no suitable vein. A prosthetic early-cannulation graft is considered. Best interpretation?",options:{A:"It may reduce catheter dependence in selected patients",B:"It is autogenous vein",C:"It never gets infected",D:"It requires no cannulation technique",E:"It is contraindicated in all patients"},answer:"A",explanation:"Early-cannulation grafts can be useful when urgent access is required and no fistula option is available, but infection and patency risks remain."},
+{id:"ACC-032",topic:"Tunnelled catheter",difficulty:"easy",stem:"A patient needs urgent haemodialysis but has no mature fistula. Best temporary access option if dialysis is needed for weeks?",options:{A:"Tunnelled central venous dialysis catheter",B:"Peripheral cannula",C:"Radial arterial line",D:"Portal vein catheter",E:"No access"},answer:"A",explanation:"A tunnelled dialysis catheter is used when haemodialysis is required before permanent access is available, especially for more than a very short period."},
+{id:"ACC-033",topic:"Catheter site",difficulty:"easy",stem:"Preferred site for a tunnelled haemodialysis catheter when available?",options:{A:"Right internal jugular vein",B:"Left femoral vein in all cases",C:"Subclavian vein first-line",D:"Portal vein",E:"Inferior mesenteric vein"},answer:"A",explanation:"The right internal jugular vein is generally preferred because it provides a straighter route to the right atrium and lower central stenosis risk than subclavian access."},
+{id:"ACC-034",topic:"Subclavian catheter",difficulty:"medium",stem:"Why should subclavian dialysis catheters generally be avoided in patients needing long-term access?",options:{A:"Risk of central venous stenosis compromising future access",B:"They never work",C:"They cause carotid stenosis",D:"They prevent peritoneal dialysis",E:"They always cause limb ischaemia"},answer:"A",explanation:"Subclavian catheters have a significant risk of central venous stenosis, which can compromise future ipsilateral AV access."},
+{id:"ACC-035",topic:"Catheter infection",difficulty:"medium",stem:"A haemodialysis patient with a tunnelled catheter has fever and positive blood cultures. There is no other source. Best management principle?",options:{A:"Treat as catheter-related bloodstream infection with antibiotics and catheter management depending organism and severity",B:"Ignore if dialysis is adequate",C:"Continue catheter without cultures",D:"Create a fistula through the infected tunnel",E:"Stop all renal replacement therapy"},answer:"A",explanation:"Catheter-related bloodstream infection requires blood cultures, appropriate antibiotics and catheter salvage, exchange or removal depending organism, sepsis and access options."},
+{id:"ACC-036",topic:"Catheter dysfunction",difficulty:"medium",stem:"A tunnelled dialysis catheter has poor flow and high arterial pressures. Chest X-ray confirms tip position. Best initial access-specific possibility?",options:{A:"Fibrin sheath or catheter thrombus",B:"Carotid body tumour",C:"Appendicitis",D:"Popliteal aneurysm",E:"Varicose veins"},answer:"A",explanation:"Poor flow from a tunnelled dialysis catheter with acceptable position may be due to intraluminal thrombus or fibrin sheath."},
+{id:"ACC-037",topic:"HeRO graft",difficulty:"hard",stem:"A haemodialysis patient has bilateral central venous occlusions, exhausted upper-limb fistula options and recurrent catheter sepsis. Arterial inflow is adequate. Which access option may bypass central venous obstruction?",options:{A:"HeRO graft",B:"Radiocephalic fistula",C:"Carotid endarterectomy",D:"Femoral arterial line",E:"No dialysis option exists"},answer:"A",explanation:"A HeRO graft can provide access in selected patients with central venous occlusion by bypassing the obstructed central veins to the right atrium."},
+{id:"ACC-038",topic:"Lower limb access",difficulty:"medium",stem:"A patient has exhausted upper-limb access options and no suitable central venous route for upper-limb access. Lower limb arteries and veins are suitable. Best option to consider?",options:{A:"Femoral loop graft or lower-limb access",B:"No further access possible",C:"Carotid-subclavian bypass",D:"Popliteal aneurysm repair",E:"Appendicectomy"},answer:"A",explanation:"Lower-limb access, such as a femoral loop graft, may be considered when upper-limb options are exhausted, balancing infection and limb ischaemia risks."},
+{id:"ACC-039",topic:"Peritoneal dialysis",difficulty:"easy",stem:"A patient with advanced CKD is choosing renal replacement therapy and wishes to avoid haemodialysis access if possible. What should be discussed?",options:{A:"Peritoneal dialysis suitability",B:"Carotid stenting",C:"No renal replacement options",D:"AAA screening only",E:"Long-term arterial cannulation"},answer:"A",explanation:"Renal replacement planning should include modality discussion, including peritoneal dialysis where suitable."},
+{id:"ACC-040",topic:"Access-induced venous hypertension",difficulty:"medium",stem:"A patient has severe arm swelling after creation of an ipsilateral brachiocephalic fistula. There are chest wall collaterals and the fistula flow is high. Best management principle?",options:{A:"Assess and treat central venous obstruction if feasible; consider access flow reduction or ligation if needed",B:"Ignore permanently",C:"Apply only compression and keep cannulating",D:"Create another ipsilateral fistula",E:"Thrombolyse the carotid artery"},answer:"A",explanation:"Venous hypertension after access creation usually reflects central venous obstruction plus access flow. Management targets the obstruction and may require access modification."},
+{id:"ACC-041",topic:"Cephalic arch stenosis",difficulty:"medium",stem:"A brachiocephalic fistula has rising venous pressures and poor dialysis. Fistulogram shows tight cephalic arch stenosis. Best management?",options:{A:"Endovascular treatment or surgical revision depending recurrence and anatomy",B:"Ignore because cephalic arch stenosis is harmless",C:"Immediate fistula ligation in all cases",D:"Carotid endarterectomy",E:"No follow-up"},answer:"A",explanation:"Cephalic arch stenosis is a common cause of brachiocephalic fistula dysfunction and can be treated endovascularly or surgically depending lesion behaviour."},
+{id:"ACC-042",topic:"Cannulation aneurysm prevention",difficulty:"easy",stem:"Which cannulation practice helps reduce focal aneurysm formation in AV fistulas?",options:{A:"Rope-ladder needling along the cannulation segment",B:"Repeated needling of the exact same small area",C:"Needling through scabs",D:"No rotation of sites",E:"Using infected skin"},answer:"A",explanation:"Rope-ladder cannulation rotates puncture sites and reduces repeated focal wall injury that contributes to aneurysm formation."},
+{id:"ACC-043",topic:"Buttonhole cannulation",difficulty:"medium",stem:"A dialysis unit uses buttonhole cannulation for a fistula. Key infection-related principle?",options:{A:"Strict asepsis and scab removal are essential because infection risk can be higher",B:"No skin preparation is needed",C:"Buttonhole prevents all infection",D:"Needles can pass through old scabs",E:"Antibiotics are mandatory for every session"},answer:"A",explanation:"Buttonhole cannulation can be useful but requires meticulous asepsis and scab removal because infection risk may be increased."},
+{id:"ACC-044",topic:"Regional anaesthesia",difficulty:"medium",stem:"A patient is undergoing brachiocephalic fistula creation. Which potential advantage is associated with regional block?",options:{A:"Vasodilatation and improved perioperative blood flow",B:"Permanent sympathectomy",C:"Guaranteed fistula maturation",D:"No need for monitoring",E:"Prevention of all steal"},answer:"A",explanation:"Regional anaesthesia can produce vasodilatation and improved blood flow, which may be advantageous for access surgery."},
+{id:"ACC-045",topic:"Antiplatelet therapy",difficulty:"hard",stem:"A surgeon asks whether routine antiplatelet therapy guarantees AV fistula maturation. Best interpretation?",options:{A:"It may reduce early thrombosis in some settings but does not guarantee maturation",B:"It guarantees maturation in all fistulas",C:"It is always contraindicated",D:"It replaces surgical technique",E:"It treats central venous stenosis"},answer:"A",explanation:"Antiplatelet therapy may reduce early thrombosis in selected settings, but maturation depends on vessel quality, flow, stenosis and cannulation factors."},
+{id:"ACC-046",topic:"Access ligation",difficulty:"medium",stem:"A kidney transplant recipient has a very high-flow fistula causing cardiac failure. The transplant works well and dialysis is not expected. Best access option to consider?",options:{A:"Flow reduction or ligation after MDT discussion",B:"Create a second fistula",C:"Ignore heart failure",D:"Increase access flow",E:"Tunnelled femoral catheter"},answer:"A",explanation:"In a stable transplant recipient with symptomatic high-flow access, flow reduction or ligation can be considered after balancing future dialysis risk."},
+{id:"ACC-047",topic:"Steal vs neuropathy",difficulty:"hard",stem:"A diabetic dialysis patient has hand numbness after fistula creation. The hand is warm with normal digital pressures and symptoms do not improve with fistula compression. Nerve conduction suggests median neuropathy. Best interpretation?",options:{A:"Carpal tunnel or neuropathy is more likely than haemodynamic steal",B:"Severe steal is confirmed",C:"Immediate fistula ligation is mandatory",D:"Central venous stenosis causes numbness only",E:"No further assessment is possible"},answer:"A",explanation:"Not all hand symptoms after access are steal. Normal perfusion and no improvement with compression suggest neuropathy or carpal tunnel rather than access-induced ischaemia."},
+{id:"ACC-048",topic:"Access rupture",difficulty:"easy",stem:"A patient arrives with massive bleeding from an aneurysmal fistula and haemodynamic instability. Best immediate management?",options:{A:"Direct pressure, resuscitation and urgent operative control",B:"Outpatient duplex",C:"Allow continued bleeding to decompress the fistula",D:"Oral antibiotics only",E:"Compression stockings"},answer:"A",explanation:"Life-threatening access haemorrhage requires direct pressure, resuscitation and urgent surgical or endovascular control."},
+{id:"ACC-049",topic:"Access and PAD",difficulty:"medium",stem:"A patient with severe distal upper-limb arterial disease requires dialysis access. Best planning principle?",options:{A:"Assess hand perfusion carefully and avoid high-risk access if steal risk is unacceptable",B:"Ignore arterial disease",C:"Always use brachial artery inflow",D:"No dialysis access is possible",E:"Treat with carotid surgery first"},answer:"A",explanation:"Poor distal arterial perfusion increases risk of access-induced hand ischaemia. Access choice should be individualised after careful perfusion assessment."},
+{id:"ACC-050",topic:"Access MDT",difficulty:"easy",stem:"A patient has multiple failed access procedures, central venous stenosis and limited life expectancy. Best decision-making approach?",options:{A:"Renal access MDT discussion including patient goals, dialysis plan and technical options",B:"Automatic thigh graft in every patient",C:"No patient discussion",D:"Only surgeon preference matters",E:"Stop dialysis planning"},answer:"A",explanation:"Complex access decisions should be made through renal access MDT discussion, considering patient goals, prognosis, anatomy, dialysis needs and procedural burden."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
