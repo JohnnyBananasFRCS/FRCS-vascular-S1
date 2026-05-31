@@ -1,111 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FRCS Vascular SBAs – Exam Hub</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRCS Vascular SBA Question Bank</title>
+
   <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --accent: #1f4f8f;
+      --accent-dark: #173b6c;
+      --tag-bg: #eef2ff;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      background: #f5f5f7;
-      color: #111827;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
     }
+
     header {
-      background: #111827;
-      color: #f9fafb;
-      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      padding: 3rem 1.5rem;
+      text-align: center;
     }
+
     header h1 {
-      margin: 0;
-      font-size: 1.5rem;
+      margin: 0 0 0.5rem 0;
+      font-size: 2.2rem;
     }
+
     header p {
-      margin: 4px 0 0;
-      font-size: 0.9rem;
-      opacity: 0.8;
+      margin: 0;
+      font-size: 1.05rem;
+      opacity: 0.95;
     }
+
     main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 16px 24px;
-      gap: 16px;
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem 3rem 1rem;
     }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
+
+    .intro {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
     }
-    .controls button {
-      padding: 8px 16px;
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 0.4rem;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin: 0.4rem 0 1rem 0;
       font-size: 0.95rem;
+    }
+
+    .tags {
+      margin-bottom: 1rem;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--tag-bg);
+      color: var(--accent-dark);
+      padding: 0.2rem 0.5rem;
       border-radius: 999px;
-      border: 1px solid #111827;
-      background: #111827;
-      color: #f9fafb;
-      cursor: pointer;
+      font-size: 0.78rem;
+      margin: 0 0.25rem 0.25rem 0;
     }
-    .controls button.secondary {
-      background: transparent;
-      color: #111827;
-    }
-    .controls button:hover {
-      opacity: 0.9;
-    }
-    .info {
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-    iframe {
-      flex: 1;
-      width: 100%;
-      border: 1px solid #d1d5db;
+
+    a.button {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      padding: 0.6rem 0.9rem;
       border-radius: 8px;
-      background: white;
+      font-weight: bold;
+      font-size: 0.9rem;
     }
+
+    a.button:hover {
+      background: var(--accent-dark);
+    }
+
+    .disabled {
+      opacity: 0.55;
+    }
+
+    .disabled a.button {
+      background: #9ca3af;
+      pointer-events: none;
+    }
+
     footer {
-      padding: 8px 24px 16px;
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
-    @media (max-width: 768px) {
-      iframe {
-        height: 70vh;
-      }
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 2rem 1rem;
     }
   </style>
 </head>
+
 <body>
-<header>
-  <h1>FRCS Vascular SBAs – Exam Hub</h1>
- <p>Paper 1: Q281–330 &nbsp;•&nbsp; Paper 2: Q331–380 &nbsp;•&nbsp; Viva Paper 2: Q1–120</p>
-</header>
+  <header>
+    <h1>FRCS Vascular SBA Question Bank</h1>
+    <p>Topic-based revision sets with study mode, exam mode, answers and explanations.</p>
+  </header>
 
-<main>
-  <div class="controls">
-    <button onclick="loadPaper('paper1_281-330.html')">Open Paper 1 (281–330)</button>
-    <button class="secondary" onclick="loadPaper('paper2_331-380.html')">Open Paper 2 (331–380)</button>
-    <button class="secondary" onclick="loadPaper('frcs-viva-paper2.html')">Open Viva (Paper 2, 1–120)</button>
-    <span class="info">Click a paper to load the interactive quiz below.</span>
-  </div>
+  <main>
+    <section class="intro">
+      <h2>Question Sets</h2>
+      <p>
+        Select a topic block below. Each set uses single-best-answer questions with radio-button selection,
+        immediate feedback in study mode, and delayed scoring in exam mode.
+      </p>
+    </section>
 
-  <iframe id="quizFrame" title="FRCS Vascular Quiz" src="" height="700">
-    Your browser does not support iframes.
-  </iframe>
-</main>
+    <section class="grid">
 
-<footer>
-  Tip: Host these three files together (e.g. GitHub Pages / Netlify / local server) and share the URL to this page as your interactive FRCS vascular practice hub.
-</footer>
+      <article class="card">
+        <h2>General Surgery Adjunct</h2>
+        <p>Intra-abdominal emergencies, appendicitis, diverticulitis, peptic ulcer, pancreatitis, trauma and source control.</p>
+        <div class="tags">
+          <span class="tag">50 questions</span>
+          <span class="tag">WSES</span>
+          <span class="tag">Emergency surgery</span>
+        </div>
+        <a class="button" href="general_surgery_adjunct_pilot.html">Open set</a>
+      </article>
 
-<script>
-  function loadPaper(file) {
-    document.getElementById('quizFrame').src = file;
-  }
-</script>
+      <article class="card disabled">
+        <h2>Aortoiliac / EVAR</h2>
+        <p>AAA, rupture, EVAR surveillance, endoleaks, iliac strategy, graft infection and open conversion.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Aortic</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Carotid / Cerebrovascular</h2>
+        <p>Symptomatic stenosis, asymptomatic disease, CEA, CAS, duplex criteria, restenosis and timing.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Carotid</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>CLTI / Diabetic Foot / Amputation</h2>
+        <p>Limb threat, revascularisation strategy, diabetic foot infection, wound care, bypass and amputation decisions.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Lower limb</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Acute Limb Ischaemia / Trauma</h2>
+        <p>ALI classification, embolus vs thrombosis, thrombolysis, fasciotomy, vascular trauma and damage control.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Emergency vascular</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Dialysis Access</h2>
+        <p>AVF planning, maturation, steal, aneurysmal fistulae, central venous disease, grafts and access complications.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Access</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Venous / VTE / Lymphatic</h2>
+        <p>DVT, PE, superficial venous disease, venous obstruction, lymphoedema, malformations and pelvic venous disease.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Venous</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Renal / Mesenteric / Visceral</h2>
+        <p>Renal artery disease, mesenteric ischaemia, visceral aneurysms, duplex interpretation and endovascular planning.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Visceral</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Upper Limb / TOS / Miscellaneous</h2>
+        <p>Thoracic outlet syndrome, upper limb ischaemia, Raynaud’s, vasculitis, hyperhidrosis and rare vascular conditions.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Miscellaneous</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Vascular Lab / Duplex</h2>
+        <p>Carotid, peripheral arterial, graft surveillance, access, venous, renal, mesenteric and EVAR duplex interpretation.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Duplex</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Consent / Stats / Governance / LA</h2>
+        <p>Capacity, Montgomery consent, duty of candour, trial interpretation, statistics and local anaesthetic calculations.</p>
+        <div class="tags">
+          <span class="tag">Coming soon</span>
+          <span class="tag">Cross-cutting</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+      <article class="card disabled">
+        <h2>Mixed Mock Exams</h2>
+        <p>Full mixed papers generated from approved topic blocks, designed for timed exam practice.</p>
+        <div class="tags">
+          <span class="tag">120 questions</span>
+          <span class="tag">Coming soon</span>
+        </div>
+        <a class="button" href="#">Coming soon</a>
+      </article>
+
+    </section>
+  </main>
+
+  <footer>
+    FRCS Vascular SBA Question Bank · Educational use only · Check current local and national guidance.
+  </footer>
 </body>
 </html>
