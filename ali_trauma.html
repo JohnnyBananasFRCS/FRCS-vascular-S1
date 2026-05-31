@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acute Limb Ischaemia / Trauma Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Acute Limb Ischaemia / Trauma Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"ALI-001",topic:"ALI classification",difficulty:"easy",stem:"A 76-year-old woman with atrial fibrillation develops sudden right leg pain 4 hours ago. The foot is cool and pale. She has reduced sensation in the toes but can move the ankle and toes. Arterial Doppler signals are absent; venous Doppler signal is present. Best Rutherford classification?",options:{A:"I viable",B:"IIa marginally threatened",C:"IIb immediately threatened",D:"III irreversible",E:"Chronic limb-threatening ischaemia"},answer:"B",explanation:"Sensory loss limited to the toes with preserved motor function is Rutherford IIa: marginally threatened, requiring urgent revascularisation but not as immediate as IIb."},
+{id:"ALI-002",topic:"ALI classification",difficulty:"easy",stem:"A 69-year-old man presents 6 hours after sudden left leg pain. He has sensory loss over the forefoot and weakness of toe and ankle dorsiflexion. Arterial Doppler signals are absent and venous signal is present. Best Rutherford classification?",options:{A:"I viable",B:"IIa marginally threatened",C:"IIb immediately threatened",D:"III irreversible",E:"Asymptomatic PAD"},answer:"C",explanation:"Motor weakness in acute limb ischaemia indicates Rutherford IIb, an immediately threatened limb needing immediate revascularisation if salvageable."},
+{id:"ALI-003",topic:"Irreversible ischaemia",difficulty:"medium",stem:"A 74-year-old man is found after a long lie. The leg is mottled to the thigh, fixed, anaesthetic and paralysed. There is profound calf rigor and no venous Doppler signal. Best management principle?",options:{A:"Immediate thrombolysis",B:"Primary amputation or palliation rather than revascularisation",C:"Routine outpatient angiography",D:"Compression bandaging",E:"Delay until CK normalises"},answer:"B",explanation:"Profound paralysis, anaesthesia, fixed mottling, rigor and absent venous signal indicate irreversible ischaemia. Revascularisation risks fatal reperfusion injury and is usually inappropriate."},
+{id:"ALI-004",topic:"Initial ALI management",difficulty:"easy",stem:"A patient presents with suspected acute limb ischaemia and no contraindication to anticoagulation. What is the best immediate medical treatment?",options:{A:"Intravenous unfractionated heparin",B:"Warfarin loading only",C:"Stop all antithrombotics",D:"Compression stockings",E:"Oral antibiotics"},answer:"A",explanation:"Immediate systemic anticoagulation with IV unfractionated heparin reduces thrombus propagation while definitive imaging and revascularisation planning proceed."},
+{id:"ALI-005",topic:"ALI imaging",difficulty:"medium",stem:"A 63-year-old woman presents with Rutherford IIb acute limb ischaemia. She has motor weakness and absent pedal Doppler signals. The vascular theatre is available. Best approach?",options:{A:"Delay revascularisation for outpatient CTA",B:"Immediate revascularisation pathway, with imaging only if it does not delay treatment",C:"Exercise ABPI",D:"Compression and review",E:"No heparin until after surgery"},answer:"B",explanation:"Rutherford IIb is immediately threatened. Imaging is useful but should not delay urgent revascularisation; angiography can be performed on table if needed."},
+{id:"ALI-006",topic:"Embolus vs thrombosis",difficulty:"medium",stem:"A 71-year-old woman with atrial fibrillation develops sudden leg pain. There is no prior claudication. The contralateral pulses are normal. The occlusion is at the common femoral bifurcation. Most likely mechanism?",options:{A:"Embolus",B:"Chronic venous insufficiency",C:"Buerger disease",D:"Diabetic neuropathy",E:"Lymphoedema"},answer:"A",explanation:"Sudden onset, atrial fibrillation, no claudication history, normal contralateral pulses and occlusion at a bifurcation favour embolic acute limb ischaemia."},
+{id:"ALI-007",topic:"In-situ thrombosis",difficulty:"medium",stem:"A 68-year-old smoker has worsening claudication for months then acute deterioration over 24 hours. The other leg has absent pulses. CTA shows thrombosis of a heavily diseased SFA with tibial disease. Most likely mechanism?",options:{A:"In-situ thrombosis on chronic PAD",B:"Paradoxical embolus only",C:"Venous gangrene",D:"Cellulitis",E:"Compartment syndrome as primary cause"},answer:"A",explanation:"Acute-on-chronic symptoms, bilateral pulse disease and thrombosis through a diseased segment favour in-situ thrombosis rather than embolus."},
+{id:"ALI-008",topic:"Femoral embolectomy",difficulty:"medium",stem:"A patient with atrial fibrillation has Rutherford IIb ischaemia from a common femoral embolus. Best operative approach?",options:{A:"Common femoral exposure and Fogarty embolectomy with completion assessment",B:"Elective angioplasty in 3 months",C:"Below-knee amputation first-line",D:"Long-term antibiotics",E:"Lumbar sympathectomy"},answer:"A",explanation:"A femoral bifurcation embolus causing threatened limb ischaemia is classically managed by common femoral exposure, balloon embolectomy and confirmation of inflow/outflow."},
+{id:"ALI-009",topic:"Completion imaging",difficulty:"hard",stem:"After femoral embolectomy, inflow is good but back-bleeding from tibial vessels is poor and pedal Doppler signals remain absent. Best next step?",options:{A:"Close and observe regardless",B:"Completion angiography and further outflow treatment as required",C:"Stop heparin permanently",D:"Discharge from theatre",E:"Apply compression only"},answer:"B",explanation:"Poor back-bleeding and absent Doppler signals after embolectomy suggest residual thrombus or distal disease. Completion angiography guides further treatment."},
+{id:"ALI-010",topic:"Catheter-directed thrombolysis",difficulty:"medium",stem:"A 66-year-old man presents with Rutherford IIa ALI from thrombosed femoropopliteal bypass. Symptoms started 18 hours ago. There is mild sensory loss but no motor deficit. No contraindication to lysis. Best treatment option?",options:{A:"Catheter-directed thrombolysis may be appropriate",B:"Immediate primary amputation",C:"Compression bandaging",D:"No anticoagulation",E:"Outpatient duplex in 6 weeks"},answer:"A",explanation:"Thrombolysis is useful for selected Rutherford I or IIa limbs, recent thrombosis, graft occlusion or distal thrombus, provided there is no contraindication."},
+{id:"ALI-011",topic:"Thrombolysis contraindication",difficulty:"easy",stem:"Which is the strongest contraindication to catheter-directed thrombolysis for acute limb ischaemia?",options:{A:"Recent intracranial haemorrhage",B:"Mild hypertension controlled with tablets",C:"Previous appendicectomy",D:"Stable claudication history",E:"Age over 60 alone"},answer:"A",explanation:"Recent intracranial haemorrhage is a major contraindication to thrombolysis because of catastrophic bleeding risk."},
+{id:"ALI-012",topic:"Thrombolysis complication",difficulty:"medium",stem:"A patient undergoing catheter-directed thrombolysis develops severe back pain, hypotension and a falling haemoglobin. Best immediate response?",options:{A:"Continue lysis unchanged",B:"Stop thrombolysis and assess for major bleeding",C:"Increase alteplase dose",D:"Mobilise the patient",E:"Give warfarin loading"},answer:"B",explanation:"Severe pain, hypotension and falling haemoglobin during thrombolysis suggest major bleeding. Thrombolysis should be stopped and the patient resuscitated and investigated."},
+{id:"ALI-013",topic:"Reperfusion injury",difficulty:"medium",stem:"After revascularisation for prolonged acute limb ischaemia, a patient becomes acidotic and hyperkalaemic with rising CK and myoglobinuria. Best diagnosis?",options:{A:"Reperfusion injury with rhabdomyolysis",B:"Carotid hyperperfusion syndrome",C:"Type II endoleak",D:"Venous ulcer infection",E:"Chronic lymphoedema"},answer:"A",explanation:"Revascularisation after prolonged ischaemia can cause reperfusion injury, rhabdomyolysis, hyperkalaemia, acidosis, renal injury and compartment syndrome."},
+{id:"ALI-014",topic:"Fasciotomy indication",difficulty:"medium",stem:"A 55-year-old man has revascularisation after 9 hours of acute popliteal artery occlusion. The calf becomes tense and painful, with pain on passive stretch and deteriorating neurology. Best management?",options:{A:"Immediate four-compartment fasciotomy",B:"Elevation and review in 24 hours only",C:"Compression bandaging",D:"Increase heparin and ignore",E:"Elective MRI"},answer:"A",explanation:"Compartment syndrome after reperfusion is a surgical emergency requiring prompt four-compartment fasciotomy."},
+{id:"ALI-015",topic:"Prophylactic fasciotomy",difficulty:"hard",stem:"A patient undergoes revascularisation for Rutherford IIb ischaemia after 12 hours of symptoms. The calf is already swollen and CK is markedly elevated. Best additional consideration?",options:{A:"Prophylactic fasciotomy",B:"Avoid all monitoring",C:"Compression therapy",D:"Discharge from recovery",E:"No renal monitoring"},answer:"A",explanation:"Prolonged ischaemia, motor deficit, swelling and high CK increase the risk of compartment syndrome. Prophylactic fasciotomy should be considered."},
+{id:"ALI-016",topic:"Popliteal aneurysm ALI",difficulty:"medium",stem:"A 72-year-old man presents with acute foot ischaemia. CTA shows a thrombosed popliteal aneurysm with poor tibial runoff and distal posterior tibial reconstitution. Best management principle?",options:{A:"Restore flow to a distal target and exclude/bypass the aneurysm",B:"Treat only with antibiotics",C:"Ignore the aneurysm",D:"Compression hosiery",E:"Carotid endarterectomy"},answer:"A",explanation:"Thrombosed popliteal aneurysm causing ALI requires management of both limb perfusion and the aneurysm source, often with thrombolysis/thrombectomy, bypass or exclusion depending runoff and urgency."},
+{id:"ALI-017",topic:"Popliteal aneurysm thrombolysis",difficulty:"hard",stem:"A man has ALI from thrombosed popliteal aneurysm with no visible tibial runoff on initial angiography. The limb is Rutherford IIa. Best reason to consider thrombolysis?",options:{A:"To improve tibial runoff and identify a bypass target",B:"To cure the aneurysm wall",C:"To avoid all later aneurysm treatment",D:"To treat venous thrombosis",E:"To replace heparin permanently"},answer:"A",explanation:"In selected threatened but not immediately threatened limbs, thrombolysis may clear distal thrombus, improve runoff and reveal a bypass target before definitive aneurysm treatment."},
+{id:"ALI-018",topic:"Upper limb embolus",difficulty:"easy",stem:"A 78-year-old woman with atrial fibrillation develops sudden pain and pallor of the right hand. Brachial pulse is present but radial and ulnar signals are absent. Best initial treatment?",options:{A:"IV heparin and urgent vascular assessment",B:"Compression sleeve",C:"Oral antibiotics",D:"No treatment because upper limb ischaemia is benign",E:"Elective review in 6 months"},answer:"A",explanation:"Acute upper limb ischaemia requires anticoagulation and urgent assessment for embolectomy or endovascular treatment depending severity and anatomy."},
+{id:"ALI-019",topic:"Brachial embolectomy",difficulty:"medium",stem:"A patient has acute hand ischaemia from embolus at the brachial bifurcation. Motor function is threatened. Best operative approach?",options:{A:"Brachial artery exposure at antecubital fossa and embolectomy",B:"Femoral embolectomy",C:"Carotid-subclavian bypass",D:"Long-term compression",E:"No anticoagulation"},answer:"A",explanation:"Brachial bifurcation embolus is commonly treated by brachial artery exposure and Fogarty embolectomy of radial and ulnar outflow."},
+{id:"ALI-020",topic:"ALI anticoagulation after embolus",difficulty:"medium",stem:"A patient undergoes successful embolectomy for embolic ALI from atrial fibrillation. What is the key long-term medical issue?",options:{A:"Long-term anticoagulation for embolic source unless contraindicated",B:"Stop all antithrombotics",C:"Long-term antibiotics",D:"No cardiac assessment",E:"Compression stockings only"},answer:"A",explanation:"After embolic ALI, the embolic source should be treated. Atrial fibrillation usually requires long-term anticoagulation unless contraindicated."},
+{id:"ALI-021",topic:"Trauma hard signs",difficulty:"easy",stem:"A 24-year-old man has a stab wound to the thigh with pulsatile bleeding and expanding haematoma. Distal pulses are absent. Best interpretation?",options:{A:"Hard signs of vascular injury",B:"Soft signs only",C:"No vascular assessment required",D:"Pure venous reflux",E:"Chronic PAD"},answer:"A",explanation:"Pulsatile bleeding, expanding haematoma and absent distal pulses are hard signs of vascular injury and usually require urgent operative or endovascular control."},
+{id:"ALI-022",topic:"Trauma soft signs",difficulty:"easy",stem:"A patient has a stab wound near the popliteal fossa. Bleeding has stopped. Pulses are present but reduced compared with the other side. There is a small stable haematoma. Best classification?",options:{A:"Soft signs of vascular injury",B:"No possible vascular injury",C:"Irreversible ischaemia",D:"Venous ulcer",E:"Compartment syndrome by definition"},answer:"A",explanation:"Reduced pulse, proximity injury and stable haematoma are soft signs requiring objective assessment, often ABPI/API and imaging if abnormal."},
+{id:"ALI-023",topic:"ABPI in trauma",difficulty:"medium",stem:"A man has a penetrating calf wound near the tibial vessels. Pulses are palpable. Arterial pressure index is 0.72. Best next step?",options:{A:"Discharge without follow-up",B:"CTA or formal vascular imaging",C:"Compression therapy only",D:"No imaging because pulses are present",E:"Elective colonoscopy"},answer:"B",explanation:"An arterial pressure index below about 0.9 after extremity trauma is abnormal and should prompt vascular imaging."},
+{id:"ALI-024",topic:"Normal API trauma",difficulty:"medium",stem:"A patient has a stab wound to the thigh. Pulses are normal and symmetric. Arterial pressure index is 1.0. No neurological deficit or expanding haematoma. Best management?",options:{A:"Observation/discharge with safety-net depending wound and local policy",B:"Mandatory femoral exploration",C:"Immediate thrombolysis",D:"Major amputation",E:"No wound care"},answer:"A",explanation:"With no hard signs and normal arterial pressure index, significant arterial injury is unlikely. Observation or discharge with safety-netting is appropriate depending injury and local protocol."},
+{id:"ALI-025",topic:"CTA in vascular trauma",difficulty:"easy",stem:"A stable patient has a gunshot wound near the superficial femoral artery, reduced distal pulses and API 0.65. Best imaging?",options:{A:"CTA with runoff",B:"Plain X-ray only",C:"Duplex carotids",D:"No imaging until clinic",E:"Barium swallow"},answer:"A",explanation:"CTA with runoff is rapid and accurate for stable extremity trauma with abnormal vascular examination or API."},
+{id:"ALI-026",topic:"Temporary shunt",difficulty:"medium",stem:"A young man has mangled lower limb trauma with femoral artery transection and severe orthopaedic contamination. He is unstable and definitive reconstruction will be delayed for damage-control orthopaedics. Best vascular damage-control option?",options:{A:"Temporary intravascular shunt",B:"No flow restoration",C:"Elective angioplasty in 6 weeks",D:"Compression stockings",E:"Ligation of the common femoral artery in all cases"},answer:"A",explanation:"Temporary vascular shunts restore perfusion during damage-control management when definitive vascular repair must be delayed."},
+{id:"ALI-027",topic:"Sequence in mangled limb",difficulty:"hard",stem:"A patient has an ischaemic mangled leg with femoral artery injury and unstable femur fracture. The limb is potentially salvageable. Best principle?",options:{A:"Coordinate haemorrhage control, temporary or definitive revascularisation and skeletal stabilisation",B:"Always perform definitive vein bypass before any bone stabilisation",C:"Ignore skeletal instability",D:"Delay all vascular intervention until fracture clinic",E:"Use compression bandaging only"},answer:"A",explanation:"Mangled limb management requires coordinated trauma, orthopaedic and vascular sequencing. Haemorrhage control and restoration of perfusion must be integrated with skeletal stabilisation."},
+{id:"ALI-028",topic:"Arterial ligation",difficulty:"medium",stem:"During damage-control surgery for exsanguinating trauma, an isolated posterior tibial artery injury is found. The anterior tibial and peroneal arteries are intact with good Doppler signals to the foot. Best management?",options:{A:"Ligation may be acceptable",B:"Mandatory complex bypass in all cases",C:"Above-knee amputation",D:"No haemorrhage control",E:"Carotid stenting"},answer:"A",explanation:"Some isolated tibial artery injuries can be ligated if there is adequate remaining arterial supply to the foot and haemorrhage control is needed."},
+{id:"ALI-029",topic:"Major named artery ligation",difficulty:"medium",stem:"A trauma patient has a superficial femoral artery transection. The limb is viable and the patient can tolerate repair. Best management?",options:{A:"Repair or reconstruct the artery",B:"Routine ligation without revascularisation",C:"Compression only",D:"Long-term antibiotics",E:"No anticoagulation or antiplatelet ever"},answer:"A",explanation:"Major named artery injuries supplying the limb should generally be repaired or reconstructed when limb salvage is intended and the patient can tolerate it."},
+{id:"ALI-030",topic:"Venous injury",difficulty:"hard",stem:"A patient has combined superficial femoral artery and femoral vein injuries. Arterial repair is performed. The femoral vein is severely injured. Best principle?",options:{A:"Venous repair should be considered if feasible, but ligation may be required in damage-control settings",B:"All venous injuries must be ignored",C:"Femoral vein ligation causes immediate death",D:"Only the vein matters for limb salvage",E:"Antibiotics replace arterial repair"},answer:"A",explanation:"Major venous injury repair may reduce oedema and venous morbidity, but ligation is sometimes necessary in unstable or destructive trauma."},
+{id:"ALI-031",topic:"Compartment syndrome trauma",difficulty:"easy",stem:"A man has tibial fracture and vascular repair. Six hours later he has severe pain, tense compartments and pain on passive stretch. Pulses remain present. Best management?",options:{A:"Urgent fasciotomy",B:"Observe because pulses are present",C:"Compression bandage",D:"Discharge",E:"Oral antibiotics only"},answer:"A",explanation:"Compartment syndrome is a clinical emergency. Pulses may remain present until late; urgent fasciotomy is required."},
+{id:"ALI-032",topic:"Knee dislocation",difficulty:"medium",stem:"A rugby player has knee dislocation reduced in ED. Pulses are palpable but API is 0.78. Best next step?",options:{A:"CTA to assess popliteal artery injury",B:"Discharge because pulses returned",C:"No observation",D:"Elective MRI only",E:"Compression stockings"},answer:"A",explanation:"Knee dislocation can injure the popliteal artery. An abnormal API requires CTA even if pulses are palpable."},
+{id:"ALI-033",topic:"Popliteal trauma",difficulty:"medium",stem:"A patient has posterior knee dislocation with absent pedal pulses after reduction. Best management?",options:{A:"Urgent vascular imaging or exploration depending limb threat and local pathway",B:"Routine outpatient orthopaedic follow-up only",C:"No anticoagulation or assessment",D:"Treat as venous ulcer",E:"Delay for 1 week"},answer:"A",explanation:"Absent pulses after knee dislocation reduction suggest popliteal artery injury. Urgent imaging or exploration is required depending severity."},
+{id:"ALI-034",topic:"Iatrogenic femoral pseudoaneurysm",difficulty:"easy",stem:"A 68-year-old woman has painful groin swelling 5 days after coronary angiography. Duplex shows a pseudoaneurysm arising from the common femoral artery with a narrow neck. She is stable. Best first-line treatment?",options:{A:"Ultrasound-guided thrombin injection",B:"Emergency laparotomy",C:"Compression stockings only",D:"Carotid endarterectomy",E:"No follow-up"},answer:"A",explanation:"Most suitable iatrogenic femoral pseudoaneurysms are treated effectively with ultrasound-guided thrombin injection."},
+{id:"ALI-035",topic:"Pseudoaneurysm waveform",difficulty:"easy",stem:"Duplex of a post-catheterisation groin lump shows a sac with swirling colour flow and a neck demonstrating bidirectional flow. Best description of the neck waveform?",options:{A:"To-and-fro waveform",B:"Tardus-parvus waveform",C:"Triphasic venous waveform",D:"Respiratory phasicity only",E:"Carotid string sign"},answer:"A",explanation:"Pseudoaneurysm necks classically show a to-and-fro waveform, with flow into the sac in systole and out in diastole."},
+{id:"ALI-036",topic:"AV fistula iatrogenic",difficulty:"medium",stem:"After femoral puncture, duplex shows direct communication between superficial femoral artery and femoral vein with arterialised venous waveform. Best diagnosis?",options:{A:"Iatrogenic arteriovenous fistula",B:"Simple haematoma",C:"Lymphocoele",D:"Baker cyst",E:"Venous reflux only"},answer:"A",explanation:"Direct arterial-to-venous communication with arterialised venous flow after puncture is an iatrogenic AV fistula."},
+{id:"ALI-037",topic:"Access-site retroperitoneal bleed",difficulty:"medium",stem:"A patient becomes hypotensive after femoral arterial catheterisation. There is flank pain and falling haemoglobin but little groin swelling. Best suspected complication?",options:{A:"Retroperitoneal haemorrhage from high puncture",B:"Carotid stenosis",C:"Venous ulcer",D:"Thoracic outlet syndrome",E:"Appendicitis"},answer:"A",explanation:"High femoral puncture can cause retroperitoneal haemorrhage with hypotension, flank/back pain and falling haemoglobin without obvious groin haematoma."},
+{id:"ALI-038",topic:"Arterial line injury",difficulty:"medium",stem:"A patient develops hand ischaemia after radial arterial line placement. Ulnar Doppler signal is poor and the hand is threatened. Best management principle?",options:{A:"Remove line, anticoagulate if appropriate and urgent vascular/hand assessment",B:"Ignore because radial artery is expendable in every patient",C:"Compression for 1 week",D:"No imaging or treatment",E:"Elective review in 1 year"},answer:"A",explanation:"Threatened hand ischaemia after radial arterial cannulation requires urgent assessment; collateral supply may be inadequate and revascularisation may be required."},
+{id:"ALI-039",topic:"Paediatric supracondylar injury",difficulty:"medium",stem:"A child has a displaced supracondylar fracture. After reduction, the hand is pink and warm but radial pulse remains absent with good capillary refill. Best principle?",options:{A:"Urgent senior orthopaedic/vascular assessment and close observation, with exploration if perfusion deteriorates",B:"Ignore completely",C:"Immediate amputation",D:"Thrombolysis for all children",E:"No neurovascular observations"},answer:"A",explanation:"A pink pulseless hand after supracondylar fracture reduction requires careful senior assessment and observation; exploration is indicated if perfusion is poor or deteriorates."},
+{id:"ALI-040",topic:"Blast injury",difficulty:"hard",stem:"A soldier has blast injury with segmental femoral artery loss, gross contamination and unstable physiology. Best conduit if definitive repair is attempted in a contaminated field?",options:{A:"Autologous vein if available",B:"Dacron graft as first choice in gross contamination",C:"No debridement",D:"Synthetic graft with no antibiotics",E:"Carotid patch"},answer:"A",explanation:"Autologous vein is generally preferred for arterial reconstruction in contaminated trauma fields because prosthetic infection risk is high."},
+{id:"ALI-041",topic:"Vascular graft infection after trauma",difficulty:"medium",stem:"A patient had prosthetic femoral interposition graft for contaminated trauma. Two weeks later he has fever, groin sepsis and exposed graft. Best management principle?",options:{A:"Source control, antibiotics and graft excision/reconstruction strategy",B:"Ignore if the graft is patent",C:"Topical cream only",D:"No cultures",E:"Compression only"},answer:"A",explanation:"Exposed infected vascular graft requires urgent source control, broad antibiotics and a reconstruction or ligation strategy based on anatomy and limb perfusion."},
+{id:"ALI-042",topic:"Traumatic intimal flap",difficulty:"medium",stem:"A stable patient after blunt thigh trauma has CTA showing a small superficial femoral artery intimal flap without flow limitation. Pulses and API are normal. Best management?",options:{A:"Non-operative management with antithrombotic therapy and surveillance may be appropriate",B:"Mandatory bypass in all cases",C:"Immediate amputation",D:"No follow-up",E:"Thrombolysis"},answer:"A",explanation:"Small non-flow-limiting intimal injuries with normal perfusion may be managed non-operatively with antithrombotic therapy and surveillance."},
+{id:"ALI-043",topic:"Traumatic occlusion",difficulty:"medium",stem:"A stable patient after blunt knee trauma has CTA showing popliteal artery occlusion and a cold foot with sensory deficit. Best management?",options:{A:"Urgent revascularisation",B:"Outpatient physiotherapy",C:"No treatment if fracture reduced",D:"Compression only",E:"Repeat CTA in 3 months"},answer:"A",explanation:"Traumatic popliteal occlusion with limb ischaemia requires urgent revascularisation to prevent limb loss."},
+{id:"ALI-044",topic:"Balloon control",difficulty:"hard",stem:"A patient has pelvic fracture with suspected iliac arterial bleeding and profound shock. Endovascular team obtains femoral access during resuscitation. Best purpose of balloon occlusion?",options:{A:"Temporary haemorrhage control as a bridge to definitive treatment",B:"Permanent cure of all pelvic fractures",C:"Treatment of venous reflux",D:"Replacement for transfusion",E:"Diagnosis of appendicitis"},answer:"A",explanation:"Endovascular balloon occlusion can provide temporary proximal haemorrhage control in selected exsanguinating trauma patients while definitive control is arranged."},
+{id:"ALI-045",topic:"Zone III REBOA",difficulty:"medium",stem:"A patient has haemodynamically unstable pelvic trauma with suspected pelvic arterial bleeding and no major intra-abdominal bleeding. If REBOA is used, preferred aortic zone?",options:{A:"Zone III",B:"Zone I in all cases",C:"Ascending aorta",D:"Carotid artery",E:"Pulmonary artery"},answer:"A",explanation:"For isolated pelvic haemorrhage, REBOA is usually positioned in zone III, below the renal arteries and above the aortic bifurcation."},
+{id:"ALI-046",topic:"Trauma contamination",difficulty:"medium",stem:"A patient has penetrating femoral artery injury with bowel contamination in the groin wound. Best reconstruction principle?",options:{A:"Prefer autologous tissue and aggressive debridement; avoid prosthetic if possible",B:"Place prosthetic graft through pus without debridement",C:"No antibiotics",D:"Close skin only",E:"Compression stockings only"},answer:"A",explanation:"Contaminated vascular trauma fields require debridement, antibiotics and preferably autologous reconstruction or extra-anatomic options to reduce graft infection risk."},
+{id:"ALI-047",topic:"Mangled extremity scoring",difficulty:"hard",stem:"A patient has a severely mangled lower limb. The team calculates a mangled extremity severity score. Best interpretation of such scores?",options:{A:"They support but do not replace clinical judgement and MDT decision-making",B:"They perfectly dictate amputation in every case",C:"They are only for carotid stenosis",D:"They remove the need for patient discussion",E:"They diagnose venous thrombosis"},answer:"A",explanation:"Mangled limb scores can support decision-making but should not replace clinical judgement, patient factors, tissue viability, resources and MDT discussion."},
+{id:"ALI-048",topic:"Tourniquet",difficulty:"medium",stem:"A patient has life-threatening extremity haemorrhage in the prehospital setting. Direct pressure fails. Best immediate haemorrhage control?",options:{A:"Apply a tourniquet proximal to the bleeding site",B:"Wait for CT before any action",C:"Give oral fluids only",D:"Compression stockings",E:"No intervention until theatre"},answer:"A",explanation:"Life-threatening extremity haemorrhage not controlled by direct pressure requires immediate tourniquet application as a temporising life-saving measure."},
+{id:"ALI-049",topic:"Heparin in trauma",difficulty:"hard",stem:"A patient has femoral artery repair after penetrating trauma. There is also traumatic brain injury with intracranial bleeding. Best anticoagulation principle?",options:{A:"Balance graft thrombosis risk against bleeding risk with senior MDT decision-making",B:"Full-dose heparin is mandatory in all cases",C:"Anticoagulation is always forbidden after vascular repair",D:"Warfarin loading in theatre",E:"No neurotrauma input is required"},answer:"A",explanation:"Anticoagulation after vascular repair must be individualised when there is major bleeding risk such as intracranial haemorrhage."},
+{id:"ALI-050",topic:"ALI after EVAR",difficulty:"medium",stem:"A patient develops acute leg ischaemia 24 hours after EVAR. CTA shows thrombosis of the left EVAR limb. The limb is Rutherford IIa. Best management principle?",options:{A:"Urgent revascularisation and correction of the underlying limb problem",B:"Routine surveillance only",C:"Discharge with analgesia",D:"Compression stockings",E:"No antithrombotic therapy"},answer:"A",explanation:"Early EVAR limb thrombosis causing acute limb ischaemia requires urgent revascularisation and correction of any kink, stenosis or landing-zone issue."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
