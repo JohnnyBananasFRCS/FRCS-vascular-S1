@@ -1,1 +1,228 @@
-.
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upper Limb / TOS / Miscellaneous Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Upper Limb / TOS / Miscellaneous Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"ULM-001",topic:"Neurogenic TOS",difficulty:"easy",stem:"A 32-year-old woman has aching in the neck, shoulder and arm with paraesthesia into the ulnar digits, worse with overhead activity. Pulses are normal and there is no swelling. Best initial diagnosis to consider?",options:{A:"Neurogenic thoracic outlet syndrome",B:"Acute limb ischaemia",C:"Subclavian steal syndrome",D:"Carotid body tumour",E:"Median arcuate ligament syndrome"},answer:"A",explanation:"Pain and paraesthesia provoked by arm position, with normal pulses and no venous swelling, is most consistent with neurogenic TOS."},
+{id:"ULM-002",topic:"Neurogenic TOS management",difficulty:"medium",stem:"A patient has suspected neurogenic TOS without objective motor deficit or vascular compromise. Best initial management?",options:{A:"Specialist physiotherapy and posture/scalene-focused rehabilitation",B:"Immediate first rib resection in all patients",C:"Long-term anticoagulation",D:"Carotid endarterectomy",E:"No treatment because symptoms are neurological"},answer:"A",explanation:"Most suspected neurogenic TOS is initially managed conservatively with specialist physiotherapy. Surgery is reserved for selected refractory or objectively severe cases."},
+{id:"ULM-003",topic:"Arterial TOS",difficulty:"medium",stem:"A 29-year-old man has hand claudication and digital embolic lesions. Duplex shows subclavian artery compression with arm abduction and CTA shows a cervical rib with post-stenotic subclavian aneurysm. Best diagnosis?",options:{A:"Arterial thoracic outlet syndrome",B:"Venous thoracic outlet syndrome",C:"Carpal tunnel syndrome",D:"Raynaud disease only",E:"Lymphoedema"},answer:"A",explanation:"Cervical rib, positional subclavian compression, subclavian aneurysm and distal embolisation are classic for arterial TOS."},
+{id:"ULM-004",topic:"Arterial TOS management",difficulty:"hard",stem:"A patient has arterial TOS with a cervical rib, subclavian aneurysm and recurrent digital embolisation. Best management principle?",options:{A:"Thoracic outlet decompression plus arterial reconstruction or aneurysm exclusion as required",B:"Antibiotics only",C:"Compression sleeve",D:"Carotid stenting",E:"Ignore unless the hand becomes paralysed"},answer:"A",explanation:"Arterial TOS with aneurysm and embolisation requires decompression and management of the diseased subclavian artery to prevent recurrent emboli."},
+{id:"ULM-005",topic:"Venous TOS",difficulty:"easy",stem:"A 24-year-old rower develops acute dominant-arm swelling, cyanosis and heaviness after training. Duplex shows axillosubclavian vein thrombosis. Best diagnosis?",options:{A:"Paget-Schroetter syndrome",B:"Subclavian steal syndrome",C:"Buerger disease",D:"Carotid dissection",E:"Giant cell arteritis"},answer:"A",explanation:"Effort thrombosis of the axillosubclavian vein in a young active patient is Paget-Schroetter syndrome, a form of venous TOS."},
+{id:"ULM-006",topic:"Paget-Schroetter",difficulty:"hard",stem:"A fit 23-year-old presents within 36 hours of axillosubclavian vein thrombosis with severe arm swelling and low bleeding risk. Best management principle?",options:{A:"Anticoagulation with consideration of early thrombus removal and later decompression if venous TOS is confirmed",B:"Compression only and no anticoagulation",C:"Immediate carotid endarterectomy",D:"First rib resection without treating thrombus",E:"Long-term antibiotics"},answer:"A",explanation:"Acute effort thrombosis is managed with anticoagulation, selected thrombolysis/thrombectomy for severe early cases, and thoracic outlet decompression in appropriate patients."},
+{id:"ULM-007",topic:"Subclavian steal",difficulty:"easy",stem:"A 67-year-old woman develops dizziness and visual disturbance when using her left arm. Left arm pressure is 35 mmHg lower than right. Duplex shows retrograde left vertebral flow. Best diagnosis?",options:{A:"Subclavian steal syndrome",B:"Neurogenic TOS",C:"Median nerve compression",D:"Acute carotid occlusion",E:"Popliteal entrapment"},answer:"A",explanation:"Arm-exertional vertebrobasilar symptoms with arm pressure difference and retrograde vertebral flow indicate subclavian steal syndrome."},
+{id:"ULM-008",topic:"Subclavian stenosis treatment",difficulty:"medium",stem:"A patient has symptomatic proximal left subclavian artery stenosis causing vertebrobasilar symptoms. Anatomy is suitable for endovascular treatment. Best first-line revascularisation?",options:{A:"Subclavian angioplasty and stenting",B:"Immediate thoracotomy",C:"Carotid endarterectomy",D:"No treatment because all steal is benign",E:"Femoro-femoral bypass"},answer:"A",explanation:"Endovascular angioplasty and stenting is commonly first-line for symptomatic proximal subclavian stenosis when anatomy is suitable."},
+{id:"ULM-009",topic:"Coronary subclavian steal",difficulty:"medium",stem:"A man with previous CABG using a left internal mammary artery graft develops exertional angina and left arm claudication. CTA shows proximal left subclavian stenosis. Best diagnosis?",options:{A:"Coronary-subclavian steal",B:"Carotid body tumour",C:"Median arcuate ligament syndrome",D:"Renal artery stenosis",E:"Venous TOS"},answer:"A",explanation:"Proximal left subclavian stenosis can reverse flow in a LIMA graft and cause myocardial ischaemia, known as coronary-subclavian steal."},
+{id:"ULM-010",topic:"Dysphagia lusoria",difficulty:"medium",stem:"A 41-year-old woman has dysphagia to solids. CT angiography shows an aberrant right subclavian artery passing posterior to the oesophagus. Best diagnosis?",options:{A:"Dysphagia lusoria",B:"Median arcuate ligament syndrome",C:"Nutcracker syndrome",D:"Subclavian steal",E:"Klippel-Trenaunay syndrome"},answer:"A",explanation:"Dysphagia due to extrinsic oesophageal compression by an aberrant right subclavian artery is dysphagia lusoria."},
+{id:"ULM-011",topic:"Aberrant subclavian aneurysm",difficulty:"hard",stem:"A patient with dysphagia lusoria has aneurysmal dilatation at the origin of the aberrant subclavian artery. Best named lesion?",options:{A:"Kommerell diverticulum",B:"Carotid body tumour",C:"Baker cyst",D:"May-Thurner lesion",E:"Endoleak"},answer:"A",explanation:"Aneurysmal dilatation at the origin of an aberrant subclavian artery is a Kommerell diverticulum."},
+{id:"ULM-012",topic:"Upper limb embolus",difficulty:"easy",stem:"A 79-year-old woman with atrial fibrillation develops sudden pain, pallor and coolness of the right hand. Radial and ulnar signals are absent. Best immediate treatment?",options:{A:"IV heparin and urgent vascular assessment",B:"Compression glove",C:"Oral antibiotics",D:"No treatment unless tissue loss develops",E:"Carotid duplex only"},answer:"A",explanation:"Acute upper limb ischaemia requires immediate anticoagulation unless contraindicated and urgent assessment for embolectomy or endovascular therapy."},
+{id:"ULM-013",topic:"Brachial embolectomy",difficulty:"medium",stem:"A patient has acute upper limb ischaemia from embolus at the brachial bifurcation with threatened hand viability. Best operative exposure?",options:{A:"Brachial artery at the antecubital fossa",B:"Common femoral artery",C:"Popliteal artery",D:"Posterior tibial artery",E:"Carotid bifurcation"},answer:"A",explanation:"Brachial bifurcation emboli are commonly treated through antecubital brachial artery exposure with radial and ulnar embolectomy."},
+{id:"ULM-014",topic:"Hypothenar hammer",difficulty:"medium",stem:"A 45-year-old mechanic has episodic digital ischaemia affecting the ulnar digits. He uses vibrating tools. Angiography shows ulnar artery occlusion at the hook of hamate with digital emboli. Best diagnosis?",options:{A:"Hypothenar hammer syndrome",B:"Carpal tunnel syndrome",C:"Subclavian steal",D:"Giant cell arteritis",E:"Lipoedema"},answer:"A",explanation:"Repetitive trauma to the ulnar artery over the hook of hamate causing thrombosis/aneurysm and digital embolisation is hypothenar hammer syndrome."},
+{id:"ULM-015",topic:"Hypothenar hammer management",difficulty:"hard",stem:"A patient has hypothenar hammer syndrome with ulnar artery aneurysm and recurrent embolic digital ischaemia despite smoking cessation and antiplatelet therapy. Best treatment to consider?",options:{A:"Excision or reconstruction of the diseased ulnar segment",B:"Carotid endarterectomy",C:"Long-term antibiotics",D:"No occupational modification",E:"Compression stockings"},answer:"A",explanation:"Symptomatic ulnar artery aneurysm or thrombosis with recurrent embolisation may require resection and reconstruction, alongside risk modification."},
+{id:"ULM-016",topic:"Raynaud phenomenon",difficulty:"easy",stem:"A 22-year-old woman has symmetrical triphasic colour change in the fingers triggered by cold. She has no ulcers, normal pulses and negative autoimmune screen. Best diagnosis?",options:{A:"Primary Raynaud phenomenon",B:"Buerger disease",C:"Acute embolus",D:"Arterial TOS",E:"Giant cell arteritis"},answer:"A",explanation:"Young patient, symmetrical cold-induced attacks, no tissue loss and no systemic features suggest primary Raynaud phenomenon."},
+{id:"ULM-017",topic:"Secondary Raynaud",difficulty:"medium",stem:"A 49-year-old woman has new severe Raynaud symptoms, digital ulcers, sclerodactyly and positive anticentromere antibodies. Best interpretation?",options:{A:"Secondary Raynaud associated with systemic sclerosis",B:"Primary Raynaud only",C:"Venous thoracic outlet",D:"Lymphoedema",E:"Subclavian steal only"},answer:"A",explanation:"Late onset, severe symptoms, ulcers and systemic sclerosis features indicate secondary Raynaud phenomenon."},
+{id:"ULM-018",topic:"Raynaud treatment",difficulty:"medium",stem:"A patient with Raynaud phenomenon has frequent attacks despite cold avoidance and smoking cessation. There is no critical ischaemia. Best first-line drug treatment?",options:{A:"Calcium-channel blocker",B:"Warfarin for life",C:"Broad-spectrum antibiotics",D:"High-dose thrombolysis",E:"Carotid stent"},answer:"A",explanation:"A dihydropyridine calcium-channel blocker such as nifedipine is commonly first-line pharmacological treatment for Raynaud symptoms."},
+{id:"ULM-019",topic:"Digital ulcer systemic sclerosis",difficulty:"hard",stem:"A patient with systemic sclerosis has recurrent painful digital ulcers despite calcium-channel blocker therapy. Best specialist treatment to consider?",options:{A:"PDE-5 inhibitor or prostacyclin pathway therapy according to severity and local protocol",B:"No escalation is possible",C:"Immediate arm amputation",D:"Antibiotics only if no infection",E:"Compression bandaging to the fingers"},answer:"A",explanation:"Severe secondary Raynaud/digital ulceration may need specialist vasodilator therapy such as PDE-5 inhibitors or intravenous prostacyclin, with MDT rheumatology input."},
+{id:"ULM-020",topic:"Buerger disease",difficulty:"easy",stem:"A 36-year-old heavy smoker has distal digital ischaemia affecting fingers and toes. Angiography shows segmental distal occlusions and corkscrew collaterals. Best management priority?",options:{A:"Complete tobacco cessation",B:"High-dose steroids in all cases",C:"Carotid endarterectomy",D:"Antibiotics for life",E:"No lifestyle change"},answer:"A",explanation:"Thromboangiitis obliterans is strongly associated with tobacco. Complete cessation is the central treatment."},
+{id:"ULM-021",topic:"Buerger disease pathology",difficulty:"medium",stem:"Which feature best supports Buerger disease rather than atherosclerotic PAD?",options:{A:"Young smoker with distal small/medium vessel disease and relative sparing of proximal vessels",B:"Elderly diabetic with calcified femoral disease",C:"Isolated carotid stenosis",D:"AAA rupture",E:"Venous ulceration"},answer:"A",explanation:"Buerger disease typically affects young smokers with distal segmental inflammatory occlusions of small and medium vessels."},
+{id:"ULM-022",topic:"Giant cell arteritis",difficulty:"easy",stem:"A 76-year-old woman has new temporal headache, jaw claudication and transient visual loss. ESR is high. Best immediate treatment?",options:{A:"Immediate high-dose corticosteroids",B:"Wait for biopsy before treatment",C:"Compression therapy",D:"Carotid endarterectomy",E:"No treatment if pulses are present"},answer:"A",explanation:"Suspected giant cell arteritis with visual symptoms requires immediate high-dose steroids to prevent irreversible visual loss; biopsy or imaging should not delay treatment."},
+{id:"ULM-023",topic:"GCA imaging",difficulty:"medium",stem:"A patient with suspected giant cell arteritis undergoes temporal artery ultrasound. Best classic ultrasound finding?",options:{A:"Halo sign",B:"Yin-yang sign",C:"To-and-fro waveform",D:"String-of-beads",E:"Subclavian steal reversal"},answer:"A",explanation:"The halo sign on temporal artery ultrasound reflects mural oedema in giant cell arteritis."},
+{id:"ULM-024",topic:"Takayasu arteritis",difficulty:"medium",stem:"A 28-year-old woman has arm claudication, unequal arm pressures and long subclavian and carotid stenoses on CTA. CRP is raised. Best diagnosis?",options:{A:"Takayasu arteritis",B:"Buerger disease",C:"Primary lymphoedema",D:"Popliteal entrapment",E:"Median arcuate ligament syndrome"},answer:"A",explanation:"Takayasu arteritis is a large-vessel vasculitis affecting young women, causing stenoses of the aorta and major branches."},
+{id:"ULM-025",topic:"Takayasu intervention",difficulty:"hard",stem:"A patient with Takayasu arteritis has severe subclavian stenosis but active systemic inflammation. Best principle before elective revascularisation?",options:{A:"Control disease activity with immunosuppression where possible before intervention",B:"Stent during maximal inflammation in all cases",C:"No medical therapy is needed",D:"Use thrombolysis",E:"Avoid follow-up imaging"},answer:"A",explanation:"Elective intervention in Takayasu is ideally performed when inflammation is controlled, because active disease increases restenosis and complication risk."},
+{id:"ULM-026",topic:"Popliteal entrapment",difficulty:"medium",stem:"A 24-year-old runner has exertional calf pain. ABPI falls after exercise. CTA with provocative manoeuvres shows popliteal artery compression by an abnormal medial gastrocnemius slip. Best diagnosis?",options:{A:"Popliteal artery entrapment syndrome",B:"Neurogenic TOS",C:"Chronic venous insufficiency",D:"Buerger disease",E:"Lymphoedema"},answer:"A",explanation:"Young athletic patient with exertional calf symptoms and dynamic popliteal compression has popliteal artery entrapment syndrome."},
+{id:"ULM-027",topic:"Popliteal entrapment treatment",difficulty:"medium",stem:"A symptomatic young patient has anatomical popliteal entrapment with arterial compression but no fixed occlusion. Best treatment?",options:{A:"Surgical decompression of the entrapment",B:"Long-term anticoagulation alone",C:"Compression stockings",D:"Carotid surgery",E:"No treatment until tissue loss"},answer:"A",explanation:"Anatomical popliteal artery entrapment is treated with surgical release/decompression; arterial reconstruction is added if fixed arterial damage is present."},
+{id:"ULM-028",topic:"Adventitial cystic disease",difficulty:"medium",stem:"A 42-year-old man has sudden-onset calf claudication. CTA shows focal smooth narrowing of the popliteal artery from a cyst in the arterial wall. Best diagnosis?",options:{A:"Adventitial cystic disease",B:"Popliteal aneurysm",C:"Buerger disease",D:"Venous malformation",E:"Giant cell arteritis"},answer:"A",explanation:"Adventitial cystic disease causes focal arterial narrowing, classically of the popliteal artery, due to mucinous cyst in the adventitia."},
+{id:"ULM-029",topic:"Adventitial cystic disease management",difficulty:"hard",stem:"A patient has symptomatic adventitial cystic disease of the popliteal artery with severe focal stenosis. Best management principle?",options:{A:"Surgical cyst excision or arterial reconstruction depending arterial wall involvement",B:"Antibiotics only",C:"No imaging follow-up",D:"Carotid stenting",E:"Compression stockings"},answer:"A",explanation:"Symptomatic adventitial cystic disease is usually treated surgically, with cyst excision or arterial reconstruction depending extent and recurrence risk."},
+{id:"ULM-030",topic:"Hyperhidrosis",difficulty:"easy",stem:"A 21-year-old has severe bilateral palmar hyperhidrosis affecting work and social function despite topical therapy. Best specialist surgical option?",options:{A:"Endoscopic thoracic sympathectomy",B:"Carotid endarterectomy",C:"Lumbar sympathectomy",D:"Femoro-popliteal bypass",E:"Venous ablation"},answer:"A",explanation:"Severe refractory palmar hyperhidrosis can be treated with endoscopic thoracic sympathectomy after counselling."},
+{id:"ULM-031",topic:"Sympathectomy complication",difficulty:"easy",stem:"A patient considering thoracic sympathectomy for palmar hyperhidrosis asks about the most important long-term adverse effect. Best answer?",options:{A:"Compensatory sweating",B:"AAA rupture",C:"Deep venous thrombosis in every case",D:"Carotid restenosis",E:"Portal hypertension"},answer:"A",explanation:"Compensatory sweating is the key long-term side effect after thoracic sympathectomy and must be discussed."},
+{id:"ULM-032",topic:"Scimitar sign",difficulty:"medium",stem:"A young patient has exertional leg symptoms. Angiography shows a crescent-shaped medial deviation of the popliteal artery around the medial head of gastrocnemius, described as the scimitar sign. Best diagnosis?",options:{A:"Popliteal artery entrapment syndrome",B:"Buerger disease",C:"Adventitial cystic disease",D:"Venous thoracic outlet syndrome",E:"Carotid dissection"},answer:"A",explanation:"The scimitar sign describes medial deviation/compression of the popliteal artery and is classically associated with popliteal artery entrapment."},
+{id:"ULM-033",topic:"Carotid body tumour",difficulty:"medium",stem:"A painless lateral neck mass is mobile side-to-side but not vertically. MRI shows a hypervascular lesion splaying the ICA and ECA. Best diagnosis?",options:{A:"Carotid body tumour",B:"Branchial cyst",C:"Thyroid goitre",D:"Internal jugular DVT",E:"Lymphoedema"},answer:"A",explanation:"A hypervascular carotid bifurcation mass splaying the ICA and ECA is typical of a carotid body tumour."},
+{id:"ULM-034",topic:"Carotid body tumour genetics",difficulty:"medium",stem:"A 34-year-old has bilateral carotid body tumours and family history of paraganglioma. Best next step?",options:{A:"Genetic assessment for hereditary paraganglioma syndrome",B:"No further assessment",C:"Immediate bilateral carotid ligation",D:"Anticoagulation only",E:"Treat as abscess"},answer:"A",explanation:"Bilateral or familial carotid body tumours suggest hereditary paraganglioma syndrome, including SDH mutations."},
+{id:"ULM-035",topic:"Vascular malformation",difficulty:"medium",stem:"A patient has a congenital blue compressible forearm lesion that enlarges with dependency. MRI shows slow-flow venous channels. Best diagnosis?",options:{A:"Venous malformation",B:"Arteriovenous malformation",C:"Carotid stenosis",D:"Giant cell arteritis",E:"Acute embolus"},answer:"A",explanation:"A congenital compressible bluish lesion with slow-flow venous channels is a venous malformation."},
+{id:"ULM-036",topic:"AVM",difficulty:"medium",stem:"A teenager has a warm pulsatile upper-limb lesion with bruit, thrill and progressive overgrowth. MRA shows high-flow arteriovenous shunting. Best diagnosis?",options:{A:"Arteriovenous malformation",B:"Simple venous malformation",C:"Lipoedema",D:"Primary Raynaud",E:"Carpal tunnel syndrome"},answer:"A",explanation:"Warmth, bruit/thrill and high-flow shunting indicate an arteriovenous malformation."},
+{id:"ULM-037",topic:"AVM treatment",difficulty:"hard",stem:"A patient has a high-flow upper-limb AVM with ulceration and recurrent bleeding. Best treatment principle?",options:{A:"Specialist vascular anomalies MDT with staged embolisation and/or surgery",B:"Blind excision in clinic",C:"Compression only forever",D:"No imaging",E:"Anticoagulation cures the malformation"},answer:"A",explanation:"High-flow AVMs are complex and can worsen after incomplete treatment. Specialist MDT planning with staged embolisation and surgery is required."},
+{id:"ULM-038",topic:"Blue rubber bleb",difficulty:"hard",stem:"A patient has multiple compressible blue venous skin lesions and recurrent gastrointestinal bleeding from venous malformations. Best syndrome?",options:{A:"Blue rubber bleb naevus syndrome",B:"Buerger disease",C:"Takayasu arteritis",D:"Subclavian steal",E:"Leriche syndrome"},answer:"A",explanation:"Blue rubber bleb naevus syndrome involves multiple venous malformations, often affecting skin and gastrointestinal tract."},
+{id:"ULM-039",topic:"Ehlers-Danlos vascular",difficulty:"hard",stem:"A 26-year-old has thin translucent skin, easy bruising and spontaneous iliac artery rupture. Best inherited arteriopathy to consider?",options:{A:"Vascular Ehlers-Danlos syndrome",B:"Primary lymphoedema",C:"Raynaud disease",D:"May-Thurner syndrome",E:"Neurogenic TOS"},answer:"A",explanation:"Vascular Ehlers-Danlos causes arterial and organ rupture, easy bruising and characteristic thin skin due to COL3A1 abnormalities."},
+{id:"ULM-040",topic:"Marfan syndrome",difficulty:"medium",stem:"A tall young man with lens dislocation and aortic root dilatation is referred. Best diagnosis?",options:{A:"Marfan syndrome",B:"Buerger disease",C:"Takayasu arteritis",D:"Adventitial cystic disease",E:"Popliteal entrapment"},answer:"A",explanation:"Marfan syndrome is associated with tall habitus, ectopia lentis and aortic root aneurysm/dissection risk."},
+{id:"ULM-041",topic:"Loeys-Dietz",difficulty:"hard",stem:"A young patient has hypertelorism, bifid uvula and aggressive arterial aneurysms in multiple beds. Best diagnosis?",options:{A:"Loeys-Dietz syndrome",B:"Primary Raynaud",C:"Klippel-Trenaunay syndrome",D:"Median arcuate ligament syndrome",E:"DVT"},answer:"A",explanation:"Loeys-Dietz syndrome is associated with craniofacial features such as hypertelorism/bifid uvula and aggressive widespread arterial aneurysms."},
+{id:"ULM-042",topic:"Mycotic aneurysm",difficulty:"medium",stem:"A patient with fever and positive blood cultures has a rapidly enlarging painful saccular femoral artery aneurysm. Best diagnosis?",options:{A:"Infected arterial aneurysm",B:"Simple varicose vein",C:"Lipoedema",D:"Neurogenic TOS",E:"Primary lymphoedema"},answer:"A",explanation:"Fever, bacteraemia and rapidly enlarging painful saccular aneurysm suggest infected or mycotic aneurysm."},
+{id:"ULM-043",topic:"Pseudoaneurysm sign",difficulty:"easy",stem:"Duplex of a pulsatile groin mass shows swirling colour flow in the sac and bidirectional flow in the neck. Best named sign?",options:{A:"Yin-yang flow with to-and-fro neck waveform",B:"String-of-beads",C:"Halo sign",D:"Scimitar sign",E:"Tardus-parvus only"},answer:"A",explanation:"Pseudoaneurysms show yin-yang colour flow in the sac and a to-and-fro waveform in the neck."},
+{id:"ULM-044",topic:"Fibromuscular dysplasia",difficulty:"easy",stem:"CTA in a young woman with hypertension shows alternating stenoses and dilatations in the mid renal artery. Best imaging description?",options:{A:"String-of-beads",B:"Yin-yang sign",C:"Halo sign",D:"Scimitar sign",E:"To-and-fro waveform"},answer:"A",explanation:"Fibromuscular dysplasia classically produces a string-of-beads appearance in the mid-distal renal or carotid arteries."},
+{id:"ULM-045",topic:"Coarctation",difficulty:"medium",stem:"A 23-year-old has hypertension in the arms, weak femoral pulses and rib notching on chest X-ray. Best diagnosis?",options:{A:"Aortic coarctation",B:"Subclavian steal",C:"Popliteal entrapment",D:"Venous TOS",E:"Buerger disease"},answer:"A",explanation:"Upper-limb hypertension, weak femoral pulses and rib notching from collaterals suggest aortic coarctation."},
+{id:"ULM-046",topic:"Cervical rib",difficulty:"medium",stem:"A chest X-ray in a patient with suspected thoracic outlet syndrome shows a cervical rib. Best interpretation?",options:{A:"It can be associated with neurogenic or arterial TOS but must match symptoms and dynamic assessment",B:"It proves venous thrombosis",C:"It always requires immediate surgery",D:"It excludes arterial TOS",E:"It causes carotid stenosis"},answer:"A",explanation:"A cervical rib is a risk factor for TOS, especially arterial or neurogenic forms, but management depends on symptoms, vascular findings and dynamic imaging."},
+{id:"ULM-047",topic:"Thoracic outlet decompression anatomy",difficulty:"hard",stem:"During supraclavicular thoracic outlet decompression for arterial TOS, which structure is typically removed or divided to decompress the outlet?",options:{A:"Cervical/first rib and scalene-related compression structures",B:"Common carotid artery",C:"Median nerve at wrist",D:"Inferior mesenteric artery",E:"Popliteal vein"},answer:"A",explanation:"Thoracic outlet decompression involves removing compressive bony or fibromuscular structures such as cervical rib, first rib and scalene-related bands depending approach and pathology."},
+{id:"ULM-048",topic:"Upper limb access injury",difficulty:"medium",stem:"A patient develops acute hand ischaemia after radial arterial cannulation. Ulnar flow is poor and the hand is threatened. Best management?",options:{A:"Remove cannula, anticoagulate if appropriate and urgent vascular/hand assessment",B:"Ignore because radial artery is always expendable",C:"Compression glove only",D:"Discharge",E:"Long-term antibiotics"},answer:"A",explanation:"Threatened hand ischaemia after radial arterial cannulation requires urgent assessment because collateral flow may be inadequate."},
+{id:"ULM-049",topic:"Compartment syndrome forearm",difficulty:"easy",stem:"After brachial artery injury and repair, a patient develops severe forearm pain, pain on passive finger extension and tense compartments. Pulses remain present. Best management?",options:{A:"Urgent forearm fasciotomy",B:"Observe because pulses are present",C:"Compression bandage",D:"No analgesia",E:"Elective MRI"},answer:"A",explanation:"Forearm compartment syndrome is a clinical diagnosis and requires urgent fasciotomy. Pulses may remain present until late."},
+{id:"ULM-050",topic:"Miscellaneous vascular",difficulty:"medium",stem:"A patient has livedo racemosa, recurrent strokes and medium-vessel stenoses/occlusions without atherosclerotic risk factors. Which systemic diagnosis should be considered?",options:{A:"Sneddon syndrome or vasculopathic disorder",B:"Simple varicose veins",C:"Primary lymphoedema only",D:"Median arcuate ligament syndrome",E:"Appendicitis"},answer:"A",explanation:"Livedo racemosa with cerebrovascular events suggests a systemic vasculopathy such as Sneddon syndrome and warrants specialist assessment."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
