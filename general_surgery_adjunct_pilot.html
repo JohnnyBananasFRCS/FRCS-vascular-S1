@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>General Surgery Adjunct Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>General Surgery Adjunct Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"GSA-001",topic:"Perforated peptic ulcer",difficulty:"medium",stem:"A 72-year-old man presents with sudden epigastric pain and generalised peritonism. He is tachycardic but normotensive. Erect chest X-ray shows no free air. Lactate is 2.8 mmol/L. There is ongoing clinical suspicion of perforated peptic ulcer. Most appropriate next investigation?",options:{A:"Repeat erect chest X-ray in 6 hours",B:"Urgent upper GI endoscopy",C:"CT abdomen with intravenous contrast",D:"Water-soluble contrast swallow",E:"Diagnostic laparoscopy without further imaging"},answer:"C",explanation:"CT is the preferred investigation when perforated peptic ulcer is suspected and plain radiography is negative or insufficient. It detects small pneumoperitoneum, free fluid and alternative diagnoses."},
+{id:"GSA-002",topic:"Perforated peptic ulcer",difficulty:"medium",stem:"An 81-year-old woman presents 18 hours after onset of abdominal pain. CT shows a perforated duodenal ulcer with free fluid and pneumoperitoneum. She has diffuse peritonitis and is requiring noradrenaline after fluid resuscitation. Best operative approach?",options:{A:"Laparoscopic omental patch repair",B:"Open surgery with source control",C:"Non-operative management with antibiotics",D:"Endoscopic clip closure",E:"Percutaneous drainage alone"},answer:"B",explanation:"An unstable patient with perforated peptic ulcer and diffuse peritonitis requires urgent operative source control. Open surgery is preferred in haemodynamic instability."},
+{id:"GSA-003",topic:"Perforated peptic ulcer",difficulty:"medium",stem:"A 58-year-old man has CT-confirmed perforated peptic ulcer. He is pain-free after resuscitation, afebrile, haemodynamically stable, and has no peritonism. Water-soluble contrast study shows no extravasation. Best initial management?",options:{A:"Emergency laparotomy",B:"Non-operative management with close observation",C:"Urgent gastroscopy and clipping",D:"Immediate laparoscopic lavage",E:"Discharge with oral PPI and review"},answer:"B",explanation:"Selected stable patients with a sealed perforation and no peritonitis or sepsis may be managed non-operatively with close observation, antibiotics, PPI, NG decompression and readiness to operate."},
+{id:"GSA-004",topic:"Gastric perforation",difficulty:"hard",stem:"A 69-year-old woman undergoes laparoscopy for perforated gastric ulcer. The ulcer is 3 cm on the lesser curve with indurated edges. She is stable. Most appropriate operative strategy?",options:{A:"Simple closure without biopsy",B:"Omental patch only",C:"Gastric resection or biopsy-directed management",D:"Pyloric exclusion and T-tube drainage",E:"Endoscopic stenting after lavage"},answer:"C",explanation:"A large indurated gastric ulcer should raise concern for malignancy. Management should include resection where appropriate or biopsy-directed management according to physiology and location."},
+{id:"GSA-005",topic:"Large duodenal perforation",difficulty:"hard",stem:"A 76-year-old man has a large posterior duodenal ulcer perforation close to the ampullary region. He is septic, acidotic and requiring vasopressors. Best principle of management?",options:{A:"Definitive pancreaticoduodenectomy",B:"Damage-control strategy with drainage/diversion as needed",C:"Laparoscopic simple closure",D:"Non-operative management if antibiotics are started",E:"Endoscopic fibrin glue closure"},answer:"B",explanation:"A septic unstable patient with a large complex duodenal perforation is usually best managed with damage-control principles rather than major definitive resection."},
+{id:"GSA-006",topic:"Bleeding peptic ulcer",difficulty:"medium",stem:"A 63-year-old man presents with melaena and haematemesis. He is hypotensive despite initial fluid resuscitation. Endoscopy shows a bleeding posterior duodenal ulcer, treated with adrenaline injection and clipping. Six hours later he rebleeds and becomes unstable. Best next step?",options:{A:"Repeat oral PPI and observe",B:"Emergency angiography or surgery depending local availability",C:"Elective repeat endoscopy in 24 hours",D:"Colonoscopy to exclude lower GI bleeding",E:"Stop resuscitation until cross-match is complete"},answer:"B",explanation:"Recurrent unstable bleeding after endoscopic therapy requires urgent haemorrhage control, usually angiographic embolisation or surgery depending resources and patient condition."},
+{id:"GSA-007",topic:"Diverticulitis",difficulty:"easy",stem:"A 44-year-old woman has CT-proven uncomplicated sigmoid diverticulitis. She is immunocompetent, afebrile, systemically well, tolerating oral fluids and has no abscess or perforation. Best management?",options:{A:"Emergency sigmoid colectomy",B:"Inpatient IV antibiotics for 5 days",C:"Outpatient treatment without routine antibiotics",D:"Percutaneous drainage",E:"Colonoscopy during the acute admission"},answer:"C",explanation:"Immunocompetent patients with uncomplicated diverticulitis and no systemic inflammation can often be managed as outpatients without routine antibiotics, with safety-netting and review."},
+{id:"GSA-008",topic:"Diverticulitis",difficulty:"medium",stem:"A 79-year-old man on long-term prednisolone presents with left iliac fossa pain. CT shows acute sigmoid diverticulitis without abscess or free perforation. CRP is 230 mg/L and he is tachycardic. Most appropriate interpretation?",options:{A:"Immunosuppression lowers risk of complicated disease",B:"Standard outpatient management is preferred",C:"He is high risk for failure of conservative treatment",D:"Antibiotics should be avoided if no abscess is seen",E:"Colonoscopy is the immediate diagnostic test"},answer:"C",explanation:"Immunosuppressed patients are at higher risk of complicated diverticulitis and failure of standard non-operative treatment. Tachycardia and high CRP strengthen that concern."},
+{id:"GSA-009",topic:"Diverticular abscess",difficulty:"medium",stem:"A 61-year-old woman has CT-confirmed sigmoid diverticulitis with a 3 cm pericolic abscess. She is stable, afebrile after analgesia, and has no generalised peritonitis. Best initial management?",options:{A:"Antibiotics and close observation",B:"Emergency Hartmann’s procedure",C:"Percutaneous drainage as mandatory first-line",D:"Laparoscopic lavage",E:"Elective sigmoid colectomy during same admission"},answer:"A",explanation:"Small diverticular abscesses, typically around 4 cm or less, can usually be managed initially with antibiotics and close observation."},
+{id:"GSA-010",topic:"Diverticular abscess",difficulty:"medium",stem:"A 70-year-old man has sigmoid diverticulitis with a 7 cm pelvic abscess. He is stable after resuscitation and there is no diffuse peritonitis. Best initial management?",options:{A:"Antibiotics alone",B:"Percutaneous drainage plus antibiotics if feasible",C:"Immediate total colectomy",D:"Colonoscopy-guided drainage",E:"No treatment unless fever develops"},answer:"B",explanation:"A large diverticular abscess should usually be treated with antibiotics and percutaneous drainage if technically feasible."},
+{id:"GSA-011",topic:"Diverticulitis peritonitis",difficulty:"medium",stem:"A 66-year-old woman presents with generalised peritonitis. CT shows sigmoid diverticulitis with diffuse free fluid and distant free gas. Best management?",options:{A:"Outpatient antibiotics",B:"Percutaneous drainage only",C:"Emergency operative source control",D:"Elective colonoscopy first",E:"Repeat CT in 48 hours"},answer:"C",explanation:"Diffuse peritonitis with free fluid and distant free gas from diverticulitis requires emergency operative source control."},
+{id:"GSA-012",topic:"WSES diverticulitis classification",difficulty:"easy",stem:"A 53-year-old man has left iliac fossa pain. CT shows sigmoid wall thickening, diverticula and pericolic fat stranding only. No abscess, no extraluminal gas, no free fluid. He is stable. WSES classification?",options:{A:"Uncomplicated diverticulitis",B:"Complicated stage 1A",C:"Complicated stage 1B",D:"Complicated stage 2A",E:"Complicated stage 4"},answer:"A",explanation:"Diverticula with wall thickening and pericolic fat stranding without abscess, gas or free fluid is WSES uncomplicated diverticulitis."},
+{id:"GSA-013",topic:"Diverticulitis imaging",difficulty:"easy",stem:"A 47-year-old woman presents with suspected diverticulitis. She has LLQ tenderness, CRP 190 mg/L and mild tachycardia. Most appropriate next step?",options:{A:"Treat clinically without imaging",B:"CT abdomen and pelvis",C:"Colonoscopy during acute symptoms",D:"Discharge with safety-net advice only",E:"Diagnostic laparoscopy"},answer:"B",explanation:"Clinical diagnosis alone is unreliable. CT is the preferred investigation for suspected diverticulitis, especially with high CRP or systemic features."},
+{id:"GSA-014",topic:"Appendicitis diagnosis",difficulty:"medium",stem:"A 31-year-old man has right iliac fossa pain, raised WCC and CRP. Adult Appendicitis Score suggests high probability. He is otherwise well and aged under 40. Most appropriate management?",options:{A:"Mandatory CT before any operation",B:"Diagnostic and therapeutic laparoscopy can be reasonable",C:"Colonoscopy before appendicectomy",D:"Antibiotics only because he is young",E:"Interval appendicectomy after 6 weeks"},answer:"B",explanation:"In high-risk patients under 40 with convincing clinical/scoring features, diagnostic and therapeutic laparoscopy can be reasonable without mandatory CT, depending local practice."},
+{id:"GSA-015",topic:"Appendicitis imaging",difficulty:"easy",stem:"A 35-year-old woman has suspected appendicitis. Clinical score is intermediate risk and ultrasound is inconclusive. Pain persists. Best next step?",options:{A:"Discharge because ultrasound is negative",B:"Cross-sectional imaging",C:"Immediate open appendicectomy",D:"Colonoscopy",E:"Treat as uncomplicated UTI"},answer:"B",explanation:"Intermediate-risk patients with persistent symptoms and inconclusive ultrasound should proceed to cross-sectional imaging."},
+{id:"GSA-016",topic:"Appendicitis NOM",difficulty:"medium",stem:"A 28-year-old man has CT-proven uncomplicated appendicitis without appendicolith. He asks whether antibiotics alone are an option. Best response?",options:{A:"Antibiotics are never appropriate",B:"Antibiotics may be discussed with risk of failure/recurrence",C:"Antibiotics are superior to surgery in all adults",D:"Observation without antibiotics is mandatory",E:"Interval appendicectomy is always required"},answer:"B",explanation:"Antibiotic-first treatment can be discussed in selected uncomplicated appendicitis without appendicolith, explaining failure, recurrence and missed complicated disease risks."},
+{id:"GSA-017",topic:"Timing appendicectomy",difficulty:"easy",stem:"A 42-year-old man has uncomplicated acute appendicitis diagnosed at 9 pm. He is stable, comfortable after analgesia and has no sepsis. Best timing of appendicectomy?",options:{A:"Must operate within 1 hour",B:"Next available list within 24 hours",C:"Delay for 72 hours to reduce inflammation",D:"Discharge for elective surgery",E:"Antibiotics only because delay is unsafe"},answer:"B",explanation:"A short in-hospital delay up to 24 hours is acceptable for stable uncomplicated appendicitis, with surgery on the next available list."},
+{id:"GSA-018",topic:"Appendiceal abscess",difficulty:"medium",stem:"A 59-year-old woman has perforated appendicitis with a 5 cm inflammatory mass and abscess. She is stable with localised tenderness. Best initial management?",options:{A:"Immediate right hemicolectomy",B:"Non-operative treatment with antibiotics ± drainage",C:"Discharge with oral analgesia",D:"Colonoscopy during acute admission",E:"Appendicectomy through Lanz incision"},answer:"B",explanation:"Stable patients with appendiceal phlegmon or abscess can often be treated initially with antibiotics, with percutaneous drainage if feasible."},
+{id:"GSA-019",topic:"Normal appendix at laparoscopy",difficulty:"medium",stem:"A macroscopically normal appendix is found during laparoscopy for right iliac fossa pain. No other pathology is identified. Best approach?",options:{A:"Always leave appendix in situ",B:"Remove appendix after appropriate assessment",C:"Convert to laparotomy",D:"Perform right hemicolectomy",E:"Close and arrange colonoscopy only"},answer:"B",explanation:"If no alternative pathology is found, removal of a macroscopically normal appendix is generally appropriate after assessment."},
+{id:"GSA-020",topic:"Acute pancreatitis severity",difficulty:"easy",stem:"A 68-year-old woman has acute pancreatitis. She has persistent renal and respiratory failure beyond 48 hours. Severity classification?",options:{A:"Mild acute pancreatitis",B:"Moderately severe acute pancreatitis",C:"Severe acute pancreatitis",D:"Chronic pancreatitis",E:"Walled-off necrosis"},answer:"C",explanation:"Persistent organ failure beyond 48 hours defines severe acute pancreatitis."},
+{id:"GSA-021",topic:"Acute pancreatitis diagnosis",difficulty:"easy",stem:"A 55-year-old man presents with epigastric pain radiating to the back. Lipase is twice the upper limit of normal. CT is equivocal and ultrasound shows gallstones. Which diagnostic statement is most accurate?",options:{A:"Lipase twice normal confirms pancreatitis",B:"Diagnosis requires two of typical pain, enzymes >3× ULN, or imaging",C:"Gallstones alone confirm acute pancreatitis",D:"CT is always diagnostic within the first hour",E:"Amylase is mandatory if lipase is abnormal"},answer:"B",explanation:"Acute pancreatitis is diagnosed by at least two of: typical pain, enzymes greater than three times upper limit, and characteristic imaging."},
+{id:"GSA-022",topic:"Pancreatitis imaging",difficulty:"medium",stem:"A 64-year-old man has severe acute pancreatitis with organ failure. He is 36 hours from onset of pain. The team wants CT to assess necrosis. Best timing for first contrast CT to stage necrosis?",options:{A:"Immediately at presentation in all cases",B:"12 hours after onset",C:"24 hours after onset",D:"72–96 hours after onset",E:"Only after 6 weeks"},answer:"D",explanation:"Contrast CT for staging necrosis in severe acute pancreatitis is optimally performed around 72–96 hours after symptom onset."},
+{id:"GSA-023",topic:"Gallstone pancreatitis",difficulty:"medium",stem:"A 49-year-old woman has acute pancreatitis. Ultrasound shows gallstones but no duct dilatation. Bilirubin is normal and she has no cholangitis. Best approach to ERCP?",options:{A:"Urgent ERCP for all gallstone pancreatitis",B:"ERCP only if cholangitis or persistent biliary obstruction",C:"ERCP after every cholecystectomy",D:"ERCP instead of ultrasound",E:"ERCP to diagnose pancreatitis severity"},answer:"B",explanation:"Urgent ERCP is reserved for cholangitis or persistent biliary obstruction, not all gallstone pancreatitis."},
+{id:"GSA-024",topic:"Necrotising pancreatitis",difficulty:"hard",stem:"A 71-year-old man has necrotising pancreatitis. He remains febrile and deteriorates after 2 weeks. CT shows gas within a necrotic collection. Best management principle?",options:{A:"Immediate open necrosectomy as first-line",B:"Conservative step-up approach with drainage before surgery where feasible",C:"Prophylactic antibiotics only",D:"No intervention until 6 months",E:"Total pancreatectomy"},answer:"B",explanation:"Infected necrosis is usually managed with a delayed step-up strategy where feasible, starting with percutaneous or endoscopic drainage before necrosectomy."},
+{id:"GSA-025",topic:"Pancreatitis antibiotics",difficulty:"easy",stem:"A 58-year-old man has severe acute pancreatitis with sterile necrosis. He is improving clinically. Best management?",options:{A:"Routine prophylactic antibiotics",B:"Operative necrosectomy",C:"Supportive care without routine prophylactic antibiotics",D:"ERCP regardless of cause",E:"Percutaneous drainage of all necrosis"},answer:"C",explanation:"Routine prophylactic antibiotics are not recommended for sterile necrosis in acute pancreatitis if the patient is improving."},
+{id:"GSA-026",topic:"Pancreatitis aetiology",difficulty:"easy",stem:"A 73-year-old man develops acute pancreatitis of unclear cause. Ultrasound shows no gallstones. He does not drink alcohol. Calcium is normal. Most appropriate additional biochemical test?",options:{A:"Serum triglycerides",B:"Serum troponin only",C:"Serum CEA",D:"Faecal elastase",E:"Serum ammonia"},answer:"A",explanation:"When gallstones and alcohol are not evident causes, triglycerides and calcium should be checked; hypertriglyceridaemia can cause pancreatitis."},
+{id:"GSA-027",topic:"Splenic trauma",difficulty:"medium",stem:"A 28-year-old man sustains blunt abdominal trauma. He is haemodynamically stable. CT shows AAST grade IV splenic injury with a contrast blush. There are no other injuries requiring laparotomy. Best management in an appropriate trauma centre?",options:{A:"Mandatory splenectomy",B:"NOM with consideration of angioembolisation",C:"Discharge after 6 hours",D:"Diagnostic peritoneal lavage",E:"Laparoscopic splenorrhaphy"},answer:"B",explanation:"Stable patients with high-grade splenic injury can undergo non-operative management in an appropriate centre, with angioembolisation considered for blush/vascular injury."},
+{id:"GSA-028",topic:"Splenic trauma",difficulty:"easy",stem:"A 34-year-old woman has blunt splenic trauma. She becomes hypotensive, remains unstable after transfusion, and has peritonism. Best management?",options:{A:"CT angiography before intervention",B:"Operative management",C:"Ward observation",D:"Delayed ultrasound in 24 hours",E:"Oral antibiotics and bed rest"},answer:"B",explanation:"Persistent haemodynamic instability and peritonism after splenic trauma require operative management."},
+{id:"GSA-029",topic:"Splenic trauma resources",difficulty:"medium",stem:"A 57-year-old man has blunt splenic trauma. CT shows grade III injury and moderate haemoperitoneum. He is stable. The hospital has no interventional radiology and limited HDU capacity. Most appropriate consideration?",options:{A:"NOM is mandatory regardless of local resources",B:"Transfer to a centre with monitoring/IR if NOM planned",C:"Immediate discharge if haemoglobin stable once",D:"Colonoscopy to exclude bowel injury",E:"Avoid CT follow-up under all circumstances"},answer:"B",explanation:"Non-operative management of moderate/severe splenic injury requires monitoring, theatre, blood products and IR availability or transfer pathways."},
+{id:"GSA-030",topic:"Splenic pseudoaneurysm",difficulty:"medium",stem:"A 40-year-old man has splenic trauma managed non-operatively. Repeat CT shows a splenic pseudoaneurysm. He remains stable. Best management?",options:{A:"Ignore as it always resolves",B:"Angioembolisation should be considered",C:"Emergency splenectomy in all cases",D:"Long-term warfarin",E:"Drainage of the pseudoaneurysm"},answer:"B",explanation:"A post-traumatic splenic pseudoaneurysm should prompt consideration of angioembolisation to reduce rupture risk."},
+{id:"GSA-031",topic:"Penetrating splenic trauma",difficulty:"hard",stem:"A 25-year-old man has penetrating left upper quadrant trauma. He is stable. CT shows isolated low-grade splenic injury and no free air or hollow viscus injury. Best management principle?",options:{A:"Mandatory laparotomy for all penetrating splenic trauma",B:"Selective NOM may be considered in an experienced centre",C:"Splenectomy before CT",D:"Angioembolisation is contraindicated",E:"No observation is required after normal observations"},answer:"B",explanation:"Selected stable penetrating splenic injuries may be managed non-operatively in experienced centres if hollow viscus injury is excluded and close observation is available."},
+{id:"GSA-032",topic:"Liver trauma",difficulty:"medium",stem:"A 50-year-old man has blunt liver trauma. He is stable. CT shows AAST grade V liver injury without other abdominal injuries requiring surgery. Best management in a major trauma centre?",options:{A:"Mandatory laparotomy because grade V injury",B:"NOM can be attempted with appropriate monitoring and IR access",C:"Discharge if pain settles",D:"Diagnostic peritoneal lavage",E:"ERCP as first-line treatment"},answer:"B",explanation:"Stable patients with severe liver injury can undergo non-operative management in a suitable centre with monitoring, blood products, theatre and IR access."},
+{id:"GSA-033",topic:"Liver trauma",difficulty:"easy",stem:"A 45-year-old man with liver trauma is haemodynamically unstable despite blood products. FAST is positive. Best initial management?",options:{A:"CT abdomen before any intervention",B:"Operative management with damage-control principles",C:"Ward observation",D:"MRCP",E:"Delayed angioembolisation next day"},answer:"B",explanation:"Unstable liver trauma with positive FAST requires operative management with damage-control principles."},
+{id:"GSA-034",topic:"Delayed hepatic bleeding",difficulty:"medium",stem:"A 38-year-old man has liver trauma managed non-operatively. One week later he develops falling haemoglobin but remains haemodynamically stable. CT suggests delayed hepatic arterial bleeding. Best management?",options:{A:"Angiography and embolisation",B:"Immediate major hepatectomy",C:"Oral tranexamic acid and discharge",D:"ERCP",E:"Percutaneous cholecystostomy"},answer:"A",explanation:"Delayed hepatic arterial bleeding in a stable patient is usually managed first with angiography and embolisation."},
+{id:"GSA-035",topic:"Hepatic pseudoaneurysm",difficulty:"easy",stem:"A 62-year-old man has blunt liver trauma. CT shows hepatic artery pseudoaneurysm during follow-up. He is stable. Best management?",options:{A:"No treatment unless rupture occurs",B:"Angioembolisation",C:"Long-term anticoagulation",D:"Open hepatic resection as first-line",E:"Repeat CT in 12 months"},answer:"B",explanation:"Hepatic artery pseudoaneurysm after trauma should be managed with angioembolisation to prevent rupture."},
+{id:"GSA-036",topic:"Pelvic binder",difficulty:"easy",stem:"A 29-year-old motorcyclist has an open-book pelvic fracture. He is hypotensive and tachycardic. A pelvic binder is applied in the emergency department. Correct binder placement?",options:{A:"Around the iliac crests",B:"Around the greater trochanters",C:"Around the lower abdomen",D:"Around the mid-thighs",E:"Around the lumbar spine"},answer:"B",explanation:"A pelvic binder should be placed around the greater trochanters to reduce pelvic volume and stabilise the ring."},
+{id:"GSA-037",topic:"Pelvic trauma",difficulty:"medium",stem:"A 41-year-old man has pelvic trauma and haemodynamic instability. FAST is negative. Pelvic X-ray shows vertical shear injury. Best early management principle?",options:{A:"CT first in all unstable pelvic injuries",B:"Pelvic haemorrhage control with binder, packing/fixation ± angio/REBOA",C:"Definitive internal fixation before resuscitation",D:"Observation if FAST is negative",E:"Colonoscopy to exclude rectal injury first"},answer:"B",explanation:"Unstable pelvic trauma requires early haemorrhage control using binder, preperitoneal packing, external fixation, angioembolisation and/or REBOA depending setting."},
+{id:"GSA-038",topic:"Pelvic haematoma",difficulty:"medium",stem:"A 76-year-old woman falls and sustains a lateral compression pelvic fracture. She becomes hypotensive. CT shows a large pelvic haematoma but no clear arterial blush. Most appropriate interpretation?",options:{A:"Absence of blush excludes arterial bleeding",B:"Large pelvic haematoma may still indicate arterial injury",C:"Lateral compression injuries never bleed significantly",D:"Pelvic binder is contraindicated in elderly patients",E:"Angiography has no role without blush"},answer:"B",explanation:"Absence of blush does not exclude arterial bleeding. A large pelvic haematoma may still indicate significant arterial injury."},
+{id:"GSA-039",topic:"Urethral injury",difficulty:"easy",stem:"A trauma patient has pelvic fracture, blood at the urethral meatus and perineal haematoma. Best next step before urethral catheterisation?",options:{A:"Forceful catheterisation by senior surgeon",B:"Retrograde urethrogram or appropriate urethral imaging",C:"Immediate oral fluids",D:"Colonoscopy",E:"No urinary drainage until laparotomy"},answer:"B",explanation:"Blood at the meatus and perineal haematoma after pelvic fracture suggest urethral injury. Urethral imaging should precede catheterisation."},
+{id:"GSA-040",topic:"Rectal injury",difficulty:"easy",stem:"A 33-year-old man with pelvic fracture has blood on rectal examination. Best next investigation?",options:{A:"Rigid proctoscopy",B:"Barium enema",C:"Colonoscopy after bowel prep",D:"Ignore unless peritonitis develops",E:"MRI pelvis before resuscitation"},answer:"A",explanation:"Blood on rectal examination after pelvic trauma should prompt rigid proctoscopy to assess for rectal injury."},
+{id:"GSA-041",topic:"Oesophageal foreign body",difficulty:"easy",stem:"A 4-year-old child swallows a button battery. X-ray shows it lodged in the oesophagus. He is drooling but maintaining airway. Best management?",options:{A:"Observe for spontaneous passage",B:"Emergent endoscopic removal",C:"Repeat X-ray in 24 hours",D:"Oral contrast swallow",E:"Laparotomy"},answer:"B",explanation:"Oesophageal button batteries require emergent endoscopic removal due to risk of pressure necrosis, electrical/chemical injury and perforation."},
+{id:"GSA-042",topic:"Fish bone ingestion",difficulty:"medium",stem:"An adult presents after fish bone ingestion with persistent throat pain. Plain films are negative. There is concern about perforation or deep neck complication. Best investigation?",options:{A:"Barium swallow",B:"CT scan",C:"Repeat plain film only",D:"Flexible sigmoidoscopy",E:"Discharge if X-ray negative"},answer:"B",explanation:"CT is the key investigation when fish bone ingestion is suspected with negative plain films but persistent symptoms or concern for perforation/complication."},
+{id:"GSA-043",topic:"Oesophageal perforation",difficulty:"hard",stem:"A 58-year-old man has Boerhaave syndrome diagnosed 10 hours after forceful vomiting. He is stable. CT shows a contained thoracic oesophageal perforation with minimal contamination. Best initial management may include?",options:{A:"Mandatory oesophagectomy",B:"Non-operative or endoscopic management in specialist centre",C:"Oral fluids and discharge",D:"Immediate colon interposition",E:"No antibiotics unless fever develops"},answer:"B",explanation:"Stable patients with early, contained oesophageal perforation and minimal contamination may be considered for non-operative or endoscopic management in a specialist centre."},
+{id:"GSA-044",topic:"Oesophageal perforation",difficulty:"medium",stem:"A 61-year-old woman presents 30 hours after oesophageal perforation with sepsis and free pleural contamination. Best management?",options:{A:"Non-operative management on the ward",B:"Emergency surgery with drainage and repair/diversion as appropriate",C:"Oral antibiotics only",D:"Delayed endoscopy in 6 weeks",E:"Discharge after PPI"},answer:"B",explanation:"Late oesophageal perforation with sepsis and free contamination requires urgent operative management with drainage and repair, diversion or resection as appropriate."},
+{id:"GSA-045",topic:"Caustic ingestion",difficulty:"medium",stem:"A 39-year-old man intentionally ingests a strong alkali. CT shows absence of enhancement of the stomach and distal oesophagus. He is tachycardic with rising lactate. Best management?",options:{A:"Non-operative management because endoscopy is pending",B:"Emergency surgery for transmural necrosis",C:"Induce vomiting",D:"Neutralise with oral acid",E:"Discharge if oral cavity looks normal"},answer:"B",explanation:"Absence of post-contrast enhancement indicates transmural necrosis after caustic ingestion and is an indication for emergency surgery."},
+{id:"GSA-046",topic:"Open abdomen",difficulty:"medium",stem:"A 70-year-old man has septic shock after emergency laparotomy for faecal peritonitis. The bowel is oedematous, vasopressor requirement is rising, and primary fascial closure would be under marked tension. Best operative strategy?",options:{A:"Forced fascial closure",B:"Temporary abdominal closure with planned re-look",C:"Skin closure only and no re-look",D:"Immediate mesh repair",E:"Close and extubate immediately"},answer:"B",explanation:"When fascial closure would be unsafe or under tension in a physiologically deranged patient, temporary abdominal closure with planned re-look is appropriate."},
+{id:"GSA-047",topic:"Closed-loop obstruction",difficulty:"easy",stem:"A 66-year-old woman has closed-loop small bowel obstruction on CT with mesenteric swirl, reduced mural enhancement and lactate 4.1 mmol/L. Best management?",options:{A:"Water-soluble contrast challenge first",B:"Emergency surgery",C:"Outpatient laxatives",D:"Colonoscopy",E:"Repeat CT in 72 hours"},answer:"B",explanation:"Closed-loop obstruction with CT signs of ischaemia and raised lactate is a surgical emergency requiring operative management."},
+{id:"GSA-048",topic:"Colonic ischaemia after AAA repair",difficulty:"medium",stem:"A 74-year-old man develops abdominal pain and bloody diarrhoea after open AAA repair. Lactate is rising and he has peritonism. Most appropriate management?",options:{A:"Flexible sigmoidoscopy only and discharge if mucosa viable",B:"Urgent assessment for colonic ischaemia with surgery if transmural infarction suspected",C:"Treat as haemorrhoids",D:"Oral antibiotics and outpatient review",E:"Elective colonoscopy in 6 weeks"},answer:"B",explanation:"After AAA repair, abdominal pain and bloody diarrhoea suggest colonic ischaemia. Peritonism and rising lactate suggest possible transmural infarction requiring urgent assessment and surgery."},
+{id:"GSA-049",topic:"Damage-control laparotomy",difficulty:"medium",stem:"A 69-year-old man has abdominal sepsis from perforated sigmoid colon. He is hypotensive, acidotic, hypothermic and coagulopathic at laparotomy. Best operative principle?",options:{A:"Definitive anastomosis is mandatory",B:"Damage-control source control may be appropriate",C:"Close without controlling contamination",D:"Avoid antibiotics until cultures return",E:"Perform elective resection after 6 weeks"},answer:"B",explanation:"In severe physiological derangement, abbreviated damage-control surgery with source control and avoidance of risky anastomosis may be appropriate."},
+{id:"GSA-050",topic:"Acute mesenteric ischaemia",difficulty:"easy",stem:"A 64-year-old woman has suspected acute mesenteric ischaemia. She has atrial fibrillation, severe abdominal pain, lactate 5.0 mmol/L and no peritonitis. She is haemodynamically stable. Best next investigation?",options:{A:"Plain abdominal X-ray",B:"CTA abdomen and pelvis",C:"Colonoscopy",D:"Non-contrast ultrasound",E:"Diagnostic laparoscopy before imaging"},answer:"B",explanation:"In stable patients with suspected acute mesenteric ischaemia and no peritonitis, urgent CTA abdomen and pelvis is the key diagnostic test."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
