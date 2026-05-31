@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venous / VTE / Lymphatic Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Venous / VTE / Lymphatic Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"VEN-001",topic:"DVT diagnosis",difficulty:"easy",stem:"A 64-year-old woman presents with unilateral calf swelling and tenderness 10 days after hip replacement. Wells score suggests likely DVT. Best initial investigation?",options:{A:"Compression duplex ultrasound",B:"Plain tibia X-ray",C:"Carotid duplex",D:"D-dimer only",E:"CT head"},answer:"A",explanation:"In likely DVT, compression duplex ultrasound is the first-line diagnostic test. D-dimer is less useful in high-probability or postoperative patients."},
+{id:"VEN-002",topic:"DVT diagnosis",difficulty:"medium",stem:"A 35-year-old woman has mild calf pain after a long flight. Wells score is unlikely and D-dimer is negative. She is clinically well. Best management?",options:{A:"No DVT imaging required",B:"Immediate catheter-directed thrombolysis",C:"IV heparin for 6 months",D:"IVC filter",E:"Venous bypass"},answer:"A",explanation:"In low-probability suspected DVT, a negative D-dimer can exclude DVT without ultrasound."},
+{id:"VEN-003",topic:"Proximal DVT",difficulty:"easy",stem:"Duplex shows non-compressible thrombus extending from the popliteal vein into the femoral vein. Best classification?",options:{A:"Proximal lower-limb DVT",B:"Superficial thrombophlebitis only",C:"Isolated calf DVT",D:"Lymphoedema",E:"Venous malformation"},answer:"A",explanation:"Thrombus involving the popliteal vein or above is proximal DVT and generally requires therapeutic anticoagulation unless contraindicated."},
+{id:"VEN-004",topic:"Isolated distal DVT",difficulty:"medium",stem:"A patient has isolated calf vein DVT in the posterior tibial veins. Symptoms are mild, bleeding risk is high, and there are no high-risk extension features. Best management principle?",options:{A:"Consider serial ultrasound surveillance rather than mandatory anticoagulation",B:"Immediate thrombolysis",C:"IVC filter in all cases",D:"Open thrombectomy",E:"No follow-up"},answer:"A",explanation:"Selected isolated distal DVTs can be managed with serial ultrasound if symptoms and extension risk are low and bleeding risk is significant."},
+{id:"VEN-005",topic:"DVT anticoagulation",difficulty:"easy",stem:"A patient has first episode provoked proximal DVT after major surgery. Bleeding risk is low. Usual minimum duration of anticoagulation?",options:{A:"3 months",B:"3 days",C:"Lifelong in all patients",D:"Until swelling improves only",E:"No anticoagulation"},answer:"A",explanation:"A provoked proximal DVT is usually treated with at least 3 months of anticoagulation, then reassessed."},
+{id:"VEN-006",topic:"Unprovoked DVT",difficulty:"medium",stem:"A 54-year-old man has an unprovoked proximal DVT. He completes 3 months of anticoagulation and has low bleeding risk. Best next step?",options:{A:"Consider extended anticoagulation after shared decision-making",B:"Stop automatically in every patient",C:"IVC filter permanently",D:"Thrombolysis at 3 months",E:"No cancer assessment"},answer:"A",explanation:"Unprovoked proximal DVT has higher recurrence risk. Extended anticoagulation should be considered, balancing bleeding risk and patient preference."},
+{id:"VEN-007",topic:"Cancer-associated thrombosis",difficulty:"medium",stem:"A patient with metastatic pancreatic cancer develops proximal DVT. Renal function is normal and bleeding risk is acceptable. Best anticoagulation principle?",options:{A:"Use cancer-appropriate anticoagulation such as LMWH or selected DOAC",B:"No anticoagulation because cancer is present",C:"Aspirin alone",D:"Thrombolysis in all cancer DVT",E:"Compression alone"},answer:"A",explanation:"Cancer-associated thrombosis requires therapeutic anticoagulation unless contraindicated. LMWH or selected DOACs are used, considering bleeding risk, tumour type and interactions."},
+{id:"VEN-008",topic:"Pregnancy DVT",difficulty:"medium",stem:"A 29-year-old woman at 24 weeks’ gestation has confirmed femoral DVT. Best anticoagulant?",options:{A:"Low-molecular-weight heparin",B:"Warfarin throughout pregnancy",C:"Rivaroxaban",D:"Aspirin only",E:"No treatment until delivery"},answer:"A",explanation:"LMWH is the standard anticoagulant for DVT in pregnancy. Warfarin and DOACs are generally avoided during pregnancy."},
+{id:"VEN-009",topic:"Massive PE",difficulty:"medium",stem:"A 62-year-old patient has acute PE with sustained hypotension, severe hypoxia and right ventricular strain. There is no absolute contraindication. Best treatment principle?",options:{A:"Systemic thrombolysis should be considered",B:"Outpatient aspirin",C:"Compression stockings only",D:"No anticoagulation",E:"Elective duplex in 6 weeks"},answer:"A",explanation:"Massive PE with haemodynamic instability is an indication to consider systemic thrombolysis or catheter/surgical embolectomy depending bleeding risk and local expertise."},
+{id:"VEN-010",topic:"Submassive PE",difficulty:"hard",stem:"A patient has PE with RV strain and positive troponin but is normotensive and oxygenating with low-flow oxygen. Best management?",options:{A:"Anticoagulation with close monitoring; rescue reperfusion if deterioration",B:"Immediate thrombolysis in every case",C:"No treatment",D:"IVC filter as first-line",E:"Open pulmonary embolectomy in all cases"},answer:"A",explanation:"Intermediate-risk PE is usually managed with anticoagulation and close monitoring. Thrombolysis is reserved for haemodynamic deterioration or selected high-risk cases."},
+{id:"VEN-011",topic:"IVC filter",difficulty:"medium",stem:"A patient has acute proximal DVT and recent intracranial haemorrhage, so anticoagulation is absolutely contraindicated. Best additional option?",options:{A:"Temporary IVC filter",B:"Aspirin alone",C:"Compression only with no PE protection",D:"Warfarin loading",E:"No follow-up"},answer:"A",explanation:"An IVC filter is considered when there is acute VTE with an absolute contraindication to anticoagulation. Retrieval should be planned when safe."},
+{id:"VEN-012",topic:"IVC filter retrieval",difficulty:"easy",stem:"A temporary IVC filter was inserted for DVT when anticoagulation was contraindicated. The bleeding risk has now resolved and anticoagulation has restarted. Best plan?",options:{A:"Arrange filter retrieval if no longer indicated",B:"Leave permanently without review",C:"Insert a second filter",D:"Stop anticoagulation because filter exists",E:"Thrombolyse the filter routinely"},answer:"A",explanation:"Retrievable filters should be removed once the indication has resolved to reduce long-term complications."},
+{id:"VEN-013",topic:"Phlegmasia",difficulty:"medium",stem:"A 55-year-old man has extensive iliofemoral DVT with a massively swollen cyanotic painful leg, paraesthesia and reduced capillary refill. Best diagnosis?",options:{A:"Phlegmasia cerulea dolens",B:"Cellulitis only",C:"Chronic venous eczema",D:"Neuropathic ulcer",E:"Lymphangitis carcinomatosa"},answer:"A",explanation:"Phlegmasia cerulea dolens is severe extensive venous thrombosis causing venous outflow obstruction, cyanosis, swelling and threatened limb perfusion."},
+{id:"VEN-014",topic:"Phlegmasia management",difficulty:"hard",stem:"A patient has phlegmasia cerulea dolens with threatened limb viability and low bleeding risk. Best management principle?",options:{A:"Urgent anticoagulation and consideration of thrombus removal",B:"Compression hosiery only",C:"Outpatient DOAC review in 6 weeks",D:"No anticoagulation",E:"Minor toe amputation first"},answer:"A",explanation:"Phlegmasia is limb-threatening. Management includes urgent anticoagulation, resuscitation and consideration of catheter-directed thrombolysis/thrombectomy or surgical thrombectomy."},
+{id:"VEN-015",topic:"Iliofemoral DVT thrombolysis",difficulty:"hard",stem:"A fit 38-year-old has acute iliofemoral DVT for 5 days with severe symptoms, low bleeding risk and good functional status. Best interpretation?",options:{A:"Catheter-directed thrombolysis or thrombectomy may be considered selectively",B:"Thrombolysis is mandatory for all DVT",C:"No anticoagulation is needed",D:"IVC filter replaces all treatment",E:"Compression alone is sufficient"},answer:"A",explanation:"Early thrombus removal may be considered in selected fit patients with severe acute iliofemoral DVT and low bleeding risk to reduce symptoms and possibly post-thrombotic morbidity."},
+{id:"VEN-016",topic:"Post-thrombotic syndrome",difficulty:"medium",stem:"A patient has chronic leg swelling, venous claudication, hyperpigmentation and heaviness 2 years after iliofemoral DVT. Best diagnosis?",options:{A:"Post-thrombotic syndrome",B:"Acute arterial embolus",C:"Charcot foot",D:"Buerger disease",E:"Necrotising fasciitis"},answer:"A",explanation:"Post-thrombotic syndrome is chronic pain, swelling, skin change and venous claudication after DVT due to obstruction and valvular damage."},
+{id:"VEN-017",topic:"May-Thurner",difficulty:"medium",stem:"A 32-year-old woman has recurrent left iliofemoral DVT. Imaging shows compression of the left common iliac vein by the right common iliac artery. Best diagnosis?",options:{A:"May-Thurner syndrome",B:"Nutcracker syndrome",C:"Median arcuate ligament syndrome",D:"Subclavian steal",E:"Klippel-Trenaunay only"},answer:"A",explanation:"May-Thurner syndrome is compression of the left common iliac vein by the right common iliac artery, predisposing to left iliofemoral DVT."},
+{id:"VEN-018",topic:"Iliac venous stenting",difficulty:"medium",stem:"A patient has severe chronic left leg venous claudication and swelling after iliofemoral DVT. Venography and IVUS show tight left common iliac vein obstruction. Best treatment to consider?",options:{A:"Iliac venous stenting",B:"Carotid endarterectomy",C:"Femoro-distal arterial bypass",D:"No treatment ever helps",E:"Inferior mesenteric artery embolisation"},answer:"A",explanation:"Symptomatic iliac venous obstruction can be treated with iliac venous stenting in selected patients, especially when symptoms are severe and anatomy is suitable."},
+{id:"VEN-019",topic:"Venous stent imaging",difficulty:"hard",stem:"A patient is assessed for iliac venous obstruction. Cross-sectional imaging is equivocal but symptoms are severe. Which investigation best characterises luminal area and stenosis during intervention?",options:{A:"Intravascular ultrasound",B:"Plain X-ray",C:"Spirometry",D:"ABPI only",E:"Carotid stump pressure"},answer:"A",explanation:"IVUS is highly useful in iliac venous intervention because it defines stenosis, luminal area, landing zones and stent sizing better than venography alone."},
+{id:"VEN-020",topic:"Superficial thrombophlebitis",difficulty:"easy",stem:"A 56-year-old man has painful thrombosed great saphenous vein in the thigh. Duplex shows thrombus 2 cm from the saphenofemoral junction. Best management principle?",options:{A:"Treat as high-risk superficial vein thrombosis with therapeutic or intermediate anticoagulation and close follow-up",B:"Ignore because it is superficial",C:"Immediate carotid surgery",D:"Compression only with no imaging",E:"No anticoagulation if painful"},answer:"A",explanation:"Superficial venous thrombosis close to the deep venous junction has higher risk of extension into the deep system and requires anticoagulation and surveillance."},
+{id:"VEN-021",topic:"Superficial vein thrombosis",difficulty:"medium",stem:"A patient has 8 cm thrombosis of the below-knee great saphenous vein, more than 10 cm from the saphenofemoral junction, with no DVT. Best treatment?",options:{A:"Fondaparinux or LMWH prophylactic-dose anticoagulation may be used",B:"Emergency thrombectomy in all cases",C:"No analgesia or mobilisation",D:"IVC filter",E:"Major amputation"},answer:"A",explanation:"Extensive symptomatic superficial vein thrombosis away from the junction is often treated with prophylactic-dose anticoagulation, compression and analgesia."},
+{id:"VEN-022",topic:"Varicose vein referral",difficulty:"easy",stem:"A 48-year-old woman has symptomatic varicose veins with aching, heaviness and ankle swelling. Duplex confirms great saphenous reflux. Best treatment principle?",options:{A:"Offer endovenous treatment if suitable",B:"Reassure that symptomatic varicose veins are cosmetic only",C:"No duplex required ever",D:"Lifelong antibiotics",E:"Carotid stenting"},answer:"A",explanation:"Symptomatic truncal reflux is appropriately treated with endovenous ablation if suitable, with alternatives including foam or surgery depending anatomy."},
+{id:"VEN-023",topic:"CEAP",difficulty:"easy",stem:"A patient has venous eczema and hyperpigmentation around the gaiter region but no active or healed ulcer. Best CEAP clinical class?",options:{A:"C4",B:"C1",C:"C2",D:"C6",E:"C0"},answer:"A",explanation:"Skin changes such as pigmentation and eczema are CEAP C4. Active ulcer is C6 and healed ulcer is C5."},
+{id:"VEN-024",topic:"Venous ulcer",difficulty:"easy",stem:"A patient has an active medial gaiter ulcer with venous reflux on duplex and ABPI 0.95. Best core management?",options:{A:"Compression therapy and treatment of superficial reflux if suitable",B:"No compression because ulcer is present",C:"Emergency arterial bypass",D:"Oral antibiotics until healed despite no infection",E:"Below-knee amputation"},answer:"A",explanation:"Venous leg ulcer care includes compression when arterial supply is adequate and treatment of superficial reflux where suitable to improve healing and reduce recurrence."},
+{id:"VEN-025",topic:"Compression contraindication",difficulty:"medium",stem:"A patient has a venous ulcer but ABPI is 0.45 with monophasic pedal Dopplers. Best management principle?",options:{A:"Avoid high compression and assess arterial disease",B:"Apply full compression immediately",C:"Ignore ABPI",D:"No vascular referral",E:"Treat only with topical steroids"},answer:"A",explanation:"Severe arterial disease is a contraindication to high compression. Arterial assessment and revascularisation consideration are needed."},
+{id:"VEN-026",topic:"EVLA complication",difficulty:"medium",stem:"Five days after endovenous laser ablation of the great saphenous vein, duplex shows thrombus extending to the saphenofemoral junction but not into the common femoral vein. Best classification concept?",options:{A:"Endothermal heat-induced thrombosis close to the junction",B:"Carotid occlusion",C:"Type II endoleak",D:"Deep venous arterialisation",E:"Compartment syndrome"},answer:"A",explanation:"Thrombus propagation towards or into the deep system after endovenous thermal ablation is described as endothermal heat-induced thrombosis and managed according to extension."},
+{id:"VEN-027",topic:"EHIT management",difficulty:"hard",stem:"After GSV ablation, duplex shows thrombus protruding into the common femoral vein but occupying less than 50% of the lumen. The patient is well. Best management principle?",options:{A:"Anticoagulation or close surveillance according to local EHIT protocol",B:"Ignore and discharge",C:"Emergency laparotomy",D:"Carotid endarterectomy",E:"Major amputation"},answer:"A",explanation:"EHIT extending into the deep vein requires active management, commonly anticoagulation and/or close duplex surveillance depending degree of luminal involvement and protocol."},
+{id:"VEN-028",topic:"Foam sclerotherapy",difficulty:"medium",stem:"A patient undergoes foam sclerotherapy and develops transient visual disturbance and migraine-like symptoms shortly afterwards. Best explanation?",options:{A:"Transient neurological phenomenon associated with foam passage, more likely with right-to-left shunt",B:"Definite major stroke in every case",C:"Normal cellulitis",D:"Venous ulcer healing",E:"Aortic rupture"},answer:"A",explanation:"Foam sclerotherapy can rarely cause transient visual or migraine-like neurological symptoms, potentially related to microbubble passage, especially with right-to-left shunt."},
+{id:"VEN-029",topic:"Recurrent varicose veins",difficulty:"medium",stem:"A patient has recurrent varicose veins after prior high tie and stripping. Duplex shows neovascularisation in the groin and residual refluxing tributaries. Best management principle?",options:{A:"Treat according to duplex-defined reflux pattern",B:"Operate blindly through the old groin scar",C:"No duplex is needed",D:"Anticoagulate lifelong",E:"Carotid duplex first"},answer:"A",explanation:"Recurrent varicose veins require duplex mapping to define the source of reflux and plan targeted treatment."},
+{id:"VEN-030",topic:"Pelvic venous disorder",difficulty:"medium",stem:"A 36-year-old multiparous woman has chronic pelvic pain worse on standing, dyspareunia and vulval varicosities. Duplex and MRV suggest ovarian vein reflux. Best diagnosis?",options:{A:"Pelvic venous disorder",B:"Acute appendicitis",C:"Aortoiliac occlusion",D:"Popliteal aneurysm",E:"Necrotising fasciitis"},answer:"A",explanation:"Chronic pelvic pain with vulval varices and ovarian/internal iliac venous reflux suggests pelvic venous disorder."},
+{id:"VEN-031",topic:"Pelvic vein embolisation",difficulty:"medium",stem:"A patient has symptomatic pelvic venous disorder with ovarian vein reflux and vulval varices. Conservative measures have failed. Best treatment to consider?",options:{A:"Ovarian/internal iliac vein embolisation according to reflux pattern",B:"Carotid endarterectomy",C:"No treatment ever helps",D:"Above-knee amputation",E:"Inferior vena cava filter"},answer:"A",explanation:"Selected symptomatic pelvic venous reflux can be treated with ovarian or internal iliac vein embolisation, tailored to imaging findings."},
+{id:"VEN-032",topic:"Venous thoracic outlet",difficulty:"medium",stem:"A 24-year-old weightlifter develops acute arm swelling and cyanosis. Duplex shows axillosubclavian vein thrombosis. Best diagnosis?",options:{A:"Paget-Schroetter syndrome",B:"Subclavian steal",C:"Carotid body tumour",D:"Buerger disease",E:"Lymphangitis"},answer:"A",explanation:"Effort thrombosis of the axillosubclavian vein in a young active patient is Paget-Schroetter syndrome, a form of venous thoracic outlet syndrome."},
+{id:"VEN-033",topic:"Paget-Schroetter management",difficulty:"hard",stem:"A 25-year-old rower presents within 48 hours of axillosubclavian DVT with severe arm swelling and low bleeding risk. Best management principle?",options:{A:"Anticoagulation with consideration of early thrombus removal and thoracic outlet decompression pathway",B:"Compression glove only",C:"No anticoagulation",D:"Carotid stenting",E:"Immediate below-elbow amputation"},answer:"A",explanation:"Acute effort thrombosis may be treated with anticoagulation, selected catheter-directed thrombolysis/thrombectomy, and later first-rib decompression if venous TOS is confirmed."},
+{id:"VEN-034",topic:"IVC thrombosis",difficulty:"hard",stem:"A patient has bilateral leg swelling and extensive iliocaval thrombosis. There is no malignancy-related contraindication and symptoms are severe. Best management principle?",options:{A:"Therapeutic anticoagulation with consideration of endovascular reconstruction in selected severe cases",B:"Compression only",C:"No imaging",D:"Carotid endarterectomy",E:"Oral antibiotics"},answer:"A",explanation:"Iliocaval thrombosis requires anticoagulation; selected patients with severe symptoms or chronic obstruction may benefit from endovascular recanalisation and stenting."},
+{id:"VEN-035",topic:"Nutcracker syndrome",difficulty:"medium",stem:"A young woman has left flank pain and haematuria. Imaging shows compression of the left renal vein between the SMA and aorta with gonadal venous reflux. Best diagnosis?",options:{A:"Nutcracker syndrome",B:"May-Thurner syndrome",C:"Median arcuate ligament syndrome",D:"Subclavian steal",E:"Leriche syndrome"},answer:"A",explanation:"Nutcracker syndrome is compression of the left renal vein, commonly between the SMA and aorta, causing renal venous hypertension, haematuria and flank pain."},
+{id:"VEN-036",topic:"Lymphoedema diagnosis",difficulty:"easy",stem:"A patient has chronic non-pitting leg swelling, skin thickening and a positive Stemmer sign. Venous duplex excludes DVT. Best diagnosis?",options:{A:"Lymphoedema",B:"Acute arterial embolus",C:"Cellulitis only",D:"Intermittent claudication",E:"Ruptured AAA"},answer:"A",explanation:"Chronic swelling with skin thickening and positive Stemmer sign is typical of lymphoedema."},
+{id:"VEN-037",topic:"Primary lymphoedema",difficulty:"medium",stem:"A 17-year-old girl has slowly progressive unilateral leg swelling since puberty with no DVT, surgery, malignancy or radiotherapy. Best classification?",options:{A:"Primary lymphoedema",B:"Secondary lymphoedema from cancer treatment",C:"Acute limb ischaemia",D:"Venous ulcer",E:"Cellulitis only"},answer:"A",explanation:"Lymphoedema presenting without an acquired cause, particularly around puberty, suggests primary lymphoedema."},
+{id:"VEN-038",topic:"Secondary lymphoedema",difficulty:"easy",stem:"A woman develops chronic unilateral leg swelling after pelvic lymph node dissection and radiotherapy for cancer. Best diagnosis?",options:{A:"Secondary lymphoedema",B:"Popliteal entrapment",C:"Buerger disease",D:"Aortoiliac occlusion",E:"Carotid stenosis"},answer:"A",explanation:"Surgery and radiotherapy damaging lymphatic drainage are common causes of secondary lymphoedema."},
+{id:"VEN-039",topic:"Lymphoedema management",difficulty:"easy",stem:"Best first-line management for established lower-limb lymphoedema?",options:{A:"Complex decongestive therapy with compression, skin care, exercise and manual drainage where appropriate",B:"Long-term diuretics as sole therapy",C:"No skin care",D:"Arterial bypass",E:"Carotid stenting"},answer:"A",explanation:"Mainstay lymphoedema treatment is complex decongestive therapy: compression, skin care, exercise, weight management and manual lymphatic drainage where appropriate."},
+{id:"VEN-040",topic:"Lymphoedema cellulitis",difficulty:"medium",stem:"A patient with chronic lymphoedema has recurrent cellulitis episodes. Best preventive principle?",options:{A:"Optimise skin care and compression; consider antibiotic prophylaxis if recurrent",B:"Stop all compression permanently",C:"Avoid treating fungal toe-web infection",D:"No antibiotics during cellulitis",E:"Arterial thrombolysis"},answer:"A",explanation:"Recurrent cellulitis in lymphoedema is reduced by skin care, treatment of entry points, compression when tolerated and prophylactic antibiotics in selected recurrent cases."},
+{id:"VEN-041",topic:"Lipoedema",difficulty:"medium",stem:"A woman has symmetrical painful enlargement of both legs sparing the feet, easy bruising and no Stemmer sign. Best diagnosis?",options:{A:"Lipoedema",B:"Primary lymphoedema",C:"Acute DVT",D:"Critical limb ischaemia",E:"Venous gangrene"},answer:"A",explanation:"Lipoedema causes symmetrical painful fat deposition, typically sparing the feet, with easy bruising and negative Stemmer sign."},
+{id:"VEN-042",topic:"Vascular malformation",difficulty:"medium",stem:"A young adult has a congenital bluish compressible calf lesion that enlarges with dependency. MRI shows slow-flow venous channels. Best diagnosis?",options:{A:"Venous malformation",B:"Infantile haemangioma",C:"Carotid stenosis",D:"Aortic dissection",E:"Cellulitis"},answer:"A",explanation:"A congenital compressible bluish lesion with slow-flow venous channels on MRI is a venous malformation."},
+{id:"VEN-043",topic:"AV malformation",difficulty:"medium",stem:"A teenager has a warm pulsatile lower-limb vascular lesion with bruit, thrill and overgrowth. MRI/MRA shows high-flow arteriovenous shunting. Best diagnosis?",options:{A:"Arteriovenous malformation",B:"Simple lymphoedema",C:"Venous ulcer",D:"DVT",E:"Charcot foot"},answer:"A",explanation:"Warmth, pulsatility, thrill/bruit and high-flow shunting indicate an arteriovenous malformation."},
+{id:"VEN-044",topic:"Klippel-Trenaunay",difficulty:"medium",stem:"A patient has capillary malformation, lateral limb varicosities and limb overgrowth without high-flow shunting. Best diagnosis?",options:{A:"Klippel-Trenaunay syndrome",B:"Parkes Weber syndrome",C:"Buerger disease",D:"May-Thurner syndrome",E:"Subclavian steal"},answer:"A",explanation:"Klippel-Trenaunay syndrome classically includes capillary malformation, venous malformation/varicosities and limb overgrowth without high-flow AV shunting."},
+{id:"VEN-045",topic:"Parkes Weber",difficulty:"medium",stem:"A child has capillary stain, limb overgrowth, warmth and multiple high-flow arteriovenous fistulae. Best diagnosis?",options:{A:"Parkes Weber syndrome",B:"Klippel-Trenaunay syndrome",C:"Lipoedema",D:"Post-thrombotic syndrome",E:"Raynaud phenomenon"},answer:"A",explanation:"Parkes Weber includes limb overgrowth and capillary stain with high-flow arteriovenous fistulae, unlike classic Klippel-Trenaunay."},
+{id:"VEN-046",topic:"Venous malformation treatment",difficulty:"medium",stem:"A patient has a painful symptomatic venous malformation confirmed on MRI. Best treatment to consider in a specialist vascular anomalies MDT?",options:{A:"Image-guided sclerotherapy",B:"Carotid endarterectomy",C:"Long-term antibiotics only",D:"No imaging before excision",E:"Compression is contraindicated in all cases"},answer:"A",explanation:"Symptomatic venous malformations are often managed with compression and image-guided sclerotherapy, with surgery selected for specific lesions."},
+{id:"VEN-047",topic:"High-flow malformation",difficulty:"hard",stem:"A patient has a high-flow AV malformation with ulceration and bleeding. Best management principle?",options:{A:"Specialist MDT planning with staged embolisation and/or surgery; avoid incomplete casual excision",B:"Blind excision in clinic",C:"Compression only forever",D:"No imaging",E:"Anticoagulation cures the lesion"},answer:"A",explanation:"High-flow AVMs are complex and can worsen after incomplete treatment. Specialist MDT planning with staged embolisation and surgery is required."},
+{id:"VEN-048",topic:"DOAC reversal",difficulty:"medium",stem:"A patient on apixaban presents with life-threatening bleeding. Best reversal principle?",options:{A:"Use specific reversal or prothrombin complex concentrate according to availability and protocol",B:"Give thrombolysis",C:"Ignore anticoagulation",D:"Aspirin reversal only",E:"Compression stockings"},answer:"A",explanation:"Life-threatening bleeding on factor Xa inhibitors requires urgent reversal according to local protocol, using andexanet alfa where available/appropriate or PCC in many settings."},
+{id:"VEN-049",topic:"HIT",difficulty:"medium",stem:"A patient treated with heparin for DVT has platelet count fall by more than 50% on day 7 with new thrombosis. HIT is suspected. Best anticoagulation principle?",options:{A:"Stop heparin and start a non-heparin anticoagulant",B:"Increase heparin dose",C:"Stop all anticoagulation permanently",D:"Give platelet transfusion routinely",E:"Use LMWH because it is not heparin-related"},answer:"A",explanation:"Suspected HIT with thrombosis requires stopping all heparin products and starting a non-heparin anticoagulant while testing is arranged."},
+{id:"VEN-050",topic:"VTE prophylaxis",difficulty:"easy",stem:"A high-risk vascular surgery inpatient has reduced mobility but no active bleeding. Best VTE prevention principle?",options:{A:"Risk assessment and pharmacological prophylaxis plus mechanical measures where appropriate",B:"No prophylaxis in vascular patients",C:"Aspirin alone for all VTE prophylaxis",D:"IVC filter for every inpatient",E:"Bed rest without anticoagulation"},answer:"A",explanation:"Hospitalised surgical patients require VTE and bleeding risk assessment. High-risk patients generally receive pharmacological prophylaxis, with mechanical measures where appropriate."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
