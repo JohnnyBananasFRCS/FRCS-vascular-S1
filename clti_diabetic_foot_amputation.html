@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLTI / Diabetic Foot / Amputation Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>CLTI / Diabetic Foot / Amputation Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"CLT-001",topic:"CLTI definition",difficulty:"easy",stem:"A 74-year-old man has 4 weeks of forefoot rest pain requiring opiate analgesia. Toe pressure is 24 mmHg and duplex shows multilevel femoropopliteal and tibial disease. Best classification?",options:{A:"Intermittent claudication",B:"Chronic limb-threatening ischaemia",C:"Acute limb ischaemia",D:"Venous ulceration",E:"Complex regional pain syndrome"},answer:"B",explanation:"CLTI is chronic ischaemic rest pain, tissue loss or gangrene with objective evidence of arterial disease. A low toe pressure supports severe limb ischaemia."},
+{id:"CLT-002",topic:"Haemodynamic assessment",difficulty:"medium",stem:"A 68-year-old diabetic patient has a plantar ulcer. ABPI is 1.35 bilaterally. Pedal pulses are not palpable. Best next bedside vascular assessment?",options:{A:"Assume perfusion is normal",B:"Toe pressure or toe-brachial index",C:"D-dimer",D:"Carotid duplex",E:"No further vascular assessment"},answer:"B",explanation:"In diabetes, medial arterial calcification can make ABPI falsely elevated. Toe pressure or toe-brachial index is more useful for foot perfusion assessment."},
+{id:"CLT-003",topic:"Toe pressure",difficulty:"easy",stem:"A patient with tissue loss has toe pressure 18 mmHg and monophasic pedal Doppler signals. Best interpretation?",options:{A:"Normal limb perfusion",B:"Severe ischaemia likely to impair healing",C:"Purely neuropathic ulcer",D:"Venous hypertension only",E:"No arterial imaging is needed"},answer:"B",explanation:"Very low toe pressure with monophasic pedal signals indicates severe ischaemia and poor healing potential without revascularisation if feasible."},
+{id:"CLT-004",topic:"WIfI",difficulty:"medium",stem:"A 70-year-old diabetic man has a 2 cm forefoot ulcer, toe pressure 25 mmHg, and mild cellulitis limited to the skin. Which system best integrates wound, ischaemia and infection to estimate limb threat?",options:{A:"Rutherford acute limb ischaemia",B:"WIfI classification",C:"CHA2DS2-VASc",D:"Forrest classification",E:"Glasgow aneurysm score"},answer:"B",explanation:"WIfI classifies Wound, Ischaemia and foot Infection to stage limb threat and estimate benefit from revascularisation in CLTI."},
+{id:"CLT-005",topic:"GLASS",difficulty:"medium",stem:"A patient with CLTI has CTA showing long-segment SFA occlusion, diseased popliteal artery and reconstitution of the posterior tibial artery into the foot. Which concept helps describe the anatomical complexity of the preferred target arterial path?",options:{A:"GLASS staging",B:"Forrest classification",C:"Child-Pugh score",D:"Bismuth classification",E:"Boey score"},answer:"A",explanation:"GLASS describes infrainguinal arterial anatomy and complexity of the target arterial path in CLTI, supporting revascularisation planning."},
+{id:"CLT-006",topic:"PLAN framework",difficulty:"medium",stem:"A frail 86-year-old woman with CLTI is being discussed at MDT. The team considers her operative risk, severity of limb threat and infrainguinal anatomy. Which framework does this reflect?",options:{A:"PLAN: patient risk, limb severity and anatomic complexity",B:"ABCDE trauma survey",C:"Forrest ulcer grading",D:"HAS-BLED",E:"TNM staging"},answer:"A",explanation:"The Global Vascular Guidelines use the PLAN framework: Patient risk, Limb severity and ANatomic complexity."},
+{id:"CLT-007",topic:"Best medical therapy",difficulty:"easy",stem:"A 65-year-old man with CLTI is awaiting angiography. He smokes and is not on vascular risk medication. Which is most appropriate?",options:{A:"No medical therapy until after revascularisation",B:"Antiplatelet, high-intensity statin, smoking cessation and risk-factor optimisation",C:"Stop all antiplatelets because surgery is possible",D:"Long-term antibiotics without infection",E:"Bed rest only"},answer:"B",explanation:"Best medical therapy is essential in CLTI and includes antiplatelet therapy, statin, smoking cessation, diabetes and blood pressure optimisation."},
+{id:"CLT-008",topic:"CLTI imaging",difficulty:"easy",stem:"A patient has CLTI with tissue loss and abnormal toe pressures. Duplex suggests multilevel disease but distal targets are unclear. Best next imaging to plan revascularisation?",options:{A:"CTA or MRA with runoff, depending renal function and local practice",B:"Chest X-ray",C:"Plain foot X-ray only",D:"No imaging before amputation",E:"Colonoscopy"},answer:"A",explanation:"Cross-sectional angiographic imaging with runoff is commonly used to plan revascularisation when duplex is insufficient, tailored to renal function and local resources."},
+{id:"CLT-009",topic:"Renal impairment imaging",difficulty:"medium",stem:"A 72-year-old man with CLTI has eGFR 18 and a plantar ulcer. Revascularisation is being considered. What is the best principle?",options:{A:"No arterial imaging is possible",B:"Use a renal-sparing imaging strategy such as duplex-first, low-contrast CTA, CO2 angiography or non-contrast MRA as appropriate",C:"Give unlimited iodinated contrast",D:"Proceed directly to major amputation in all cases",E:"Use D-dimer to plan bypass"},answer:"B",explanation:"Severe renal impairment does not preclude imaging, but a renal-sparing approach should be used, balancing limb salvage against kidney risk."},
+{id:"CLT-010",topic:"Diabetic foot sepsis",difficulty:"easy",stem:"A diabetic patient presents with spreading foot infection, fever, crepitus and gas in the soft tissues on X-ray. Pedal pulses are absent. Best immediate management?",options:{A:"Delay all treatment until elective angiography",B:"Urgent source control, broad-spectrum antibiotics and vascular assessment",C:"Compression bandaging only",D:"Outpatient oral antibiotics",E:"No debridement because pulses are absent"},answer:"B",explanation:"Severe diabetic foot infection with gas requires urgent surgical source control and antibiotics. Vascular assessment and revascularisation planning follow in parallel."},
+{id:"CLT-011",topic:"Osteomyelitis",difficulty:"medium",stem:"A 63-year-old diabetic man has a chronic ulcer over the first metatarsal head. Probe-to-bone test is positive and X-ray shows cortical erosion. Best diagnosis?",options:{A:"Osteomyelitis",B:"Acute limb ischaemia",C:"Cellulitis only",D:"Venous eczema",E:"Gout by definition"},answer:"A",explanation:"A chronic diabetic foot ulcer with positive probe-to-bone and bony erosion is highly suggestive of osteomyelitis."},
+{id:"CLT-012",topic:"Charcot foot",difficulty:"medium",stem:"A 58-year-old diabetic woman has a warm swollen midfoot with minimal pain. Pulses are present. X-ray shows midfoot collapse and fragmentation. CRP is normal. Best diagnosis?",options:{A:"Acute Charcot neuroarthropathy",B:"Necrotising fasciitis",C:"Acute embolus",D:"Popliteal aneurysm",E:"Venous gangrene"},answer:"A",explanation:"A warm swollen relatively painless foot with neuropathy and midfoot fragmentation/collapse is typical of Charcot neuroarthropathy."},
+{id:"CLT-013",topic:"Neuropathic ulcer",difficulty:"medium",stem:"A diabetic patient has a painless plantar ulcer under the first metatarsal head. Pulses are palpable, toe pressure is 80 mmHg and there is callus around the ulcer. Best primary mechanism?",options:{A:"Neuropathic pressure ulceration",B:"Aortoiliac occlusion",C:"Acute venous thrombosis",D:"Blue toe syndrome",E:"Buerger’s disease"},answer:"A",explanation:"A painless plantar pressure ulcer with callus and adequate perfusion is typical of neuropathic ulceration."},
+{id:"CLT-014",topic:"Ischaemic ulcer",difficulty:"easy",stem:"A 76-year-old smoker has a painful punched-out ulcer on the lateral fifth toe. Toe pressure is 22 mmHg and pedal Dopplers are monophasic. Best primary mechanism?",options:{A:"Arterial ischaemia",B:"Pure venous hypertension",C:"Neuropathic pressure only",D:"Contact dermatitis",E:"Lymphoedema"},answer:"A",explanation:"Painful distal toe ulceration with low toe pressure and monophasic signals is most consistent with arterial ischaemia."},
+{id:"CLT-015",topic:"Infection before revascularisation",difficulty:"medium",stem:"A diabetic patient has CLTI and wet gangrene of two toes with spreading cellulitis and systemic sepsis. CTA shows treatable femoropopliteal disease. Best sequence?",options:{A:"Elective bypass in 3 months",B:"Immediate infection source control and antibiotics, with early revascularisation planning",C:"No debridement until after 6 weeks of antibiotics",D:"Compression hosiery",E:"Discharge with analgesia"},answer:"B",explanation:"Sepsis from wet gangrene requires urgent source control and antibiotics. Revascularisation should be planned early to support healing once infection is controlled."},
+{id:"CLT-016",topic:"Dry gangrene",difficulty:"medium",stem:"A 74-year-old man has dry gangrene of the tip of the great toe, no cellulitis, toe pressure 20 mmHg and femoropopliteal disease suitable for angioplasty. Best management principle?",options:{A:"Allow autoamputation without vascular assessment",B:"Revascularisation if feasible before definitive minor amputation",C:"Immediate major amputation in all cases",D:"Broad-spectrum IV antibiotics for 6 months",E:"Compression bandaging"},answer:"B",explanation:"In dry gangrene without sepsis, revascularisation before minor amputation often improves healing potential."},
+{id:"CLT-017",topic:"Endovascular-first",difficulty:"medium",stem:"A frail 82-year-old woman has tissue loss, short SFA stenosis and single-vessel posterior tibial runoff to the foot. She has no suitable vein and high surgical risk. Best revascularisation approach?",options:{A:"Endovascular treatment is reasonable",B:"Mandatory femoro-distal bypass",C:"Primary above-knee amputation",D:"No medical therapy",E:"Lumbar sympathectomy first-line"},answer:"A",explanation:"In high-risk patients with suitable anatomy, endovascular treatment is often reasonable, especially where surgical bypass conduit is poor or absent."},
+{id:"CLT-018",topic:"Bypass-first",difficulty:"medium",stem:"A 61-year-old fit man has CLTI with extensive femoropopliteal occlusion, a good below-knee popliteal/distal target and good ipsilateral long saphenous vein. Best durable strategy to consider?",options:{A:"Autologous vein bypass",B:"No revascularisation",C:"Primary major amputation in all fit patients",D:"Lumbar sympathectomy",E:"Long-term antibiotics alone"},answer:"A",explanation:"Fit patients with advanced limb threat, complex disease, good target and good vein are often strong candidates for autologous vein bypass."},
+{id:"CLT-019",topic:"Conduit choice",difficulty:"easy",stem:"A femoro-distal bypass is planned for CLTI. Which conduit is generally preferred when available?",options:{A:"Ipsilateral great saphenous vein",B:"Dacron graft to pedal artery",C:"Umbilical vein in all cases",D:"Synthetic graft without antiplatelet therapy",E:"Cryopreserved artery as first-line in every case"},answer:"A",explanation:"Autologous great saphenous vein is generally the preferred conduit for infrainguinal bypass, especially to below-knee or distal targets."},
+{id:"CLT-020",topic:"Spliced vein",difficulty:"medium",stem:"A patient needs distal bypass for CLTI. Ipsilateral great saphenous vein is too short, but arm vein and contralateral vein segments are available. Best interpretation?",options:{A:"Bypass is impossible without a single continuous vein",B:"Spliced autologous vein may be considered",C:"Only Dacron is suitable below knee",D:"Use no conduit and close",E:"Antibiotics replace bypass"},answer:"B",explanation:"When a single adequate vein is unavailable, spliced autologous vein can be considered for distal bypass if quality is acceptable."},
+{id:"CLT-021",topic:"Prosthetic bypass",difficulty:"medium",stem:"A patient with CLTI needs below-knee bypass but has no usable vein. A prosthetic graft is considered. Best interpretation?",options:{A:"Prosthetic grafts always have better patency than vein",B:"Prosthetic bypass may be used selectively but has poorer distal patency than vein",C:"Prosthetic grafts cannot be infected",D:"No antithrombotic therapy is relevant",E:"Prosthetic grafts require no surveillance"},answer:"B",explanation:"Prosthetic bypass may be used when no vein is available, but outcomes are generally inferior for distal targets compared with autologous vein."},
+{id:"CLT-022",topic:"Target artery",difficulty:"hard",stem:"A diabetic patient has a plantar forefoot ulcer. Angiography shows occluded anterior tibial and peroneal arteries, with posterior tibial reconstitution supplying the plantar arch. Best bypass target if vein is available?",options:{A:"Posterior tibial artery",B:"Occluded anterior tibial without outflow",C:"External iliac artery only",D:"Inferior mesenteric artery",E:"Contralateral popliteal artery"},answer:"A",explanation:"The target should provide in-line flow to the wound angiosome where feasible. Posterior tibial supply to the plantar arch is appropriate for plantar forefoot tissue loss."},
+{id:"CLT-023",topic:"Angiosome",difficulty:"hard",stem:"A patient has an ischaemic heel ulcer. Angiography shows peroneal-only runoff with a large calcaneal branch and no reconstructible posterior tibial artery. Best interpretation?",options:{A:"Revascularisation is pointless unless the posterior tibial artery is patent",B:"Peroneal revascularisation may still support heel healing via calcaneal collaterals",C:"Heel ulcers always require above-knee amputation",D:"Only venous surgery is needed",E:"Angiosomes are never relevant"},answer:"B",explanation:"Direct angiosome revascularisation is desirable but not always possible. Peroneal flow via calcaneal branches may support heel healing when posterior tibial reconstruction is not feasible."},
+{id:"CLT-024",topic:"Inflow disease",difficulty:"medium",stem:"A man has CLTI with rest pain. CTA shows severe common iliac stenosis and mild distal tibial disease with preserved pedal arch. Best first revascularisation target?",options:{A:"Treat inflow disease",B:"Pedal bypass first in all cases",C:"Major amputation",D:"No intervention because tibial disease is mild",E:"Lumbar sympathectomy"},answer:"A",explanation:"Significant inflow disease should be corrected first. Inflow-only treatment may relieve rest pain and improve perfusion when distal disease is not the main limitation."},
+{id:"CLT-025",topic:"Common femoral disease",difficulty:"medium",stem:"A patient with CLTI has bulky calcific common femoral bifurcation disease involving the profunda origin. Best treatment in a fit patient?",options:{A:"Common femoral endarterectomy with profundaplasty",B:"Compression therapy alone",C:"Carotid stenting",D:"No treatment because CFA disease is benign",E:"Long-term thrombolysis"},answer:"A",explanation:"Bulky common femoral bifurcation disease, especially involving the profunda, is usually best treated with open common femoral endarterectomy and patch/profundaplasty."},
+{id:"CLT-026",topic:"Profunda femoris",difficulty:"medium",stem:"A patient has SFA occlusion and CLTI. CTA shows severe profunda origin stenosis with otherwise reasonable profunda collaterals. Why is profunda treatment important?",options:{A:"The profunda is irrelevant in limb perfusion",B:"Profunda flow can be critical collateral supply to the limb",C:"It only supplies the kidney",D:"It prevents carotid stroke",E:"It drains venous blood"},answer:"B",explanation:"The profunda femoris is a key collateral pathway in femoropopliteal occlusive disease and may be crucial for limb perfusion."},
+{id:"CLT-027",topic:"Hybrid treatment",difficulty:"medium",stem:"A patient has CLTI with bulky common femoral disease and long SFA stenosis. The profunda origin is involved. Best approach to consider?",options:{A:"Hybrid common femoral endarterectomy and endovascular SFA treatment",B:"No treatment because disease is multilevel",C:"Only tibial amputation",D:"Carotid endarterectomy",E:"Compression bandaging"},answer:"A",explanation:"Hybrid treatment is useful for multilevel disease, combining open common femoral endarterectomy with endovascular treatment of iliac or SFA lesions."},
+{id:"CLT-028",topic:"Bypass surveillance",difficulty:"medium",stem:"Six months after femoro-posterior tibial vein bypass, duplex shows focal graft PSV 420 cm/s, velocity ratio 4.5, and low distal graft velocity. The patient is asymptomatic. Best management?",options:{A:"Ignore because he is asymptomatic",B:"Investigate and treat a significant graft stenosis to prevent occlusion",C:"Stop antiplatelet therapy",D:"Major amputation",E:"Discharge from follow-up"},answer:"B",explanation:"A high-grade vein graft stenosis threatens graft patency and should be investigated and treated even if asymptomatic."},
+{id:"CLT-029",topic:"Bypass graft occlusion",difficulty:"medium",stem:"A patient presents with acute pain 2 months after femoro-distal bypass. The graft pulse is absent and duplex confirms graft occlusion. The foot is viable but threatened. Best principle?",options:{A:"Urgent assessment for graft salvage and limb revascularisation",B:"Routine clinic review in 6 months",C:"No treatment because the graft was distal",D:"Compression therapy only",E:"Stop all analgesia"},answer:"A",explanation:"Early bypass graft occlusion in a threatened but viable limb requires urgent assessment for thrombectomy, thrombolysis, revision or alternative revascularisation."},
+{id:"CLT-030",topic:"Failed endovascular therapy",difficulty:"hard",stem:"A 66-year-old fit man with CLTI has failed repeated SFA angioplasty with recurrent occlusion. He has good saphenous vein and a below-knee popliteal target. Best next durable option?",options:{A:"Femoro-below-knee popliteal vein bypass",B:"Repeat angioplasty indefinitely",C:"Primary above-knee amputation",D:"No antiplatelet therapy",E:"Lumbar sympathectomy"},answer:"A",explanation:"In a fit patient with suitable vein and target after failed endovascular therapy, surgical vein bypass is a durable option."},
+{id:"CLT-031",topic:"No-option CLTI",difficulty:"hard",stem:"An 88-year-old nursing-home resident has extensive heel necrosis, fixed knee contracture, severe dementia and no reconstructible distal target. She is bedbound. Best management principle?",options:{A:"Attempt multiple complex bypasses regardless",B:"Palliative wound care or primary amputation depending symptoms and goals",C:"Mandatory limb salvage at all costs",D:"Thrombolysis for chronic tibial occlusions",E:"Supervised exercise only"},answer:"B",explanation:"In no-option CLTI with poor functional status and limited goals, palliation or primary amputation may be more appropriate than burdensome failed limb salvage."},
+{id:"CLT-032",topic:"Primary amputation",difficulty:"medium",stem:"A 79-year-old man has CLTI with extensive infected foot necrosis, non-ambulatory status, severe flexion contracture and no usable revascularisation target. Best treatment option to discuss?",options:{A:"Primary major amputation",B:"Toe nail avulsion only",C:"Endless antibiotics without source control",D:"Cosmetic varicose vein treatment",E:"Discharge without analgesia"},answer:"A",explanation:"Primary amputation is appropriate to discuss when the limb is unsalvageable, infection is extensive, revascularisation is not feasible and functional benefit of salvage is poor."},
+{id:"CLT-033",topic:"Minor amputation healing",difficulty:"medium",stem:"A patient needs first-ray amputation for dry gangrene. Toe pressure is 18 mmHg and there is treatable popliteal/tibial disease. Best principle?",options:{A:"Revascularise first if feasible to improve healing",B:"Proceed with ray amputation without assessing perfusion",C:"Major amputation is mandatory in all toe gangrene",D:"Use compression bandaging only",E:"No offloading is required"},answer:"A",explanation:"Minor amputations require adequate perfusion to heal. Revascularisation before definitive minor amputation should be considered where feasible."},
+{id:"CLT-034",topic:"Transmetatarsal amputation",difficulty:"medium",stem:"A diabetic patient has gangrene of all toes but a viable plantar flap and adequate perfusion after revascularisation. Best limb-sparing amputation level to consider?",options:{A:"Transmetatarsal amputation",B:"Above-knee amputation",C:"Hip disarticulation",D:"No debridement",E:"Carotid endarterectomy"},answer:"A",explanation:"When forefoot tissue loss is extensive but the plantar flap is viable and perfusion is adequate, transmetatarsal amputation can preserve a functional weight-bearing limb."},
+{id:"CLT-035",topic:"BKA flap",difficulty:"easy",stem:"A below-knee amputation is planned. Which flap design is most commonly used for a standard transtibial amputation?",options:{A:"Long posterior myocutaneous flap",B:"Short anterior flap only",C:"Circular guillotine closure in all cases",D:"Fish-mouth forefoot flap",E:"No muscle coverage"},answer:"A",explanation:"A long posterior myocutaneous flap is commonly used for below-knee amputation, providing durable soft-tissue coverage."},
+{id:"CLT-036",topic:"BKA versus AKA",difficulty:"medium",stem:"A 72-year-old man with CLTI needs major amputation. The knee is mobile and perfusion at the below-knee level appears adequate. Best principle?",options:{A:"Preserve the knee with BKA if healing is likely",B:"Above-knee amputation is always superior",C:"Hip disarticulation is standard",D:"No rehabilitation assessment is needed",E:"Major amputation is contraindicated"},answer:"A",explanation:"Preserving the knee improves rehabilitation potential. BKA is preferred over AKA when healing is likely and the knee is functional."},
+{id:"CLT-037",topic:"Guillotine amputation",difficulty:"medium",stem:"A septic diabetic patient has spreading wet gangrene and profound physiological derangement. Definitive flap closure is unsafe. Best initial amputation strategy?",options:{A:"Open guillotine amputation for source control with later formalisation",B:"Cosmetic ray amputation only",C:"Delay until sepsis resolves without source control",D:"Primary closed AKA in all cases",E:"No antibiotics"},answer:"A",explanation:"In severe sepsis, an open guillotine amputation can provide rapid source control, with later revision/formalisation once physiology improves."},
+{id:"CLT-038",topic:"Necrotising infection",difficulty:"easy",stem:"A diabetic patient has severe foot pain, systemic toxicity, skin necrosis and gas tracking along fascial planes. Best management?",options:{A:"Immediate radical debridement with broad-spectrum antibiotics",B:"Outpatient oral flucloxacillin",C:"Compression stockings",D:"Watchful waiting",E:"Topical antifungal cream"},answer:"A",explanation:"Necrotising soft tissue infection requires immediate surgical debridement and broad-spectrum antibiotics."},
+{id:"CLT-039",topic:"Antibiotics diabetic foot",difficulty:"medium",stem:"A diabetic patient has a clean, dry neuropathic plantar ulcer without erythema, warmth, swelling, purulence or systemic signs. Best antibiotic strategy?",options:{A:"No antibiotics unless clinically infected",B:"Six weeks IV antibiotics for every ulcer",C:"Lifelong oral antibiotics",D:"Antibiotics instead of offloading",E:"Antifungal therapy only"},answer:"A",explanation:"Clinically uninfected diabetic foot ulcers should not receive antibiotics. Offloading, wound care and vascular assessment are key."},
+{id:"CLT-040",topic:"Offloading",difficulty:"easy",stem:"A diabetic patient has a neuropathic plantar forefoot ulcer with adequate perfusion and no infection. Best intervention to promote healing?",options:{A:"Offloading with appropriate cast or boot",B:"High-pressure walking exercise on the ulcer",C:"Long-term IV antibiotics",D:"Carotid duplex",E:"No footwear changes"},answer:"A",explanation:"Neuropathic plantar ulcers require effective pressure offloading to heal, alongside wound care and risk-factor control."},
+{id:"CLT-041",topic:"Heel ulcer",difficulty:"hard",stem:"A bedbound frail patient has a large necrotic heel ulcer, exposed calcaneum, severe tibial disease and no revascularisation option. Best interpretation?",options:{A:"Heel ulcers are always easily salvaged",B:"Major amputation or palliation may be appropriate depending goals and symptoms",C:"Toe amputation will heal the heel",D:"Compression cures arterial heel necrosis",E:"Anticoagulation restores tissue"},answer:"B",explanation:"Large necrotic heel ulcers with exposed bone and no revascularisation option have poor salvage potential. Management should consider pain, infection, mobility and patient goals."},
+{id:"CLT-042",topic:"Blue toe syndrome",difficulty:"medium",stem:"A 70-year-old man has painful blue toes with intact pedal pulses. CTA shows a shaggy infrarenal aorta and popliteal pulses are present. Best diagnosis?",options:{A:"Cholesterol embolisation",B:"Venous ulcer",C:"Acute compartment syndrome",D:"Cellulitis only",E:"Lymphoedema"},answer:"A",explanation:"Painful blue toes with preserved pulses suggest microembolisation, often cholesterol emboli from a shaggy aorta or aneurysmal disease."},
+{id:"CLT-043",topic:"Buerger disease",difficulty:"medium",stem:"A 38-year-old heavy smoker has distal digital ischaemia affecting fingers and toes. Angiography shows distal segmental occlusions with corkscrew collaterals and no diabetes. Best management priority?",options:{A:"Complete smoking cessation",B:"Long-term steroids for all patients",C:"Carotid endarterectomy",D:"Compression bandaging",E:"No lifestyle change"},answer:"A",explanation:"Buerger disease is strongly associated with tobacco. Complete smoking cessation is the most important treatment."},
+{id:"CLT-044",topic:"Popliteal aneurysm CLTI",difficulty:"medium",stem:"A 73-year-old man has toe gangrene and absent pedal pulses. CTA shows a thrombosed popliteal aneurysm with poor tibial runoff but a patent posterior tibial artery reconstituting distally. Best principle?",options:{A:"Assess for revascularisation to a distal target and exclude/treat aneurysm source",B:"Treat only with compression",C:"No imaging of the contralateral leg",D:"Antibiotics alone",E:"Ignore the aneurysm if gangrene is dry"},answer:"A",explanation:"Thrombosed popliteal aneurysm can cause CLTI through embolisation/thrombosis. Management requires distal runoff assessment, revascularisation if feasible and exclusion or bypass of the aneurysm."},
+{id:"CLT-045",topic:"Contralateral aneurysm screening",difficulty:"easy",stem:"A man is diagnosed with a popliteal artery aneurysm causing embolic toe ischaemia. What associated screening is appropriate?",options:{A:"Contralateral popliteal and abdominal aortic aneurysm assessment",B:"Routine colonoscopy only",C:"No further vascular imaging",D:"Thyroid ultrasound",E:"Cerebral angiography in all cases"},answer:"A",explanation:"Popliteal aneurysms are associated with contralateral popliteal aneurysms and AAA, so screening for both is appropriate."},
+{id:"CLT-046",topic:"Diabetic foot MDT",difficulty:"easy",stem:"A diabetic patient with CLTI, ulceration and infection is admitted. Which team structure is most appropriate?",options:{A:"Vascular, diabetology, podiatry, orthopaedic/foot surgery, microbiology and tissue viability input",B:"Vascular surgery alone with no other input",C:"Psychiatry only",D:"No MDT is useful",E:"Discharge to GP without plan"},answer:"A",explanation:"Diabetic foot disease requires multidisciplinary care including vascular, diabetes, podiatry, infection and wound expertise."},
+{id:"CLT-047",topic:"Revascularisation benefit",difficulty:"hard",stem:"A 75-year-old man has a small toe ulcer, toe pressure 55 mmHg, good pedal signals and no infection. CTA shows diffuse tibial calcification but no clear flow-limiting lesion. Best management?",options:{A:"Conservative wound care, offloading and surveillance",B:"Mandatory tibial bypass",C:"Immediate above-knee amputation",D:"Thrombolysis",E:"No podiatry input"},answer:"A",explanation:"Not every diabetic foot ulcer requires revascularisation. With acceptable toe pressure, good signals and no target lesion, wound care, offloading and close surveillance are appropriate."},
+{id:"CLT-048",topic:"Revascularisation after debridement",difficulty:"medium",stem:"A patient has infected forefoot tissue loss. He undergoes urgent debridement for sepsis. Post-debridement the wound is viable but toe pressure is 24 mmHg and CTA shows treatable tibial disease. Best next step?",options:{A:"Early revascularisation to support wound healing",B:"Delay vascular treatment until the wound fails for 1 year",C:"No further care after debridement",D:"Compression only",E:"Stop statin therapy"},answer:"A",explanation:"After urgent infection source control, early revascularisation should be pursued when perfusion is inadequate and anatomy is treatable."},
+{id:"CLT-049",topic:"Pain control CLTI",difficulty:"medium",stem:"A patient with CLTI has severe rest pain while awaiting urgent revascularisation. Renal function is poor and he is already on antiplatelet therapy. Best principle?",options:{A:"Provide adequate analgesia while expediting definitive treatment",B:"Avoid all analgesia to preserve examination",C:"NSAIDs are mandatory in renal failure",D:"Pain relief removes need for revascularisation",E:"Only antibiotics treat rest pain"},answer:"A",explanation:"Severe ischaemic rest pain requires adequate analgesia while definitive revascularisation or amputation planning is expedited."},
+{id:"CLT-050",topic:"CLTI shared decision-making",difficulty:"medium",stem:"A frail patient with CLTI is offered either complex limb salvage with multiple procedures or primary amputation. What is the best counselling principle?",options:{A:"Discuss survival, mobility, wound healing, reintervention burden and patient goals",B:"Only quote technical patency",C:"Avoid discussing amputation",D:"Promise limb salvage will succeed",E:"Let imaging alone decide treatment"},answer:"A",explanation:"CLTI decisions require shared decision-making, balancing limb threat, patient risk, functional status, expected mobility, wound healing, reintervention burden and patient preferences."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
