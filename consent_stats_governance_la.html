@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vascular Lab / Duplex Pilot Set — 50 SBAs</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--ok:#166534;--bad:#991b1b;--accent:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:#111827;color:white;padding:2rem 1rem}
+header .wrap,main{max-width:1000px;margin:0 auto}
+h1{margin:0 0 .5rem;font-size:clamp(1.6rem,3vw,2.4rem)}
+.subtitle{color:#d1d5db;max-width:780px}
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(247,247,251,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.toolbar-inner{max-width:1000px;margin:0 auto;padding:.8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:white;padding:.55rem .8rem;border-radius:.6rem;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.score{margin-left:auto;font-weight:700}
+main{padding:1rem}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;margin:1rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.question-head{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:.65rem;margin-bottom:.75rem}
+.qid{font-weight:800;color:#111827}
+.tags{color:var(--muted);font-size:.88rem;text-align:right}
+.stem{margin:.7rem 0 1rem;font-weight:500}
+.option{display:block;padding:.62rem .75rem;margin:.45rem 0;border:1px solid var(--line);border-radius:.65rem;background:#fff}
+.option input{margin-right:.55rem}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.incorrect{border-color:#fecaca;background:#fef2f2}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.feedback{display:none;margin-top:.9rem;padding:.85rem;border-radius:.75rem;background:#f9fafb;border:1px solid var(--line)}
+.feedback.show{display:block}
+.correct-text{color:var(--ok);font-weight:800}
+.incorrect-text{color:var(--bad);font-weight:800}
+.muted{color:var(--muted)}
+.mode-pill{padding:.25rem .5rem;border-radius:999px;border:1px solid var(--line);background:white;color:#374151;font-size:.9rem}
+@media(max-width:720px){.score{width:100%;margin-left:0}.question-head{display:block}.tags{text-align:left;margin-top:.25rem}}
+@media print{.toolbar,.actions{display:none}body{background:white}.question-card{box-shadow:none;page-break-inside:avoid}.feedback{display:block}}
+</style>
+</head>
+
+<body>
+<header>
+<div class="wrap">
+<h1>Vascular Lab / Duplex Pilot Set — 50 SBAs</h1>
+<div class="subtitle">FRCS Vascular Section 1 style. Study mode gives immediate feedback; Exam mode hides explanations until the whole paper is submitted.</div>
+</div>
+</header>
+
+<div class="toolbar">
+<div class="toolbar-inner">
+<span class="mode-pill">Mode: <strong id="modeLabel">Study</strong></span>
+<button id="studyModeBtn" class="primary" type="button">Study mode</button>
+<button id="examModeBtn" type="button">Exam mode</button>
+<button id="submitExamBtn" type="button" style="display:none">Submit exam</button>
+<button id="resetBtn" type="button">Reset</button>
+<button id="showAllBtn" type="button">Show all explanations</button>
+<span class="score" id="scoreBox">Score: 0 / 0</span>
+</div>
+</div>
+
+<main>
+<p class="muted">Select one answer for each question. This is a single-file GitHub Pages version with embedded question data.</p>
+<div id="quiz"></div>
+</main>
+
+<script>
+const questions=[
+{id:"DUP-001",topic:"Carotid duplex",difficulty:"medium",stem:"A carotid duplex shows left ICA PSV 340 cm/s, EDV 125 cm/s and ICA/CCA PSV ratio 5.4. There is visible plaque at the ICA origin with post-stenotic turbulence. Best interpretation?",options:{A:"Normal ICA",B:"Likely severe ICA stenosis",C:"Complete ICA occlusion",D:"Subclavian steal",E:"External carotid stenosis only"},answer:"B",explanation:"Markedly elevated ICA PSV, EDV and ICA/CCA ratio with plaque and turbulence are consistent with severe ICA stenosis, interpreted according to local lab criteria."},
+{id:"DUP-002",topic:"Carotid occlusion",difficulty:"medium",stem:"Duplex shows echogenic material filling the ICA lumen with no colour flow and no spectral Doppler signal despite optimised settings. The ipsilateral CCA waveform is high resistance. Best interpretation?",options:{A:"Complete ICA occlusion",B:"Moderate ICA stenosis",C:"Normal carotid bifurcation",D:"Vertebral stenosis",E:"Carotid body tumour"},answer:"A",explanation:"Absent ICA colour and spectral flow despite optimisation, with supportive proximal waveform change, is consistent with ICA occlusion."},
+{id:"DUP-003",topic:"Near occlusion",difficulty:"hard",stem:"A duplex suggests ICA occlusion, but CTA shows a tiny patent ICA lumen with distal collapse and delayed filling. The patient has recurrent ipsilateral TIAs. Best interpretation?",options:{A:"Near occlusion or pseudo-occlusion",B:"Normal ICA",C:"Subclavian steal",D:"Venous reflux",E:"External iliac stenosis"},answer:"A",explanation:"Very low-flow near occlusion can mimic occlusion on duplex. CTA/MRA can distinguish true occlusion from a thread-like residual lumen."},
+{id:"DUP-004",topic:"Carotid technical factors",difficulty:"medium",stem:"During carotid duplex, the Doppler angle is incorrectly set at 75 degrees rather than 60 degrees. What is the likely effect?",options:{A:"Velocity measurement may be falsely inaccurate",B:"The stenosis disappears",C:"Only venous flow is measured",D:"It proves occlusion",E:"It has no effect on calculated velocity"},answer:"A",explanation:"Doppler velocity is angle-dependent. Incorrect angle correction can significantly distort measured velocities and stenosis classification."},
+{id:"DUP-005",topic:"Carotid aliasing",difficulty:"easy",stem:"Colour Doppler over the ICA origin shows colour aliasing with spectral broadening and elevated PSV. Best interpretation?",options:{A:"Flow disturbance from stenosis",B:"Normal laminar flow",C:"Venous thrombosis",D:"Lymphoedema",E:"No arterial disease"},answer:"A",explanation:"Colour aliasing and spectral broadening at a plaque are typical Doppler features of disturbed high-velocity flow through stenosis."},
+{id:"DUP-006",topic:"Aortic valve mimic",difficulty:"hard",stem:"Bilateral carotid duplex shows delayed upstroke and low peak systolic velocities in both CCAs and ICAs, without focal plaque or velocity step-up. Best explanation to consider?",options:{A:"Proximal cardiac/aortic valve disease causing damped waveforms",B:"Bilateral severe ICA origin stenosis by definition",C:"Normal finding",D:"Bilateral carotid body tumours",E:"Temporal arteritis"},answer:"A",explanation:"Diffuse bilateral damped carotid waveforms without focal stenosis should prompt consideration of proximal inflow or cardiac causes such as severe aortic stenosis."},
+{id:"DUP-007",topic:"Vertebral waveform",difficulty:"medium",stem:"A patient has dizziness on left arm exercise. Duplex shows retrograde flow in the left vertebral artery at rest. Best diagnosis?",options:{A:"Complete subclavian steal physiology",B:"ICA occlusion",C:"External carotid stenosis",D:"Venous thoracic outlet syndrome",E:"Popliteal entrapment"},answer:"A",explanation:"Retrograde vertebral flow due to proximal subclavian stenosis is complete subclavian steal physiology."},
+{id:"DUP-008",topic:"Early subclavian steal",difficulty:"hard",stem:"Left vertebral Doppler shows a sharp systolic deceleration with a small mid-systolic notch but remains antegrade. Left arm pressure is 25 mmHg lower than right. Best interpretation?",options:{A:"Early or partial subclavian steal waveform",B:"Normal vertebral flow",C:"Complete ICA occlusion",D:"Pseudoaneurysm neck",E:"Portal vein thrombosis"},answer:"A",explanation:"A bunny/rabbit-type vertebral waveform with systolic deceleration suggests early subclavian steal from proximal subclavian stenosis before complete reversal occurs."},
+{id:"DUP-009",topic:"Subclavian stenosis",difficulty:"medium",stem:"Duplex shows very high PSV and turbulence in the proximal subclavian artery with damped distal axillary waveforms and lower ipsilateral arm pressure. Best diagnosis?",options:{A:"Haemodynamically significant subclavian stenosis",B:"Normal upper limb duplex",C:"Carotid body tumour",D:"DVT",E:"Lymphoedema"},answer:"A",explanation:"A focal high-velocity turbulent subclavian lesion with distal dampening and arm pressure difference suggests significant subclavian stenosis."},
+{id:"DUP-010",topic:"Peripheral arterial waveform",difficulty:"easy",stem:"A resting common femoral artery Doppler waveform is triphasic with brisk systolic upstroke, early diastolic reversal and late forward flow. Best interpretation?",options:{A:"Normal high-resistance peripheral arterial waveform",B:"Severe proximal inflow disease",C:"Venous reflux",D:"Pseudoaneurysm",E:"Complete arterial occlusion"},answer:"A",explanation:"Triphasic flow with brisk upstroke and early diastolic reversal is a normal high-resistance peripheral arterial waveform."},
+{id:"DUP-011",topic:"Peripheral arterial disease",difficulty:"easy",stem:"Pedal Doppler waveforms are monophasic and damped with prolonged systolic rise time. Best interpretation?",options:{A:"Proximal or multilevel arterial disease",B:"Normal triphasic flow",C:"Deep venous thrombosis",D:"Lymphoedema",E:"Carotid stenosis"},answer:"A",explanation:"Monophasic damped pedal waveforms suggest haemodynamically significant proximal or multilevel arterial disease."},
+{id:"DUP-012",topic:"Aortoiliac inflow",difficulty:"medium",stem:"A patient has buttock claudication. Duplex shows damped monophasic common femoral waveforms bilaterally. Best anatomical level of disease to suspect?",options:{A:"Aortoiliac inflow disease",B:"Isolated tibial disease only",C:"Carotid stenosis",D:"Renal vein thrombosis",E:"Popliteal cyst"},answer:"A",explanation:"Damped monophasic common femoral waveforms bilaterally suggest proximal inflow disease at the aortoiliac level."},
+{id:"DUP-013",topic:"SFA stenosis",difficulty:"medium",stem:"Lower-limb duplex shows focal SFA PSV 420 cm/s with pre-stenotic PSV 90 cm/s and post-stenotic turbulence. Best interpretation?",options:{A:"Haemodynamically significant SFA stenosis",B:"Normal SFA",C:"Venous reflux",D:"Pseudoaneurysm",E:"Lymphatic malformation"},answer:"A",explanation:"A focal velocity step-up with velocity ratio greater than about 2.5 and post-stenotic turbulence suggests significant arterial stenosis."},
+{id:"DUP-014",topic:"Diffuse disease",difficulty:"hard",stem:"A diabetic patient has diffuse calcific SFA disease. Duplex shows generally low monophasic velocities but no single focal velocity step-up. Toe pressure is 22 mmHg. Best interpretation?",options:{A:"Diffuse multilevel disease may be severe despite no focal velocity jump",B:"Normal perfusion because no velocity ratio is high",C:"Pure venous ulceration",D:"No further imaging is ever needed",E:"Carotid stenosis"},answer:"A",explanation:"Diffuse calcific disease may produce low-flow monophasic waveforms without a focal velocity step-up. Haemodynamic tests and cross-sectional imaging may be needed."},
+{id:"DUP-015",topic:"ABPI limitation",difficulty:"easy",stem:"A diabetic patient has tissue loss and ABPI 1.45. Pedal Dopplers are monophasic. Best interpretation?",options:{A:"ABPI may be falsely elevated from arterial calcification",B:"Perfusion is definitely normal",C:"No arterial disease is possible",D:"Venous disease is excluded",E:"Toe pressure is irrelevant"},answer:"A",explanation:"Medial arterial calcification in diabetes or renal disease can make ABPI falsely elevated. Toe pressure/TBI is more reliable."},
+{id:"DUP-016",topic:"Toe pressure",difficulty:"easy",stem:"A patient with forefoot ulcer has toe pressure 18 mmHg. Best interpretation?",options:{A:"Severe ischaemia with poor healing potential",B:"Normal wound-healing perfusion",C:"Pure neuropathy",D:"Venous hypertension only",E:"No need for vascular imaging"},answer:"A",explanation:"Very low toe pressure indicates severe ischaemia and poor likelihood of wound healing without revascularisation if feasible."},
+{id:"DUP-017",topic:"Exercise ABPI",difficulty:"medium",stem:"A runner has exertional calf pain. Resting ABPI is 1.05. Immediately after exercise, ABPI falls to 0.62 and symptoms are reproduced. Best interpretation?",options:{A:"Exercise-induced arterial limitation",B:"Normal study",C:"Venous reflux",D:"Lymphoedema",E:"Carotid dissection"},answer:"A",explanation:"A significant post-exercise ABPI drop with reproduced symptoms supports haemodynamically significant arterial disease or dynamic compression."},
+{id:"DUP-018",topic:"Popliteal entrapment",difficulty:"hard",stem:"A young athlete has normal resting duplex. With resisted plantar flexion, popliteal flow becomes severely damped and symptoms are reproduced. Best diagnosis to investigate?",options:{A:"Popliteal artery entrapment syndrome",B:"Venous ulcer",C:"Carotid stenosis",D:"Renal artery stenosis",E:"Primary lymphoedema"},answer:"A",explanation:"Dynamic popliteal artery compression during provocative manoeuvres in a young athletic patient suggests popliteal artery entrapment syndrome."},
+{id:"DUP-019",topic:"Pseudoaneurysm",difficulty:"easy",stem:"Duplex of a pulsatile groin mass after femoral puncture shows swirling colour flow in the sac and bidirectional flow in a narrow neck. Best diagnosis?",options:{A:"Femoral pseudoaneurysm",B:"Simple haematoma",C:"Lymph node",D:"Baker cyst",E:"Venous ulcer"},answer:"A",explanation:"A pseudoaneurysm has yin-yang colour flow in the sac and a to-and-fro waveform in the neck."},
+{id:"DUP-020",topic:"AV fistula",difficulty:"medium",stem:"Duplex after femoral puncture shows communication between the superficial femoral artery and femoral vein with arterialised venous waveform. Best diagnosis?",options:{A:"Iatrogenic arteriovenous fistula",B:"Pseudoaneurysm only",C:"Simple haematoma",D:"Lymphocoele",E:"Popliteal entrapment"},answer:"A",explanation:"Direct arterial-to-venous communication with arterialised venous flow indicates an AV fistula."},
+{id:"DUP-021",topic:"Vein graft surveillance",difficulty:"medium",stem:"Six months after femoro-posterior tibial vein bypass, duplex shows focal graft PSV 430 cm/s, velocity ratio 4.8 and low distal graft velocity. Best interpretation?",options:{A:"Significant graft stenosis threatening patency",B:"Normal graft",C:"Deep venous thrombosis",D:"Type II endoleak",E:"Lymphoedema"},answer:"A",explanation:"High focal velocity ratio and low distal velocity suggest a significant vein graft stenosis at risk of occlusion."},
+{id:"DUP-022",topic:"Vein graft low flow",difficulty:"hard",stem:"A vein bypass has no focal stenosis but uniformly low velocities throughout the graft and poor runoff on distal imaging. Best interpretation?",options:{A:"Low-flow graft at risk, possibly due to poor inflow or outflow",B:"Normal finding",C:"Carotid stenosis",D:"Venous reflux",E:"Pseudoaneurysm"},answer:"A",explanation:"Uniformly low graft velocities can indicate a threatened low-flow graft due to inflow or outflow problems, even without a focal stenosis."},
+{id:"DUP-023",topic:"EVAR surveillance",difficulty:"easy",stem:"Post-EVAR duplex shows stable sac diameter and no colour flow within the sac. Best interpretation?",options:{A:"No duplex evidence of endoleak with stable sac",B:"Rupture",C:"Type I endoleak by definition",D:"Graft infection",E:"Limb occlusion"},answer:"A",explanation:"Stable sac size with no demonstrable sac flow is reassuring, although surveillance protocols vary and CTA is needed if concern persists."},
+{id:"DUP-024",topic:"Type II endoleak duplex",difficulty:"medium",stem:"EVAR surveillance duplex shows low-velocity bidirectional flow within the aneurysm sac from a posterior branch, with stable sac size. Best likely diagnosis?",options:{A:"Type II endoleak",B:"Type Ia endoleak",C:"Type III endoleak",D:"EVAR limb occlusion",E:"Aortoenteric fistula"},answer:"A",explanation:"Low-flow sac filling from branch vessels such as lumbar arteries is typical of type II endoleak, especially with stable sac size."},
+{id:"DUP-025",topic:"EVAR sac expansion",difficulty:"medium",stem:"A post-EVAR duplex shows sac growth from 55 mm to 64 mm. No endoleak is confidently seen on standard duplex. Best next step?",options:{A:"CTA or contrast-enhanced ultrasound to assess for occult endoleak",B:"Discharge from surveillance",C:"Ignore because duplex saw no leak",D:"Compression therapy",E:"Carotid duplex"},answer:"A",explanation:"Sac expansion after EVAR requires further assessment for occult type I, II or III endoleak, commonly with CTA or contrast-enhanced ultrasound."},
+{id:"DUP-026",topic:"DVT duplex",difficulty:"easy",stem:"Compression ultrasound shows a non-compressible femoral vein containing echogenic thrombus. Best diagnosis?",options:{A:"Femoral DVT",B:"Normal femoral vein",C:"Arterial pseudoaneurysm",D:"Lymphoedema",E:"Varicose vein reflux"},answer:"A",explanation:"Failure of venous compression with intraluminal thrombus is the key ultrasound finding of DVT."},
+{id:"DUP-027",topic:"Calf DVT propagation",difficulty:"medium",stem:"Initial scan shows isolated posterior tibial vein thrombosis. One week later, thrombus extends into the popliteal vein. Best interpretation?",options:{A:"Propagation to proximal DVT",B:"Resolution",C:"Superficial thrombophlebitis only",D:"Normal finding",E:"Arterial occlusion"},answer:"A",explanation:"Extension into the popliteal vein converts isolated distal DVT into proximal DVT, with higher PE risk and treatment implications."},
+{id:"DUP-028",topic:"Duplicated femoral vein",difficulty:"hard",stem:"A duplex scan finds one duplicated femoral vein channel compresses normally, but the second parallel channel is non-compressible with thrombus. Best interpretation?",options:{A:"Femoral DVT in a duplicated venous system",B:"Normal because one channel is patent",C:"Superficial vein thrombosis",D:"Arterial stenosis",E:"Lymph node"},answer:"A",explanation:"Duplicated femoral veins can harbour DVT in one channel while the other remains patent. Both channels must be assessed."},
+{id:"DUP-029",topic:"Iliac venous obstruction",difficulty:"medium",stem:"A patient has unilateral leg swelling. Femoral vein Doppler shows continuous non-phasic flow with poor respiratory variation. Best proximal lesion to suspect?",options:{A:"Iliac venous obstruction",B:"Femoral artery stenosis",C:"Normal venous flow",D:"Carotid occlusion",E:"Popliteal entrapment"},answer:"A",explanation:"Loss of normal respiratory phasicity and continuous venous flow in the common femoral vein can indicate proximal iliac venous obstruction."},
+{id:"DUP-030",topic:"Venous reflux",difficulty:"easy",stem:"A standing venous duplex demonstrates great saphenous vein reflux lasting 1.2 seconds after calf squeeze release. Best interpretation?",options:{A:"Pathological superficial venous reflux",B:"Normal superficial vein",C:"DVT",D:"Arterial occlusion",E:"Lymphoedema"},answer:"A",explanation:"Reflux lasting more than about 0.5 seconds in superficial veins is generally considered pathological, interpreted with local protocol."},
+{id:"DUP-031",topic:"Deep venous reflux",difficulty:"medium",stem:"Duplex shows femoral vein reflux lasting 1.4 seconds after distal augmentation. Best interpretation?",options:{A:"Deep venous reflux",B:"Normal deep venous valve function",C:"Arterial stenosis",D:"Pseudoaneurysm",E:"Lymphatic obstruction"},answer:"A",explanation:"Prolonged reverse flow in a deep vein after augmentation indicates deep venous reflux."},
+{id:"DUP-032",topic:"Saphenopopliteal junction",difficulty:"medium",stem:"A patient has posterior calf varicosities. Duplex shows small saphenous reflux entering the popliteal vein high in the popliteal fossa. Best planning point?",options:{A:"Define the variable SPJ anatomy before intervention",B:"No duplex mapping is needed",C:"Treat the GSV only",D:"Carotid duplex is required",E:"Compression is contraindicated"},answer:"A",explanation:"The small saphenous termination is variable. Duplex mapping of the SPJ is essential before intervention."},
+{id:"DUP-033",topic:"Access duplex",difficulty:"medium",stem:"A dialysis fistula has high venous pressures and prolonged bleeding after dialysis. Duplex shows focal outflow vein PSV 520 cm/s with post-stenotic turbulence. Best diagnosis?",options:{A:"Outflow stenosis",B:"Normal fistula maturation",C:"Steal syndrome only",D:"Carotid stenosis",E:"Portal vein thrombosis"},answer:"A",explanation:"High venous pressures, prolonged bleeding and focal high-velocity outflow lesion indicate access outflow stenosis."},
+{id:"DUP-034",topic:"Access steal",difficulty:"medium",stem:"A patient has hand pain after brachiocephalic fistula creation. Digital pressure is low and improves markedly when the fistula is compressed. Best diagnosis?",options:{A:"Dialysis access steal syndrome",B:"Carpal tunnel alone",C:"DVT",D:"Lymphoedema",E:"Subclavian steal"},answer:"A",explanation:"Improvement in digital pressure and symptoms with access compression supports access-related hand ischaemia."},
+{id:"DUP-035",topic:"High-flow access",difficulty:"medium",stem:"Duplex of a large brachiocephalic fistula estimates access flow at 3.0 L/min in a patient with breathlessness and high-output cardiac failure. Best interpretation?",options:{A:"High-flow access may be contributing to cardiac failure",B:"Normal fistula flow in all patients",C:"DVT",D:"Arterial occlusion",E:"Carotid restenosis"},answer:"A",explanation:"Very high access flow can contribute to high-output cardiac failure and may require flow reduction or ligation depending dialysis needs."},
+{id:"DUP-036",topic:"Renal artery stenosis",difficulty:"medium",stem:"Renal duplex shows renal artery PSV 370 cm/s and renal-aortic ratio 4.5. Best interpretation?",options:{A:"Significant renal artery stenosis is likely",B:"Normal renal artery",C:"Renal vein thrombosis",D:"SMA occlusion",E:"Portal hypertension"},answer:"A",explanation:"High renal PSV and elevated renal-aortic ratio suggest haemodynamically significant renal artery stenosis, interpreted with local criteria."},
+{id:"DUP-037",topic:"Tardus-parvus",difficulty:"easy",stem:"Intrarenal Doppler shows delayed systolic upstroke and low acceleration distal to a proximal renal artery stenosis. Best waveform term?",options:{A:"Tardus-parvus",B:"To-and-fro",C:"Yin-yang",D:"Triphasic",E:"Reflux waveform"},answer:"A",explanation:"Tardus-parvus describes a damped waveform with delayed systolic upstroke downstream of proximal arterial stenosis."},
+{id:"DUP-038",topic:"Mesenteric duplex",difficulty:"medium",stem:"A fasting mesenteric duplex shows markedly elevated SMA origin PSV with post-stenotic turbulence. Best interpretation?",options:{A:"Significant SMA stenosis",B:"Normal SMA",C:"Portal vein thrombosis",D:"DVT",E:"Carotid stenosis"},answer:"A",explanation:"High fasting SMA PSV at the origin with turbulence suggests significant SMA stenosis."},
+{id:"DUP-039",topic:"Coeliac compression",difficulty:"hard",stem:"Coeliac artery PSV is high during expiration and falls substantially during inspiration. The patient has epigastric pain and weight loss. Best diagnosis to consider?",options:{A:"Median arcuate ligament compression",B:"SMA embolus",C:"May-Thurner syndrome",D:"DVT",E:"Carotid occlusion"},answer:"A",explanation:"Dynamic respiratory variation in coeliac velocity, worse on expiration, is typical of median arcuate ligament compression."},
+{id:"DUP-040",topic:"Portal vein thrombosis",difficulty:"medium",stem:"Abdominal duplex shows absent colour flow in the portal vein with intraluminal echogenic thrombus and collateral cavernous channels. Best diagnosis?",options:{A:"Portal vein thrombosis with cavernous transformation",B:"Normal portal vein",C:"Renal artery stenosis",D:"AAA endoleak",E:"Popliteal entrapment"},answer:"A",explanation:"Portal vein thrombus with collateral cavernous channels indicates chronic portal vein thrombosis/cavernous transformation."},
+{id:"DUP-041",topic:"AAA ultrasound",difficulty:"easy",stem:"During AAA surveillance, which measurement is most important for serial comparison?",options:{A:"Maximum outer-to-outer aortic diameter in a consistent plane",B:"Aortic length only",C:"IVC diameter",D:"Renal vein velocity",E:"Common femoral waveform only"},answer:"A",explanation:"AAA surveillance depends on reproducible maximum aortic diameter measurement, usually outer-to-outer, using a consistent technique."},
+{id:"DUP-042",topic:"AAA rupture ultrasound",difficulty:"medium",stem:"A hypotensive patient has suspected ruptured AAA. Bedside ultrasound shows a 7 cm AAA. Best interpretation?",options:{A:"AAA is confirmed but ultrasound cannot reliably exclude or fully characterise rupture",B:"Rupture is excluded",C:"No CTA is ever needed",D:"This proves type II endoleak",E:"Venous duplex is first-line"},answer:"A",explanation:"Bedside ultrasound can rapidly confirm an AAA but cannot reliably exclude rupture or plan EVAR; CTA is needed if the patient can be stabilised for imaging."},
+{id:"DUP-043",topic:"Ultrasound gain",difficulty:"medium",stem:"A sonographer increases colour gain excessively during arterial duplex. What artefact may occur?",options:{A:"Colour bleed/noise that can mimic flow outside the vessel",B:"True stenosis resolution",C:"Guaranteed velocity accuracy",D:"Loss of all venous signals only",E:"Conversion to CT angiography"},answer:"A",explanation:"Excess colour gain produces noise and colour bleed, potentially mimicking flow or obscuring vessel boundaries."},
+{id:"DUP-044",topic:"Doppler angle",difficulty:"easy",stem:"For most vascular duplex velocity measurements, what Doppler angle is generally used to standardise measurements?",options:{A:"60 degrees or less",B:"90 degrees exactly",C:"120 degrees",D:"No angle correction",E:"180 degrees"},answer:"A",explanation:"Velocity measurements are standardised using angle correction, generally at 60 degrees or less, because error increases at higher angles."},
+{id:"DUP-045",topic:"Spectral broadening",difficulty:"easy",stem:"Spectral Doppler across a stenosis shows filling-in of the spectral window and turbulent high-velocity flow. Best term?",options:{A:"Spectral broadening",B:"To-and-fro waveform",C:"Tardus-parvus only",D:"Normal laminar flow",E:"Respiratory phasicity"},answer:"A",explanation:"Spectral broadening reflects disturbed turbulent flow, often seen in and just beyond stenoses."},
+{id:"DUP-046",topic:"Aliasing",difficulty:"easy",stem:"Colour Doppler displays abrupt colour reversal within a high-velocity jet because the Nyquist limit is exceeded. Best term?",options:{A:"Aliasing",B:"Compression",C:"Cavernous transformation",D:"Phasicity",E:"Augmentation"},answer:"A",explanation:"Aliasing occurs when Doppler shift exceeds the Nyquist limit, causing apparent colour reversal in high-velocity flow."},
+{id:"DUP-047",topic:"Duplex reporting",difficulty:"medium",stem:"A lower-limb arterial duplex reports a focal velocity elevation but omits pre-stenotic velocity, waveform quality and runoff. What is the main limitation?",options:{A:"Severity and haemodynamic significance are harder to interpret",B:"The report is automatically normal",C:"It proves occlusion",D:"It replaces clinical assessment entirely",E:"It diagnoses DVT"},answer:"A",explanation:"Velocity ratios, waveform changes and runoff help determine whether a focal velocity elevation is haemodynamically significant."},
+{id:"DUP-048",topic:"Venous augmentation",difficulty:"medium",stem:"During venous duplex, distal calf squeeze produces a brisk increase in femoral venous flow. Best interpretation?",options:{A:"Normal augmentation suggesting patent intervening deep veins",B:"Definite proximal occlusion",C:"Arterial stenosis",D:"Pseudoaneurysm",E:"No venous flow"},answer:"A",explanation:"Normal augmentation with distal compression supports patency of the venous segment between compression and probe, though it does not replace direct compression assessment."},
+{id:"DUP-049",topic:"Venous phasicity",difficulty:"medium",stem:"Bilateral common femoral venous waveforms are phasic with respiration. Best interpretation?",options:{A:"No obvious major proximal iliocaval obstruction on waveform assessment",B:"Bilateral iliac occlusion is proven",C:"DVT is excluded in all calf veins",D:"Arterial stenosis",E:"Portal hypertension"},answer:"A",explanation:"Respiratory phasicity in common femoral venous waveforms argues against major proximal iliocaval obstruction, though direct imaging may still be needed."},
+{id:"DUP-050",topic:"Quality assurance",difficulty:"medium",stem:"A vascular lab introduces a new carotid velocity threshold without validating it against local outcomes or imaging correlation. Best governance concern?",options:{A:"Duplex criteria require local validation and quality assurance",B:"All velocity criteria are universal and interchangeable",C:"No audit is needed",D:"Only trainee interpretation matters",E:"Duplex never affects treatment"},answer:"A",explanation:"Vascular lab criteria should be validated and audited locally, because equipment, technique, population and reference standards affect velocity thresholds."}
+];
+
+let mode="study";
+
+function renderQuiz(){
+  const quiz=document.getElementById("quiz");
+  quiz.innerHTML=questions.map((q,i)=>`
+  <section class="question-card" id="${q.id}" data-qid="${q.id}">
+    <div class="question-head">
+      <div class="qid">Q${i+1}. ${q.id}</div>
+      <div class="tags">${q.topic} · ${q.difficulty}</div>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <form class="options">
+      ${Object.entries(q.options).map(([letter,text])=>`
+      <label class="option" data-letter="${letter}">
+        <input type="radio" name="${q.id}" value="${letter}"> <strong>${letter}.</strong> ${text}
+      </label>`).join("")}
+    </form>
+    <div class="actions">
+      <button type="button" class="checkBtn">Check answer</button>
+      <button type="button" class="clearBtn">Clear</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>`).join("");
+
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.addEventListener("click",e=>checkQuestion(e.target.closest(".question-card"))));
+  document.querySelectorAll(".clearBtn").forEach(btn=>btn.addEventListener("click",e=>clearQuestion(e.target.closest(".question-card"))));
+  updateModeUI();
+  updateScore();
+}
+
+function getQuestion(card){return questions.find(q=>q.id===card.dataset.qid)}
+function selectedValue(card){const el=card.querySelector('input[type="radio"]:checked');return el?el.value:null}
+
+function checkQuestion(card,force=false){
+  const q=getQuestion(card);
+  const selected=selectedValue(card);
+  if(!selected&&!force){alert("Please select an answer first.");return}
+  const isCorrect=selected===q.answer;
+
+  card.querySelectorAll(".option").forEach(opt=>{
+    opt.classList.remove("correct","incorrect");
+    const letter=opt.dataset.letter;
+    if(letter===q.answer)opt.classList.add("correct");
+    if(selected&&letter===selected&&selected!==q.answer)opt.classList.add("incorrect");
+  });
+
+  const feedback=card.querySelector(".feedback");
+  feedback.innerHTML=`
+    <div class="${isCorrect?"correct-text":"incorrect-text"}">${selected?(isCorrect?"Correct":"Incorrect"):"Answer shown"}</div>
+    <p><strong>Correct answer: ${q.answer}.</strong> ${q.options[q.answer]}</p>
+    <p>${q.explanation}</p>
+  `;
+  feedback.classList.add("show");
+  updateScore();
+}
+
+function clearQuestion(card){
+  card.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+  card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+  const feedback=card.querySelector(".feedback");
+  feedback.classList.remove("show");
+  feedback.innerHTML="";
+  updateScore();
+}
+
+function updateScore(){
+  let answered=0,correct=0;
+  document.querySelectorAll(".question-card").forEach(card=>{
+    const q=getQuestion(card);
+    const selected=selectedValue(card);
+    if(selected)answered++;
+    if(selected===q.answer)correct++;
+  });
+  document.getElementById("scoreBox").textContent=`Score: ${correct} / ${answered}`;
+}
+
+function updateModeUI(){
+  document.getElementById("modeLabel").textContent=mode==="study"?"Study":"Exam";
+  document.getElementById("studyModeBtn").classList.toggle("primary",mode==="study");
+  document.getElementById("examModeBtn").classList.toggle("primary",mode==="exam");
+  document.getElementById("submitExamBtn").style.display=mode==="exam"?"":"none";
+  document.querySelectorAll(".checkBtn").forEach(btn=>btn.style.display=mode==="study"?"":"none");
+  if(mode==="exam"){
+    document.querySelectorAll(".question-card").forEach(card=>{
+      card.querySelector(".feedback").classList.remove("show");
+      card.querySelectorAll(".option").forEach(opt=>opt.classList.remove("correct","incorrect"));
+    });
+  }
+}
+
+document.getElementById("studyModeBtn").addEventListener("click",()=>{mode="study";updateModeUI()});
+document.getElementById("examModeBtn").addEventListener("click",()=>{mode="exam";updateModeUI()});
+document.getElementById("submitExamBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("showAllBtn").addEventListener("click",()=>{
+  document.querySelectorAll(".question-card").forEach(card=>checkQuestion(card,true));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Clear all selected answers and explanations?"))return;
+  document.querySelectorAll(".question-card").forEach(clearQuestion);
+});
+document.addEventListener("change",e=>{if(e.target.matches('input[type="radio"]'))updateScore()});
+renderQuiz();
+</script>
+</body>
+</html>
